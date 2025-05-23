@@ -1,0 +1,17 @@
+version: "1"
+
+services:
+  postgres:
+    image: postgres
+    container_name: ta-silap-tih-postgres
+    ports:
+      - "54322:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: db-ta-silap-tih
+    volumes:
+      - data_postgres:/var/lib/postgresql/data
+
+volumes:
+  data_postgres:

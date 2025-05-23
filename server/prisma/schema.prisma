@@ -1,0 +1,163 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../prisma/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id              String   @id @default(uuid())
+  full_name       String
+  email           String   @unique
+  password        String
+  role            UserRole
+  is_verified     Boolean  @default(false)
+  profile_picture String?
+
+  referral_code    String  @unique
+  referred_by_code String?
+  referrer         User?   @relation("UserReferrals", fields: [referred_by_code], references: [referral_code])
+  referrals        User[]  @relation("UserReferrals") // user-user yang direferensikan oleh user ini
+
+  points_balance     Int       @default(0)
+  points_expiry_date DateTime?
+
+  coupons      CouponUser[]
+  events       Event[]
+  reviews      Review[]
+  transactions Transaction[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  is_deleted Boolean  @default(false)
+}
+
+model Coupon {
+  id              String    @id @default(uuid())
+  name            String?
+  description     String?
+  code            String    @unique
+  discount_amount Int
+  expired_at      DateTime?
+
+  users CouponUser[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  is_deleted Boolean  @default(false)
+}
+
+model CouponUser {
+  id         String    @id @default(uuid())
+  expired_at DateTime?
+  used       Boolean   @default(false)
+
+  user_id   String
+  user      User   @relation(fields: [user_id], references: [id])
+  coupon_id String
+  coupon    Coupon @relation(fields: [coupon_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  is_deleted Boolean  @default(false)
+}
+
+model Event {
+  id              String        @id @default(uuid())
+  organizer_id    String
+  name            String
+  description     String
+  category        String
+  location        String
+  price           Int
+  start_date      DateTime
+  end_date        DateTime
+  total_seats     Int
+  remaining_seats Int
+  organizer       User          @relation(fields: [organizer_id], references: [id])
+  reviews         Review[]
+  transactions    Transaction[]
+  vouchers        Voucher[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  is_deleted Boolean  @default(false)
+}
+
+model Voucher {
+  id              String   @id @default(uuid())
+  event_id        String
+  code            String   @unique
+  discount_amount Int
+  start_date      DateTime
+  end_date        DateTime
+  usage_limit     Int
+  used_count      Int      @default(0)
+  event           Event    @relation(fields: [event_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  is_deleted Boolean  @default(false)
+}
+
+model Transaction {
+  id              String            @id @default(uuid())
+  user_id         String
+  event_id        String
+  ticket_quantity Int
+  locked_price    Int
+  total_price     Int
+  status          TransactionStatus
+  payment_proof   String?
+  event           Event             @relation(fields: [event_id], references: [id])
+  user            User              @relation(fields: [user_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  is_deleted Boolean  @default(false)
+}
+
+model Review {
+  id       String  @id @default(uuid())
+  user_id  String
+  event_id String
+  rating   Int
+  comment  String?
+  event    Event   @relation(fields: [event_id], references: [id])
+  user     User    @relation(fields: [user_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  is_deleted Boolean  @default(false)
+}
+
+enum UserRole {
+  CUSTOMER
+  ORGANIZER
+  ADMIN
+}
+
+enum TransactionStatus {
+  waiting_payment
+  waiting_confirm
+  done
+  rejected
+  expired
+  canceled
+}
+
+enum PointSource {
+  referral
+  refund
+  redeem
+}
