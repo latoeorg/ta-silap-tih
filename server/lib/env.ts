@@ -1,10 +1,19 @@
+import { z } from "zod";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-export const Env = {
-  DATABASE_URL: process.env.DATABASE_URL,
+const envSchema = z.object({
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
+  PORT: z
+    .string()
+    .transform((val) => parseInt(val, 10))
+    .default("3000"),
+  DATABASE_URL: z.string(),
+  JWT_SECRET: z.string().default("your-secret-key"),
+  JWT_EXPIRES_IN: z.string().default("7d"),
+});
 
-  JWT_SECRET: process.env.JWT_SECRET,
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
-};
+export const env = envSchema.parse(process.env);

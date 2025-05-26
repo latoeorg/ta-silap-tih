@@ -1,7 +1,16 @@
 import { Router } from "express";
-import { AuthMiddlware } from "./auth.middleware";
 import { AuthController } from "./auth.controller";
+import { authenticate } from "./auth.middleware";
+import { validate } from "../../lib/validate";
+import { registerSchema, loginSchema } from "./auth.schema";
 
-export const AuthRouter = Router()
-  .post("/register", AuthMiddlware.registerMiddleware, AuthController.register)
-  .post("/login", AuthMiddlware.loginMiddleware, AuthController.login);
+export const authRouter = Router();
+
+// Register a new user
+authRouter.post("/register", validate(registerSchema), AuthController.register);
+
+// Login
+authRouter.post("/login", validate(loginSchema), AuthController.login);
+
+// Get current user profile
+authRouter.get("/profile", authenticate, AuthController.getProfile);
