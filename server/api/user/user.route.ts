@@ -2,7 +2,8 @@ import { Router } from "express";
 import { UserController } from "./user.controller";
 import { authorize } from "../auth/auth.middleware";
 import { validate } from "../../lib/validate";
-import { updateUserSchema, updateProfileSchema } from "./user.schema";
+import { updateUserSchema } from "./user.schema";
+import { UserMiddleware } from "./user.middleware";
 
 export const userRouter = Router();
 
@@ -18,7 +19,7 @@ userRouter.put("/:id", validate(updateUserSchema), UserController.updateUser);
 // Update profile
 userRouter.put(
   "/profile/update",
-  validate(updateProfileSchema),
+  UserMiddleware.schema,
   UserController.updateProfile
 );
 

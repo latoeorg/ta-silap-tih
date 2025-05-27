@@ -16,12 +16,13 @@ datasource db {
 }
 
 enum Role {
+  ADMIN
   TEACHER
   STUDENT
 }
 
 model User {
-  id       String @id @default(uuid())
+  id       String @id @default(cuid())
   email    String @unique
   password String
   name     String
@@ -40,7 +41,7 @@ model User {
 }
 
 model StudentProfile {
-  id             String    @id @default(uuid())
+  id             String    @id @default(cuid())
   email          String    @unique
   user           User      @relation(fields: [email], references: [email])
   role           Role
@@ -58,7 +59,7 @@ model StudentProfile {
 }
 
 model TeacherProfile {
-  id             String    @id @default(uuid())
+  id             String    @id @default(cuid())
   email          String    @unique
   user           User      @relation(fields: [email], references: [email])
   role           Role
@@ -78,7 +79,7 @@ model TeacherProfile {
 }
 
 model Course {
-  id          String       @id @default(uuid())
+  id          String       @id @default(cuid())
   name        String
   teacherId   String
   teacher     User         @relation("TeacherCourses", fields: [teacherId], references: [id])
@@ -89,7 +90,7 @@ model Course {
 }
 
 model Schedule {
-  id        String @id @default(uuid())
+  id        String @id @default(cuid())
   day       String
   startTime String
   endTime   String
@@ -100,7 +101,7 @@ model Schedule {
 }
 
 model Grade {
-  id             String               @id @default(uuid())
+  id             String               @id @default(cuid())
   examType       ExamType
   score          Float
   courseId       String
@@ -118,7 +119,7 @@ enum ExamType {
 }
 
 model GradeChangeRequest {
-  id        String        @id @default(uuid())
+  id        String        @id @default(cuid())
   gradeId   String
   userId    String
   examType  ExamType
@@ -137,7 +138,7 @@ enum RequestStatus {
 }
 
 model Attendance {
-  id       String           @id @default(uuid())
+  id       String           @id @default(cuid())
   date     DateTime
   status   AttendanceStatus
   userId   String
