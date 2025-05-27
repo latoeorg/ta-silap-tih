@@ -1,18 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  // output   = "../node_modules/@prisma/client"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // directUrl = env("DIRECT_URL")
 }
 
 enum Role {
@@ -31,13 +23,17 @@ model User {
   studentProfile StudentProfile?
   teacherProfile TeacherProfile?
 
-  teachingCourses Course[]             @relation("TeacherCourses")
-  enrolledCourses Course[]             @relation("StudentCourses")
+  teachingCourses Course[]           @relation("TeacherCourses")
+  enrolledCourses Course[]           @relation("StudentCourses")
   grades          Grade[]
   attendances     Attendance[]
-  schedules       Schedule[]
-  gradeRequests   GradeChangeRequest[]
-  createdAt       DateTime             @default(now())
+  createdWeights  AssessmentWeight[] @relation("CreatedWeights")
+
+  classGroup ClassGroup? @relation("ClassStudents", fields: [classGroupId], references: [id])
+
+  createdAt    DateTime     @default(now())
+  classGroupId String?
+  ClassGroup   ClassGroup[]
 }
 
 model StudentProfile {
@@ -78,63 +74,70 @@ model TeacherProfile {
   status         String?   @default("Active")
 }
 
+model ClassGroup {
+  id         String @id @default(cuid())
+  name       String // e.g. "Kelas 10 IPA 1"
+  homeroomId String
+  homeroom   User   @relation(fields: [homeroomId], references: [id])
+  students   User[] @relation("ClassStudents")
+}
+
+model Subject {
+  id      String             @id @default(cuid())
+  name    String
+  courses Course[]
+  weights AssessmentWeight[]
+}
+
+model AssessmentWeight {
+  id          String   @id @default(cuid())
+  subjectId   String
+  examType    ExamType
+  weight      Float
+  quota       Int      @default(1)
+  createdById String
+  createdBy   User     @relation("CreatedWeights", fields: [createdById], references: [id])
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+}
+
 model Course {
   id          String       @id @default(cuid())
   name        String
+  subjectId   String?
+  subject     Subject?     @relation(fields: [subjectId], references: [id])
   teacherId   String
   teacher     User         @relation("TeacherCourses", fields: [teacherId], references: [id])
   students    User[]       @relation("StudentCourses")
-  schedules   Schedule[]
   grades      Grade[]
   attendances Attendance[]
 }
 
-model Schedule {
-  id        String @id @default(cuid())
-  day       String
-  startTime String
-  endTime   String
-  courseId  String
-  userId    String
-  course    Course @relation(fields: [courseId], references: [id])
-  user      User   @relation(fields: [userId], references: [id])
+model Grade {
+  id         String           @id @default(cuid())
+  examType   ExamType
+  courseId   String
+  userId     String
+  course     Course           @relation(fields: [courseId], references: [id])
+  user       User             @relation(fields: [userId], references: [id])
+  createdAt  DateTime         @default(now())
+  components GradeComponent[] // ← NEW
+  totalScore Float? // computed on save
 }
 
-model Grade {
-  id             String               @id @default(cuid())
-  examType       ExamType
-  score          Float
-  courseId       String
-  userId         String
-  course         Course               @relation(fields: [courseId], references: [id])
-  user           User                 @relation(fields: [userId], references: [id])
-  createdAt      DateTime             @default(now())
-  changeRequests GradeChangeRequest[]
+model GradeComponent {
+  id      String @id @default(cuid())
+  gradeId String
+  score   Float
+  index   Int // e.g. 1st quiz or 2nd quiz (based on quota)
+  grade   Grade  @relation(fields: [gradeId], references: [id])
 }
 
 enum ExamType {
   DAILY
   MID_TERM
   FINAL
-}
-
-model GradeChangeRequest {
-  id        String        @id @default(cuid())
-  gradeId   String
-  userId    String
-  examType  ExamType
-  newScore  Float
-  reason    String
-  status    RequestStatus @default(PENDING)
-  createdAt DateTime      @default(now())
-  user      User          @relation(fields: [userId], references: [id])
-  grade     Grade         @relation(fields: [gradeId], references: [id])
-}
-
-enum RequestStatus {
-  PENDING
-  APPROVED
-  REJECTED
+  QUIZ
+  ASSIGNMENT
 }
 
 model Attendance {

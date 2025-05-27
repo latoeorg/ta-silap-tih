@@ -38,10 +38,14 @@ export const authenticate = (
   }
 };
 
-export const authorize = (roles: Role[]) => {
+export const authorize = (roles: Role[] | Role) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       throw new Error("Unauthorized: User not authenticated");
+    }
+
+    if (typeof roles === "string") {
+      roles = [roles];
     }
 
     if (!roles.includes(req.user.role)) {

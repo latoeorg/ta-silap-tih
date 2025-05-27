@@ -6,15 +6,18 @@ export class ApiResponse {
     data,
     message = "Success",
     statusCode = 200,
+    meta,
   }: {
     res: Response;
     data?: T;
     message?: string;
     statusCode?: number;
+    meta?: any;
   }) {
     return res.status(statusCode).json({
       success: true,
       message,
+      meta,
       data,
     });
   }

@@ -1,0 +1,85 @@
+import { Request, Response } from "express";
+import {
+  ClassGroupCreateInput,
+  ClassGroupUpdateInput,
+  ClassGroupParams,
+  ClassGroupStudentsInput,
+} from "./classGroup.schema";
+import { ApiResponse } from "../../utils/api-response";
+import { ClassGroupService } from "./classGroup.service";
+
+export class ClassGroupController {
+  static async create(
+    req: Request<{}, {}, ClassGroupCreateInput>,
+    res: Response
+  ) {
+    const classGroup = await ClassGroupService.create(req.body);
+
+    ApiResponse.success({
+      res,
+      data: classGroup,
+      message: "Class group created successfully",
+    });
+  }
+
+  static async findAll(req: Request, res: Response) {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const result = await ClassGroupService.findAll(page, limit);
+
+    ApiResponse.success({
+      res,
+      data: result.classGroups,
+      meta: result.meta,
+      message: "Class groups retrieved successfully",
+    });
+  }
+
+  static async findById(req: Request<ClassGroupParams>, res: Response) {
+    const classGroup = await ClassGroupService.findById(req.params.id);
+
+    ApiResponse.success({
+      res,
+      data: classGroup,
+      message: "Class group retrieved successfully",
+    });
+  }
+
+  static async update(
+    req: Request<ClassGroupParams, {}, ClassGroupUpdateInput>,
+    res: Response
+  ) {
+    const classGroup = await ClassGroupService.update(req.params.id, req.body);
+
+    ApiResponse.success({
+      res,
+      data: classGroup,
+      message: "Class group updated successfully",
+    });
+  }
+
+  static async delete(req: Request<ClassGroupParams>, res: Response) {
+    await ClassGroupService.delete(req.params.id);
+
+    ApiResponse.success({
+      res,
+      message: "Class group deleted successfully",
+    });
+  }
+
+  static async updateStudents(
+    req: Request<ClassGroupParams, {}, ClassGroupStudentsInput>,
+    res: Response
+  ) {
+    const classGroup = await ClassGroupService.updateStudents(
+      req.params.id,
+      req.body
+    );
+
+    ApiResponse.success({
+      res,
+      data: classGroup,
+      message: "Class group students updated successfully",
+    });
+  }
+}
