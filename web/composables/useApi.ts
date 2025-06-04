@@ -1,5 +1,6 @@
 import { useRuntimeConfig } from "#app";
 import { $fetch } from "ofetch";
+import { toast } from "vue-sonner";
 import type { ApiResponse } from "~/types";
 
 export const useApi = () => {
@@ -36,9 +37,13 @@ export const useApi = () => {
 
       return response;
     } catch (error: any) {
-      // Handle 401 errors by logging out
       if (error.status === 401) {
         authStore.logout();
+        toast.error("Session expired. You have been logged out.");
+      } else {
+        toast.error(
+          error?.data?.message || "Something went wrong. Please try again."
+        );
       }
       throw error;
     }

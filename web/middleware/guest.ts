@@ -6,9 +6,9 @@ export default defineNuxtRouteMiddleware(async () => {
   const authStore = useAuthStore();
 
   await nextTick(); // Wait for hydration
-  console.log("Guest middleware triggered", authStore.isAuthenticated);
+  const isLogged = localStorage.getItem("token");
 
-  if (authStore.isAuthenticated) {
+  if (authStore.isAuthenticated || isLogged) {
     return navigateTo("/");
   }
 });
