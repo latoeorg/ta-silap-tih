@@ -68,7 +68,7 @@ const onSubmit = async () => {
 
   try {
     await authStore.login(form.email, form.password);
-    navigateTo("/dashboard");
+    navigateTo("/");
   } catch (error: any) {
     console.error("Login error:", error);
     // Handle error (show toast, etc.)

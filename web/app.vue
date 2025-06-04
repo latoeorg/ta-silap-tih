@@ -54,6 +54,13 @@ const useIdFunction = () => useId();
 
 const textDirection = useTextDirection({ initialValue: "ltr" });
 const dir = computed(() => (textDirection.value === "rtl" ? "rtl" : "ltr"));
+
+const authStore = useAuthStore();
+
+// Initialize auth on app start
+onMounted(() => {
+  authStore.initializeAuth();
+});
 </script>
 
 <template>

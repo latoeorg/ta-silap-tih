@@ -1,6 +1,3 @@
-<script setup lang="ts">
-</script>
-
 <template>
   <SidebarProvider>
     <LayoutAppSidebar />
@@ -13,6 +10,19 @@
   </SidebarProvider>
 </template>
 
-<style scoped>
+<script setup lang="ts">
+const authStore = useAuthStore();
+const route = useRoute();
 
-</style>
+const pageTitle = computed(() => {
+  const path = route.path;
+  if (path === "/dashboard") return "Dashboard";
+  if (path.startsWith("/users")) return "Users";
+  if (path.startsWith("/classes")) return "Classes";
+  if (path.startsWith("/subjects")) return "Subjects";
+  if (path.startsWith("/assessment-weights")) return "Assessment Weights";
+  return "TA SILAP TIH";
+});
+</script>
+
+<style scoped></style>
