@@ -31,7 +31,9 @@ model User {
 
   classGroup ClassGroup? @relation("ClassStudents", fields: [classGroupId], references: [id])
 
-  createdAt    DateTime     @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   classGroupId String?
   ClassGroup   ClassGroup[]
 }
@@ -52,6 +54,9 @@ model StudentProfile {
   gender         String?
   phone          String?
   status         String?   @default("Active")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model TeacherProfile {
@@ -72,6 +77,9 @@ model TeacherProfile {
   address        String?
   phone          String?
   status         String?   @default("Active")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ClassGroup {
@@ -79,7 +87,11 @@ model ClassGroup {
   name       String // e.g. "Kelas 10 IPA 1"
   homeroomId String
   homeroom   User   @relation(fields: [homeroomId], references: [id])
-  students   User[] @relation("ClassStudents")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  students User[] @relation("ClassStudents")
 }
 
 model Subject {
@@ -87,6 +99,9 @@ model Subject {
   name    String
   courses Course[]
   weights AssessmentWeight[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model AssessmentWeight {
@@ -98,6 +113,9 @@ model AssessmentWeight {
   createdById String
   createdBy   User     @relation("CreatedWeights", fields: [createdById], references: [id])
   subject     Subject  @relation(fields: [subjectId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Course {
@@ -110,6 +128,9 @@ model Course {
   students    User[]       @relation("StudentCourses")
   grades      Grade[]
   attendances Attendance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Grade {
@@ -119,9 +140,11 @@ model Grade {
   userId     String
   course     Course           @relation(fields: [courseId], references: [id])
   user       User             @relation(fields: [userId], references: [id])
-  createdAt  DateTime         @default(now())
   components GradeComponent[] // ← NEW
   totalScore Float? // computed on save
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model GradeComponent {
@@ -130,6 +153,9 @@ model GradeComponent {
   score   Float
   index   Int // e.g. 1st quiz or 2nd quiz (based on quota)
   grade   Grade  @relation(fields: [gradeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum ExamType {

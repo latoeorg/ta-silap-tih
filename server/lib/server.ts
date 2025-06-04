@@ -1,4 +1,9 @@
-import express, { Application, Request, Response, NextFunction } from "express";
+import express, {
+  type Application,
+  type Request,
+  type Response,
+  type NextFunction,
+} from "express";
 import cors from "cors";
 import helmet from "helmet";
 import { rateLimit } from "express-rate-limit";
@@ -41,9 +46,9 @@ export default class App {
       res.status(200).json({ status: "ok" });
     });
 
-    // API routes
-    this.express.use(`${this.apiPrefix}/`, authRouter);
-    this.express.use(`${this.apiPrefix}/`, authenticate, ProtectedRoutes);
+    // API routes - Fix: Ensure all route paths are properly formatted
+    this.express.use(`${this.apiPrefix}`, authRouter);
+    this.express.use(`${this.apiPrefix}`, authenticate, ProtectedRoutes);
   }
 
   private errorHandling(): void {
