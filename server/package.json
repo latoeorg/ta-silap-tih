@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@prisma/client": "6.7.0",
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "compression": "^1.8.0",
     "cors": "^2.8.5",
@@ -48,6 +48,9 @@
     "prisma": "^6.7.0",
     "winston": "^3.17.0",
     "zod": "^3.24.4"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }

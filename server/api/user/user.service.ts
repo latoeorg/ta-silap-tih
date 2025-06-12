@@ -3,9 +3,23 @@ import { User, Role } from "@prisma/client";
 import { hashPassword } from "../../utils/bcrypt";
 
 export class UserService {
+  static async create(data: User) {
+    // If password is provided, hash it
+    if (data.password) {
+      data.password = await hashPassword(data.password);
+    }
+    console.log(data);
+    return await prisma.user.create({
+      data,
+    });
+  }
   static async findByEmail(email: string) {
     return await prisma.user.findUnique({
       where: { email },
+      include: {
+        studentProfile: true,
+        teacherProfile: true,
+      },
     });
   }
 
@@ -19,19 +33,64 @@ export class UserService {
     });
   }
 
-  static async getAll(role?: Role) {
-    return await prisma.user.findMany({
-      where: role ? { role } : undefined,
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        createdAt: true,
-        studentProfile: role === "STUDENT",
-        teacherProfile: role === "TEACHER",
+  static async getAll(params: {
+    role?: string;
+    roleExclude?: string;
+    search?: string;
+    page: number;
+    pageSize: number;
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+  }) {
+    const {
+      role,
+      roleExclude,
+      search,
+      page,
+      pageSize,
+      sortBy = "createdAt",
+      sortOrder = "desc",
+    } = params;
+
+    // Prepare filters
+    const where: any = {};
+
+    // // Role filter
+    if (role) {
+      where.role = role;
+    }
+
+    // // Role exclusion filter
+    // if (roleExclude) {
+    //   where.role = { not: roleExclude };
+    // }
+
+    // // Search filter
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    // Get total count for pagination
+    const total = await prisma.user.count({ where });
+
+    // Get paginated data
+    const users = await prisma.user.findMany({
+      where,
+      include: {
+        studentProfile: true,
+        teacherProfile: true,
+      },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      orderBy: {
+        [sortBy]: sortOrder,
       },
     });
+
+    return { users, total };
   }
 
   static async update(id: string, data: Partial<User>) {
