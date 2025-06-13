@@ -41,6 +41,7 @@ export class UserService {
     pageSize: number;
     sortBy?: string;
     sortOrder?: "asc" | "desc";
+    classGroupId?: string;
   }) {
     const {
       role,
@@ -50,6 +51,7 @@ export class UserService {
       pageSize,
       sortBy = "createdAt",
       sortOrder = "desc",
+      classGroupId,
     } = params;
 
     // Prepare filters
@@ -58,6 +60,10 @@ export class UserService {
     // // Role filter
     if (role) {
       where.role = role;
+    }
+
+    if (classGroupId) {
+      where.classGroupId = classGroupId;
     }
 
     // // Role exclusion filter

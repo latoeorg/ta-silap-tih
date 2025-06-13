@@ -27,17 +27,17 @@ export class ClassGroupController {
     const limit = Number(req.query.limit) || 10;
     const result = await ClassGroupService.findAll(page, limit);
 
-     ApiResponse.success({
-        res,
-        data: result.classGroups,
-        pagination: {
-          total_items: result.meta.total,
-          page: result.meta.page,
-          page_size: result.meta.limit,
-          total_pages: Math.ceil(result.meta.total / result.meta.limit),
-        },
-        message: "Users retrieved successfully",
-      });
+    ApiResponse.success({
+      res,
+      data: result.classGroups,
+      pagination: {
+        total_items: result.meta.total,
+        page: result.meta.page,
+        page_size: result.meta.limit,
+        total_pages: Math.ceil(result.meta.total / result.meta.limit),
+      },
+      message: "Users retrieved successfully",
+    });
   }
 
   static async findById(req: Request<ClassGroupParams>, res: Response) {
@@ -77,6 +77,22 @@ export class ClassGroupController {
     res: Response
   ) {
     const classGroup = await ClassGroupService.updateStudents(
+      req.params.id,
+      req.body
+    );
+
+    ApiResponse.success({
+      res,
+      data: classGroup,
+      message: "Class group students updated successfully",
+    });
+  }
+
+  static async deleteStudents(
+    req: Request<ClassGroupParams, {}, ClassGroupStudentsInput>,
+    res: Response
+  ) {
+    const classGroup = await ClassGroupService.deleteStudents(
       req.params.id,
       req.body
     );

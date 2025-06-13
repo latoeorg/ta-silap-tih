@@ -31,6 +31,7 @@ export class UserController {
       page_size = "10",
       sort_by = "createdAt",
       sort_order = "desc",
+      class_group_id,
     } = req.query;
     const pageNumber = parseInt(page as string, 10);
     const pageSize = parseInt(page_size as string, 10);
@@ -44,6 +45,7 @@ export class UserController {
         sortBy: sort_by as string,
         sortOrder:
           (sort_order as string)?.toLowerCase() === "asc" ? "asc" : "desc",
+        classGroupId: class_group_id as string,
       });
 
       ApiResponse.success({
