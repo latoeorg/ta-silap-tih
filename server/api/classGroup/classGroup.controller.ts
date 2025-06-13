@@ -27,12 +27,17 @@ export class ClassGroupController {
     const limit = Number(req.query.limit) || 10;
     const result = await ClassGroupService.findAll(page, limit);
 
-    ApiResponse.success({
-      res,
-      data: result.classGroups,
-      meta: result.meta,
-      message: "Class groups retrieved successfully",
-    });
+     ApiResponse.success({
+        res,
+        data: result.classGroups,
+        pagination: {
+          total_items: result.meta.total,
+          page: result.meta.page,
+          page_size: result.meta.limit,
+          total_pages: Math.ceil(result.meta.total / result.meta.limit),
+        },
+        message: "Users retrieved successfully",
+      });
   }
 
   static async findById(req: Request<ClassGroupParams>, res: Response) {
