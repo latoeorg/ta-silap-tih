@@ -3,10 +3,9 @@ import { z } from "zod";
 export const updateUserSchema = z.object({
   email: z.string().email("Invalid email format").optional(),
   name: z.string().min(2, "Name must be at least 2 characters").optional(),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .optional(),
+  role: z.enum(["ADMIN", "TEACHER", "STUDENT"], {
+    message: "Role must be either ADMIN, TEACHER, or STUDENT",
+  }),
 });
 
 const baseProfileSchema = z.object({

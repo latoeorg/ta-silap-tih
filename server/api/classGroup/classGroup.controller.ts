@@ -30,8 +30,13 @@ export class ClassGroupController {
     ApiResponse.success({
       res,
       data: result.classGroups,
-      meta: result.meta,
-      message: "Class groups retrieved successfully",
+      pagination: {
+        total_items: result.meta.total,
+        page: result.meta.page,
+        page_size: result.meta.limit,
+        total_pages: Math.ceil(result.meta.total / result.meta.limit),
+      },
+      message: "Users retrieved successfully",
     });
   }
 
@@ -72,6 +77,22 @@ export class ClassGroupController {
     res: Response
   ) {
     const classGroup = await ClassGroupService.updateStudents(
+      req.params.id,
+      req.body
+    );
+
+    ApiResponse.success({
+      res,
+      data: classGroup,
+      message: "Class group students updated successfully",
+    });
+  }
+
+  static async deleteStudents(
+    req: Request<ClassGroupParams, {}, ClassGroupStudentsInput>,
+    res: Response
+  ) {
+    const classGroup = await ClassGroupService.deleteStudents(
       req.params.id,
       req.body
     );

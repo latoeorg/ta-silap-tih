@@ -11,13 +11,14 @@ export class UserMiddleware {
   static async schema(req: Request, res: Response, next: NextFunction) {
     try {
       const user = req.user;
-
       switch (user.role) {
         case Role.TEACHER:
           req.body = updateTeacherProfileSchema.parse(req.body);
           break;
         case Role.STUDENT:
           req.body = updateStudentProfileSchema.parse(req.body);
+          break;
+        case Role.ADMIN:
           break;
         default:
           throw new Error("Unauthorized: You can only update your own profile");

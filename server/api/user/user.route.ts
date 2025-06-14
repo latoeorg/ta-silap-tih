@@ -10,11 +10,24 @@ export const userRouter = Router();
 // Get all users
 userRouter.get("/", UserController.getAllUsers);
 
+//Create user
+
+userRouter.post(
+  "/",
+  authorize(["TEACHER", "ADMIN"]),
+  UserMiddleware.schema,
+  UserController.createUser
+);
 // Get user by ID
 userRouter.get("/:id", UserController.getUserById);
 
 // Update user
-userRouter.put("/:id", validate(updateUserSchema), UserController.updateUser);
+userRouter.put(
+  "/:id",
+  authorize(["TEACHER", "ADMIN"]),
+  UserMiddleware.schema,
+  UserController.updateUser
+);
 
 // Update profile
 userRouter.put(
@@ -24,4 +37,8 @@ userRouter.put(
 );
 
 // Delete user
-userRouter.delete("/:id", authorize(["TEACHER"]), UserController.deleteUser);
+userRouter.delete(
+  "/:id",
+  authorize(["TEACHER", "ADMIN"]),
+  UserController.deleteUser
+);

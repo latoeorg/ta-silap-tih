@@ -40,7 +40,7 @@ router.get(
 
 router.get(
   "/:id",
-  validate(classGroupParamsSchema),
+  // validate(classGroupParamsSchema),
   authorize([Role.ADMIN, Role.TEACHER, Role.STUDENT]),
   checkClassGroupAccess,
   ClassGroupController.findById
@@ -48,7 +48,6 @@ router.get(
 
 router.put(
   "/:id",
-  validate(classGroupParamsSchema),
   validate(classGroupUpdateSchema),
   authorize([Role.ADMIN]),
   checkClassGroupAccess,
@@ -57,11 +56,18 @@ router.put(
 
 router.put(
   "/:id/students",
-  validate(classGroupParamsSchema),
   validate(classGroupStudentsSchema),
   authorize([Role.ADMIN]),
   checkClassGroupAccess,
   ClassGroupController.updateStudents
+);
+
+router.delete(
+  "/:id/students",
+  validate(classGroupStudentsSchema),
+  authorize([Role.ADMIN]),
+  checkClassGroupAccess,
+  ClassGroupController.deleteStudents
 );
 
 export { router as classGroupRouter };

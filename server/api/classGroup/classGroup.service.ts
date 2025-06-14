@@ -82,22 +82,8 @@ export class ClassGroupService {
     const classGroup = await prisma.classGroup.findUnique({
       where: { id },
       include: {
-        homeroom: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-          },
-        },
-        students: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-          },
-        },
+        homeroom: true,
+        students: true,
       },
     });
 
@@ -176,6 +162,49 @@ export class ClassGroupService {
     });
   }
 
+  static async deleteStudents(
+    id: string,
+    input: ClassGroupStudentsInput
+  ): Promise<ClassGroup> {
+    // Check if all students exist
+    const { studentIds } = input;
+
+    const students = await prisma.user.findMany({
+      where: { id: { in: studentIds } },
+    });
+
+    if (students.length !== studentIds?.length)
+      throw new Error("Some students not found");
+
+    // Remove current students from class group
+    await prisma.user.updateMany({
+      where: { classGroupId: id },
+      data: { classGroupId: null },
+    });
+
+    return prisma.classGroup.findUnique({
+      where: { id },
+      include: {
+        homeroom: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
+        students: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
+    }) as Promise<ClassGroup>;
+  }
+
   static async updateStudents(
     id: string,
     input: ClassGroupStudentsInput
@@ -188,20 +217,6 @@ export class ClassGroupService {
     });
 
     if (!classGroup) throw new Error("Class group not found");
-
-    // Check if all students exist
-    const students = await prisma.user.findMany({
-      where: { id: { in: studentIds } },
-    });
-
-    if (students.length !== studentIds.length)
-      throw new Error("Some students not found");
-
-    // Remove current students from class group
-    await prisma.user.updateMany({
-      where: { classGroupId: id },
-      data: { classGroupId: null },
-    });
 
     // Add new students to class group
     await Promise.all(
