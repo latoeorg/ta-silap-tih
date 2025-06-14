@@ -2,11 +2,7 @@ import { Router } from "express";
 import { SubjectController } from "./subject.controller";
 import { authenticate, authorize } from "../auth/auth.middleware";
 import { validate } from "../../lib/validate";
-import {
-  subjectCreateSchema,
-  subjectUpdateSchema,
-  subjectParamsSchema,
-} from "./subject.schema";
+import { subjectCreateSchema, subjectUpdateSchema } from "./subject.schema";
 import { Role } from "@prisma/client";
 
 const router = Router();
