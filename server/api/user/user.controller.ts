@@ -9,7 +9,7 @@ export class UserController {
       const newUser = await UserService.create(userData);
 
       // Remove password from response
-      const { password, ...userWithoutPassword } = newUser;
+      const { ...userWithoutPassword } = newUser;
 
       ApiResponse.success({
         res,
@@ -104,7 +104,7 @@ export class UserController {
       const updatedUser = await UserService.update(id, data);
 
       // Remove password from response
-      const { password, ...userWithoutPassword } = updatedUser;
+      const {  ...userWithoutPassword } = updatedUser;
 
       ApiResponse.success({
         res,

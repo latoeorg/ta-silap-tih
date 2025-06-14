@@ -24,22 +24,16 @@ router.post(
 
 router.put(
   "/:id",
-  validate(subjectParamsSchema),
   validate(subjectUpdateSchema),
   authorize(Role.ADMIN),
   SubjectController.update
 );
 
-router.delete(
-  "/:id",
-  validate(subjectParamsSchema),
-  authorize(Role.ADMIN),
-  SubjectController.delete
-);
+router.delete("/:id", authorize(Role.ADMIN), SubjectController.delete);
 
 // Routes for all authenticated users
 router.get("/", SubjectController.findAll);
 
-router.get("/:id", validate(subjectParamsSchema), SubjectController.findById);
+router.get("/:id", SubjectController.findById);
 
 export { router as subjectRouter };

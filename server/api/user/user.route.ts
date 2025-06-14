@@ -25,7 +25,7 @@ userRouter.get("/:id", UserController.getUserById);
 userRouter.put(
   "/:id",
   authorize(["TEACHER", "ADMIN"]),
-  validate(updateUserSchema),
+  UserMiddleware.schema,
   UserController.updateUser
 );
 
