@@ -27,6 +27,12 @@ export class SubjectController {
       res,
       data: result.subjects,
       meta: result.meta,
+      pagination: {
+        total_items: result.meta.total,
+        page: page,
+        page_size: limit,
+        total_pages: Math.ceil(result.meta.total / limit),
+      },
       message: "Subjects retrieved successfully",
     });
   }

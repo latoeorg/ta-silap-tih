@@ -25,6 +25,10 @@ export class SubjectService {
         skip,
         take: limit,
         orderBy: { name: "asc" },
+        include: {
+          courses: true,
+          weights: true,
+        },
       }),
       prisma.subject.count(),
     ]);
