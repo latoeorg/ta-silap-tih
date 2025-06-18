@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <link rel="icon" href="/favicon.ico" /> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistem Informasi dan Layanan Siswa | SMA Negeri 12 Batam</title>
+    <link rel="stylesheet" type="text/css" href="/loader.css" />
+  </head>
+
+  <body>
+    <div id="app">
+      <div id="loading-bg" style="background: #e9e3db">
+        <div class="loading-logo">
+          <!-- SVG Logo -->
+          <img
+            src="/logo.png"
+            alt="logo"
+            style="width: 100%; max-width: 200px"
+          />
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+    <script>
+      const loaderColor =
+        localStorage.getItem("vuexy-initial-loader-bg") || "#E9E3DB";
+      const primaryColor =
+        localStorage.getItem("vuexy-initial-loader-color") || "#4F594E";
+
+      if (loaderColor)
+        document.documentElement.style.setProperty(
+          "--initial-loader-bg",
+          loaderColor
+        );
+
+      if (primaryColor)
+        document.documentElement.style.setProperty(
+          "--initial-loader-color",
+          primaryColor
+        );
+    </script>
+  </body>
+</html>

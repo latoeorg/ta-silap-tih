@@ -1,35 +1,35 @@
-![nuxt-shadcn-dashboard-social-card](https://nuxt-shadcn-dashboard.vercel.app/social-card.png)
+# vue
 
-# Nuxt Shadcn UnoCSS - Dashboard
+This template should help get you started developing with Vue 3 in Vite.
 
-[![built with nuxt][nuxt-src]][nuxt-href]
+## Recommended IDE Setup
 
-- [Live demo](https://nuxt-shadcn-dashboard.vercel.app)
-- [Component Documentation](https://shadcn-vue.com/docs/introduction)
+[VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (and disable Vetur).
 
-## Quick Start
+## Type Support for `.vue` Imports in TS
 
-```bash [Terminal]
-npx degit dianprata/nuxt-shadcn-dashboard my-dashboard-app
-cd my-dashboard-app
-pnpm i # If you don't have pnpm installed, run: npm install -g pnpm
+Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates.
+
+However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can run `Volar: Switch TS Plugin on/off` from VS Code command palette.
+
+## Customize configuration
+
+See [Vite Configuration Reference](https://vitejs.dev/config/).
+
+## Project Setup
+
+```sh
+npm install
 ```
 
-## Contributing
+### Compile and Hot-Reload for Development
 
-1. Clone this repository.
-2. Install dependencies `pnpm install`.
-3. Use `pnpm run dev` to start dev server.
+```sh
+npm run dev
+```
 
-## Credits
+### Type-Check, Compile and Minify for Production
 
-- [Nuxt.js](https://nuxtjs.org/)
-- [Shadcn Vue](https://shadcn-vue.com/)
-- [UnoCSS](https://unocss.com/)
-
-## License
-
-MIT
-
-[nuxt-src]: https://img.shields.io/badge/Built%20With%20Nuxt-18181B?logo=nuxt.js
-[nuxt-href]: https://nuxt.com/
+```sh
+npm run build
+```
