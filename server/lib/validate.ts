@@ -9,6 +9,8 @@ export const validate =
       req.body = schema.parse(req.body);
       next();
     } catch (error) {
+      console.log("Validation error:", error);
+      
       if (error instanceof ZodError) {
         const message = error.issues.map((err) => err.message).join(", ");
 

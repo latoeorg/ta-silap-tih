@@ -50,6 +50,11 @@ export class AuthController {
   }
 
   static async login(req: Request, res: Response) {
+    console.log({
+      body: req.body,
+    });
+    
+
     try {
       const { email, password } = req.body;
 

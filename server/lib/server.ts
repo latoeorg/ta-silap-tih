@@ -13,7 +13,7 @@ import { ProtectedRoutes } from "../routes/protected.route";
 
 export default class App {
   public express: Application;
-  private apiPrefix = "/api";
+  private apiPrefix = "/api/v1";
 
   constructor() {
     this.express = express();
