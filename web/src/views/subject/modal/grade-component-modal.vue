@@ -71,99 +71,106 @@
                 </div>
               </VAlert>
               
-              <div v-else>
+              <div v-else class="table-container">
                 <VCard variant="outlined" class="mb-4">
                   <VCardText class="pa-0">
-                    <VTable density="comfortable">
-                      <thead>
-                        <tr>
-                          <th class="text-left">Name</th>
-                          <th class="text-left">Weight (%)</th>
-                          <th class="text-left">Max Score</th>
-                          <th class="text-left">Index</th>
-                          <th class="text-center">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(component, index) in components" :key="index">
-                          <td>
-                            <VTextField
-                              v-model="component.name"
-                              density="compact"
-                              variant="outlined"
-                              hide-details
-                              placeholder="Component name"
-                              :rules="[v => !!v || 'Name is required']"
-                              class="max-w-[200px]"
-                            />
-                          </td>
-                          <td>
-                            <VTextField
-                              v-model.number="component.weight"
-                              type="number"
-                              density="compact"
-                              variant="outlined"
-                              hide-details
-                              placeholder="Weight"
-                              :rules="[
-                                v => v !== null || 'Weight is required',
-                                v => v > 0 || 'Must be positive',
-                              ]"
-                              suffix="%"
-                              class="max-w-[100px]"
-                              @input="normalizeWeights()"
-                            />
-                          </td>
-                          <td>
-                            <VTextField
-                              v-model.number="component.maxScore"
-                              type="number"
-                              density="compact"
-                              variant="outlined"
-                              hide-details
-                              placeholder="Max score"
-                              :rules="[
-                                v => v !== null || 'Score is required',
-                                v => v > 0 || 'Must be positive'
-                              ]"
-                              class="max-w-[100px]"
-                            />
-                          </td>
-                          <td>
-                            <VTextField
-                              v-model.number="component.index"
-                              type="number"
-                              density="compact"
-                              variant="outlined"
-                              hide-details
-                              placeholder="Index"
-                              :rules="[v => v > 0 || 'Must be positive']"
-                              class="max-w-[80px]"
-                            />
-                          </td>
-                          <td class="text-center">
-                            <IconBtn @click="removeComponent(index)">
-                              <VIcon color="error" icon="tabler-trash" />
-                              <VTooltip activator="parent">Remove</VTooltip>
-                            </IconBtn>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </VTable>
+                    <div class="table-wrapper">
+                      <VTable density="comfortable" class="grade-components-table">
+                        <thead>
+                          <tr>
+                            <th width="30%" class="text-left">Name</th>
+                            <th width="15%" class="text-left">Weight (%)</th>
+                            <th width="15%" class="text-left">Max Score</th>
+                            <th width="15%" class="text-left">Index</th>
+                            <th width="25%" class="text-center">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(component, index) in components" :key="index">
+                            <td width="30%">
+                              <VTextField
+                                v-model="component.name"
+                                density="compact"
+                                variant="outlined"
+                                hide-details
+                                placeholder="Component name"
+                                :rules="[v => !!v || 'Name is required']"
+                                class="component-input"
+                              />
+                            </td>
+                            <td width="15%">
+                              <VTextField
+                                v-model.number="component.weight"
+                                type="number"
+                                density="compact"
+                                variant="outlined"
+                                hide-details
+                                placeholder="Weight"
+                                :rules="[
+                                  v => v !== null || 'Weight is required',
+                                  v => v > 0 || 'Must be positive',
+                                ]"
+                                suffix="%"
+                                class="component-input"
+                                @input="normalizeWeights()"
+                              />
+                            </td>
+                            <td width="15%">
+                              <VTextField
+                                v-model.number="component.maxScore"
+                                type="number"
+                                density="compact"
+                                variant="outlined"
+                                hide-details
+                                placeholder="Max score"
+                                :rules="[
+                                  v => v !== null || 'Score is required',
+                                  v => v > 0 || 'Must be positive'
+                                ]"
+                                class="component-input"
+                              />
+                            </td>
+                            <td width="15%">
+                              <VTextField
+                                v-model.number="component.index"
+                                type="number"
+                                density="compact"
+                                variant="outlined"
+                                hide-details
+                                placeholder="Index"
+                                :rules="[v => v > 0 || 'Must be positive']"
+                                class="component-input"
+                              />
+                            </td>
+                            <td width="25%" class="text-center">
+                              <IconBtn @click="removeComponent(index)">
+                                <VIcon color="error" icon="tabler-trash" />
+                                <VTooltip activator="parent">Remove</VTooltip>
+                              </IconBtn>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </VTable>
+                    </div>
                   </VCardText>
                 </VCard>
                 
                 <!-- Weight Distribution Summary -->
-                <div class="d-flex align-center mb-4">
-                  <div class="text-subtitle-2 me-2">Weight Distribution:</div>
-                  <VProgressLinear
-                    v-model="totalWeight"
-                    height="14"
-                    :color="totalWeight === 100 ? 'success' : (totalWeight < 100 ? 'warning' : 'error')"
-                    :striped="totalWeight !== 100"
-                  />
-                  <div class="ms-2 text-subtitle-2" :class="getWeightTotalClass()">
-                    {{ totalWeight }}%
+                <div class="weight-distribution mb-4">
+                  <div class="d-flex align-center mb-2">
+                    <div class="text-subtitle-2 me-2">Weight Distribution:</div>
+                    <div class="ms-2 text-subtitle-2" :class="getWeightTotalClass()">
+                      {{ totalWeight }}%
+                    </div>
+                  </div>
+                  
+                  <div class="progress-container">
+                    <VProgressLinear
+                      v-model="totalWeight"
+                      height="14"
+                      :color="totalWeight === 100 ? 'success' : (totalWeight < 100 ? 'warning' : 'error')"
+                      :striped="totalWeight !== 100"
+                    />
                   </div>
                 </div>
                 
@@ -248,7 +255,7 @@ const emit = defineEmits(['update:modelValue', 'save']);
 // Dialog state
 const dialogModel = computed({
   get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value)
+  set: (val) => emit('update:modelValue', val)
 });
 
 // UI state
@@ -420,16 +427,21 @@ const saveComponents = async () => {
     const componentsData = components.value.map(comp => ({
       name: comp.name,
       // Convert percentage to decimal for storage
-      weight: comp.weight / 100,
-      maxScore: comp.maxScore,
-      index: comp.index || 0,
+      weight: parseFloat(comp.weight) / 100,
+      maxScore: parseInt(comp.maxScore),
+      index: parseInt(comp.index) || 0,
       id: comp.id // Include ID if it exists
     }));
     
-    await apiOperation('POST', '/grade-components/define', {
+    const result = await apiOperation('POST', '/grade-components/define', {
       examType: currentExamType.value,
       components: componentsData
     }, null, 'Grade components saved successfully');
+    
+    // Add this line to refresh the component data after saving
+    if (result.data) {
+      await loadComponents();
+    }
     
     emit('save');
     closeDialog();
@@ -441,7 +453,7 @@ const saveComponents = async () => {
 };
 
 const closeDialog = () => {
-  dialogModel.value = false;
+  emit('update:modelValue', false);
   components.value = [];
   selectedExamType.value = null;
 };
@@ -462,14 +474,32 @@ watch(() => props.examType, (newExamType) => {
 </script>
 
 <style scoped>
-.max-w-200 {
-  max-width: 200px;
+.table-wrapper {
+  overflow-x: auto;
+  width: 100%;
 }
-.max-w-100 {
-  max-width: 100px;
+
+.grade-components-table {
+  min-width: 700px;
+  table-layout: fixed;
 }
-.max-w-80 {
-  max-width: 80px;
+
+.component-input {
+  width: 100%;
+}
+
+.table-container {
+  width: 100%;
+}
+
+.weight-distribution {
+  width: 100%;
+}
+
+.progress-container {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 </style>
 

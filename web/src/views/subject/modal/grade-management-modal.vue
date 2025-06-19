@@ -158,19 +158,6 @@
                   </VChip>
                 </template>
 
-                <!-- Grade Components -->
-                <template
-                  v-for="(component, index) in gradeComponents"
-                  :key="index"
-                  #[`item.component${index}`]="{ item }"
-                >
-                  <template v-if="item.grade && item.grade.components">
-                    <div>
-                      {{ findComponentScore(item.grade.components, component) }}
-                    </div>
-                  </template>
-                  <div v-else>-</div>
-                </template>
 
                 <!-- Total Score -->
                 <template #item.totalScore="{ item }">
@@ -193,10 +180,6 @@
                       <VTooltip activator="parent">Grade Student</VTooltip>
                     </IconBtn>
 
-                    <IconBtn v-if="item.grade" @click="viewGradeDetails(item)">
-                      <VIcon icon="tabler-eye" />
-                      <VTooltip activator="parent">View Details</VTooltip>
-                    </IconBtn>
                   </div>
                 </template>
               </VDataTable>
@@ -241,8 +224,8 @@
             class="mb-4"
           />
 
-          <!-- Student Selection (only for batch grading) -->
-          <div v-if="!selectedStudent" class="mb-4">
+          <!-- Student Selection (only for batch grading and not when editing) -->
+          <div v-if="!selectedStudent && !editingGrade" class="mb-4">
             <VSelect
               v-model="gradeForm.selectedStudents"
               :items="courseStudents"
@@ -262,6 +245,24 @@
                 </VChip>
               </template>
             </VSelect>
+          </div>
+
+          <!-- Show selected student when editing -->
+          <div v-else-if="selectedStudent" class="mb-4">
+            <div class="d-flex align-center py-2">
+              <VAvatar
+                size="36"
+                color="primary"
+                variant="tonal"
+                class="me-3"
+              >
+                <VIcon icon="tabler-user" />
+              </VAvatar>
+              <div>
+                <div class="font-weight-medium">{{ selectedStudent.name }}</div>
+                <div class="text-caption text-medium-emphasis">{{ selectedStudent.email }}</div>
+              </div>
+            </div>
           </div>
 
           <!-- Grade Components -->
@@ -376,107 +377,6 @@
     </VCard>
   </VDialog>
 
-  <!-- Grade Details Dialog -->
-  <VDialog v-model="gradeDetailsDialog" max-width="500px">
-    <VCard>
-      <VCardTitle class="d-flex justify-space-between align-center">
-        <span>Grade Details</span>
-        <VBtn
-          variant="text"
-          icon="tabler-x"
-          @click="gradeDetailsDialog = false"
-        />
-      </VCardTitle>
-
-      <VDivider />
-
-      <VCardText class="pt-4">
-        <div v-if="selectedGrade">
-          <div class="d-flex align-center mb-4">
-            <VAvatar size="42" color="primary" class="me-3">
-              <VIcon icon="tabler-user" />
-            </VAvatar>
-            <div>
-              <div class="text-h6">{{ selectedStudent?.name }}</div>
-              <div class="text-caption text-disabled">
-                {{ selectedStudent?.email }}
-              </div>
-            </div>
-          </div>
-
-          <div class="d-flex justify-space-between align-center mb-3">
-            <div class="text-subtitle-1">Exam Type:</div>
-            <VChip color="primary" size="small">{{
-              selectedGrade.examType
-            }}</VChip>
-          </div>
-
-          <VDivider class="my-3" />
-
-          <!-- Component Scores -->
-          <div
-            v-if="
-              selectedGrade.components && selectedGrade.components.length > 0
-            "
-          >
-            <h6 class="text-subtitle-2 mb-2">Component Scores:</h6>
-            <VList density="compact" border class="mb-4 rounded">
-              <VListItem
-                v-for="component in selectedGrade.components"
-                :key="component.id"
-              >
-                <div class="d-flex justify-space-between align-center w-100">
-                  <div>{{ getComponentName(component.componentId) }}</div>
-                  <div class="d-flex align-center">
-                    <strong>{{ component.score.toFixed(1) }}</strong>
-                    <div class="text-caption ms-1">
-                      / {{ getComponentMaxScore(component.componentId) }}
-                    </div>
-                  </div>
-                </div>
-              </VListItem>
-            </VList>
-          </div>
-
-          <!-- Total Score -->
-          <div
-            class="d-flex justify-space-between align-center pa-3 bg-primary-lighten-5 rounded"
-          >
-            <div class="text-subtitle-1 font-weight-bold">Total Score:</div>
-            <div
-              class="text-h6 font-weight-bold"
-              :class="getScoreColorClass(selectedGrade.totalScore)"
-            >
-              {{ selectedGrade.totalScore.toFixed(1) }}
-            </div>
-          </div>
-
-          <div class="d-flex justify-space-between mt-4">
-            <div class="text-caption">
-              Created: {{ formatDate(selectedGrade.createdAt) }}
-            </div>
-            <div class="text-caption">
-              Last Updated: {{ formatDate(selectedGrade.updatedAt) }}
-            </div>
-          </div>
-        </div>
-      </VCardText>
-
-      <VDivider />
-
-      <VCardActions class="pa-4">
-        <VSpacer />
-        <VBtn
-          color="primary"
-          variant="tonal"
-          @click="editGrade(selectedStudent)"
-        >
-          Edit Grade
-        </VBtn>
-      </VCardActions>
-    </VCard>
-  </VDialog>
-
   <!-- Grade Component Modal -->
   <GradeComponentModal
     v-model="componentsModalOpen"
@@ -507,6 +407,9 @@ const dialogModel = computed({
   get: () => props.open,
   set: (value) => emit("update:open", value),
 });
+const closeDialog = () => {
+  emit("update:open", false);
+};
 
 // UI state
 const loading = ref(false);
@@ -554,19 +457,13 @@ const gradeHeaders = computed(() => {
     { title: "Status", key: "status", sortable: true },
   ];
 
-  // Dynamic component headers
-  const componentHeaders = gradeComponents.value.map((component, index) => ({
-    title: component.name,
-    key: `component${index}`,
-    sortable: true,
-  }));
 
   const endHeaders = [
     { title: "Total Score", key: "totalScore", sortable: true },
     { title: "Actions", key: "actions", align: "end", sortable: false },
   ];
 
-  return [...baseHeaders, ...componentHeaders, ...endHeaders];
+  return [...baseHeaders, ...endHeaders];
 });
 
 // Computed values for summary stats
@@ -847,7 +744,6 @@ const resetGradeForm = () => {
 
   overrideTotal.value = false;
   editingGrade.value = false;
-  selectedStudent.value = null;
   selectedGrade.value = null;
 
   // Reset validation
@@ -862,13 +758,13 @@ const openCreateGradeForm = () => {
 };
 
 const editGrade = (student) => {
+  // Make sure we have the complete student object
   selectedStudent.value = student;
+  editingGrade.value = true;
   const existingGrade = grades.value.find(
-    (grade) =>
-      grade.userId === student.id && grade.examType === selectedExamType.value
+    (grade) => grade.userId === student.id && grade.examType === selectedExamType.value
   );
 
-  resetGradeForm();
 
   if (existingGrade) {
     editingGrade.value = true;
@@ -876,21 +772,24 @@ const editGrade = (student) => {
     gradeForm.value.totalScore = existingGrade.totalScore;
 
     // Load component scores
-    if (existingGrade.components) {
+    if (existingGrade.components && existingGrade.components.length > 0) {
       existingGrade.components.forEach((component) => {
         gradeForm.value.components[component.componentId] = component.score;
       });
-    }
 
-    // If the grade has components but calculated total is different,
-    // assume it was manually overridden
-    if (
-      existingGrade.components &&
-      existingGrade.components.length > 0 &&
-      Math.abs(calculatedTotalScore.value - existingGrade.totalScore) > 0.1
-    ) {
+      // If the grade has components but calculated total is different,
+      // assume it was manually overridden
+      if (Math.abs(calculatedTotalScore.value - existingGrade.totalScore) > 0.1) {
+        overrideTotal.value = true;
+      }
+    } else {
+      // If no components exist, assume manual total
       overrideTotal.value = true;
     }
+  } else {
+    // For new grades for an existing student
+    editingGrade.value = false;
+    gradeForm.value.examType = selectedExamType.value;
   }
 
   gradeFormDialog.value = true;
@@ -910,18 +809,18 @@ const saveGrade = async () => {
   savingGrade.value = true;
 
   try {
-    // Prepare component data to match the GradeComponent Prisma schema
+    // Prepare component data
     const components = [];
 
     Object.entries(gradeForm.value.components).forEach(
       ([componentId, score], idx) => {
         if (score !== null && score !== undefined) {
-          // Find the component definition to get the index
           const componentDef = gradeComponentDefinitions.value.find(
             (c) => c.id === componentId
           );
 
           components.push({
+            componentId, 
             score: parseFloat(score),
             index: componentDef?.index || idx + 1,
           });
@@ -929,31 +828,37 @@ const saveGrade = async () => {
       }
     );
 
-    // Prepare grade data
-    const gradeData = {
-      examType: gradeForm.value.examType,
-      components,
-      // If override is set or no components, use manual total score
-      totalScore:
-        overrideTotal.value || !components.length
-          ? gradeForm.value.totalScore
-          : calculatedTotalScore.value,
-    };
+    // Calculate the final score
+    const totalScore = (overrideTotal.value || components.length === 0)
+      ? parseFloat(gradeForm.value.totalScore)
+      : calculatedTotalScore.value;
 
-    if (selectedStudent.value) {
-      // Update for a single student
+    if (editingGrade.value && selectedStudent.value) {
+      // Update an existing grade
       await apiOperation(
-        editingGrade.value ? "PUT" : "POST",
-        editingGrade.value
-          ? `/grade/${selectedStudent.value.id}/${props.courseId}/${gradeForm.value.examType}`
-          : "/grade",
+        "PUT",
+        `/grade/${selectedStudent.value.id}/${props.courseId}/${selectedExamType.value}`,
         {
-          ...gradeData,
-          userId: selectedStudent.value.id,
-          courseId: props.courseId,
+          totalScore,
+          components
         },
         null,
-        `Grade ${editingGrade.value ? "updated" : "created"} successfully`
+        "Grade updated successfully"
+      );
+    } else if (selectedStudent.value) {
+      // Create a new grade for a single student
+      await apiOperation(
+        "POST",
+        "/grade",
+        {
+          userId: selectedStudent.value.id,
+          courseId: props.courseId,
+          examType: gradeForm.value.examType || selectedExamType.value,
+          totalScore,
+          components
+        },
+        null,
+        "Grade created successfully"
       );
     } else {
       // Batch update for multiple students
@@ -962,9 +867,11 @@ const saveGrade = async () => {
         "/grade/batch",
         {
           grades: gradeForm.value.selectedStudents.map((studentId) => ({
-            ...gradeData,
             userId: studentId,
             courseId: props.courseId,
+            examType: gradeForm.value.examType || selectedExamType.value,
+            totalScore,
+            components
           })),
         },
         null,
@@ -975,6 +882,9 @@ const saveGrade = async () => {
     // Close form and reload data
     closeGradeForm();
     await loadGrades();
+    
+    // Emit refresh event to notify parent component
+    emit("refresh");
   } catch (error) {
     console.error("Error saving grade:", error);
   } finally {

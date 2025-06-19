@@ -30,7 +30,6 @@
 
 <script setup>
 import Navigation from '@/views/subject/subject-detail-navigation.vue'
-
 const store = useVuex()
 const route = useRoute()
 const subjectId = ref(route.params.id)

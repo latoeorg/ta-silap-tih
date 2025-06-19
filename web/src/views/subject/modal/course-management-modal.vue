@@ -276,8 +276,8 @@ import axiosInstance from '@/utils/axios'
 import { SwalDelete } from '@/utils/sweetalert'
 import { computed, ref, watch } from 'vue'
 import { toast } from 'vue-sonner'
-import GradeManagementModal from './grade-management-modal.vue'
-import StudentManagementModal from './student-management-modal.vue'
+import GradeManagementModal from './modal/grade-management-modal.vue'
+import StudentManagementModal from './modal/student-management-modal.vue'
 
 // Props and emits
 const props = defineProps({
