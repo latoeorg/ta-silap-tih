@@ -13,8 +13,6 @@
       />
       By <a
         href="#"
-        target="_blank"
-        rel="noopener noreferrer"
         class="text-primary ms-1"
       >
         Tegar Irfan Hamid (3312111028)

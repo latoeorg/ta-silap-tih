@@ -6,8 +6,8 @@ import calendar from './modules/calendar'
 import dashboard from './modules/dashboard'
 
 import booking from './modules/booking'
-
 import booster from './modules/booster'
+import subject from './modules/subject'
 
 import menu from './modules/menu'
 import night_club_table from './modules/night-club-table'
@@ -43,6 +43,7 @@ const store = new Store({
     event,
 
     service,
+    subject,
 
     lead,
     content,
@@ -53,7 +54,7 @@ const store = new Store({
     database,
     setup,
     util,
-    class: classGroup
+    class: classGroup,
   },
 })
 

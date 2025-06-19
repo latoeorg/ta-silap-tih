@@ -11,10 +11,10 @@
     <div class="d-flex align-items-center gap-3 cursor-pointer">
       <div class="text-end d-none d-lg-block">
         <p class="font-weight-semibold mb-0">
-          {{ user.first_name }} {{ user.last_name }}
+          {{ user.name }}
         </p>
         <p class="text-body-2 mb-0">
-          {{ user.role_name }}
+          {{ user.role }}
         </p>
       </div>
 
@@ -23,7 +23,7 @@
         color="primary"
         variant="tonal"
       >
-        <VImg :src="user?.photo || `https://ui-avatars.com/api/?name=${user.first_name} ${user.last_name}`" />
+        <VImg :src="user?.photo || `https://ui-avatars.com/api/?name=${user.name}`" />
 
         <!-- SECTION Menu -->
        
@@ -52,17 +52,17 @@
                     color="primary"
                     variant="tonal"
                   >
-                    <VImg :src="user?.photo || `https://ui-avatars.com/api/?name=${user.first_name} ${user.last_name}`" />
+                    <VImg :src="user?.photo || `https://ui-avatars.com/api/?name=${user.name} ${user.last_name}`" />
                   </VAvatar>
                 </VBadge>
               </VListItemAction>
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              {{ user.first_name }} {{ user.last_name }}
+              {{ user.name }}
             </VListItemTitle>
             <VListItemSubtitle>
-              {{ user.role_name }}
+              {{ user.role }}
             </VListItemSubtitle>
           </VListItem>
 

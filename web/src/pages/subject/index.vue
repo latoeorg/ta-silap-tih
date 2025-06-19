@@ -13,7 +13,10 @@
           </div>
 
           <VBtn @click="handleDrawerForm(true)">
-            <VIcon start icon="tabler-plus" />
+            <VIcon
+              start
+              icon="tabler-plus"
+            />
             Add Subject
           </VBtn>
         </div>
@@ -32,12 +35,18 @@
           :items="subjects"
           :loading="loading"
           class="text-no-wrap"
+          hover
+          @click:row="onRowClick"
           @update:options="refetch"
         >
           <!-- Subject Name -->
           <template #item.name="{ item }">
             <div class="d-flex align-center">
-              <VIcon size="22" icon="tabler-book" class="me-2" />
+              <VIcon
+                size="22"
+                icon="tabler-book"
+                class="me-2"
+              />
               <span class="text-body-1 font-weight-medium">{{ item.name }}</span>
             </div>
           </template>
@@ -51,7 +60,11 @@
               @click="openCourseManagementModal(item.id, item.name)"
             >
               {{ item.courses?.length || 0 }} courses
-              <VIcon size="14" icon="tabler-chevron-right" class="ms-1" />
+              <VIcon
+                size="14"
+                icon="tabler-chevron-right"
+                class="ms-1"
+              />
             </VChip>
           </template>
           
@@ -64,7 +77,11 @@
               @click="openAssessmentWeightsModal(item.id, item.name)"
             >
               {{ item.weights?.length || 0 }} weights
-              <VIcon size="14" icon="tabler-chevron-right" class="ms-1" />
+              <VIcon
+                size="14"
+                icon="tabler-chevron-right"
+                class="ms-1"
+              />
             </VChip>
           </template>
 
@@ -78,17 +95,23 @@
             <div class="d-flex gap-1 justify-end">
               <IconBtn @click="handleViewDetails(item.id)">
                 <VIcon icon="tabler-eye" />
-                <VTooltip activator="parent">View Details</VTooltip>
+                <VTooltip activator="parent">
+                  View Details
+                </VTooltip>
               </IconBtn>
 
               <IconBtn @click="handleUpdate(item.id)">
                 <VIcon icon="tabler-edit" />
-                <VTooltip activator="parent">Edit</VTooltip>
+                <VTooltip activator="parent">
+                  Edit
+                </VTooltip>
               </IconBtn>
 
               <IconBtn @click="handleDelete(item.id)">
                 <VIcon icon="tabler-trash" />
-                <VTooltip activator="parent">Delete</VTooltip>
+                <VTooltip activator="parent">
+                  Delete
+                </VTooltip>
               </IconBtn>
             </div>
           </template>
@@ -106,7 +129,10 @@
     />
 
     <!-- Subject Details Dialog - Modified to remove management buttons -->
-    <VDialog v-model="detailsDialog" max-width="800px">
+    <VDialog
+      v-model="detailsDialog"
+      max-width="800px"
+    >
       <VCard>
         <VCardTitle class="d-flex justify-space-between align-center">
           <span>Subject Details: {{ selectedSubject.name }}</span>
@@ -121,24 +147,35 @@
 
         <VCardText>
           <div v-if="loadingDetails">
-            <VProgressCircular indeterminate class="mx-auto d-block my-4" />
+            <VProgressCircular
+              indeterminate
+              class="mx-auto d-block my-4"
+            />
           </div>
           
           <div v-else>
             <!-- Basic Subject Information -->
             <div class="mb-4">
-              <h4 class="text-h6 mb-2">Basic Information</h4>
+              <h4 class="text-h6 mb-2">
+                Basic Information
+              </h4>
               <div class="d-flex flex-column gap-2">
                 <div class="d-flex align-center">
-                  <div class="text-subtitle-2 min-width-100">Name:</div>
+                  <div class="text-subtitle-2 min-width-100">
+                    Name:
+                  </div>
                   <div>{{ selectedSubject.name }}</div>
                 </div>
                 <div class="d-flex align-center">
-                  <div class="text-subtitle-2 min-width-100">Created:</div>
+                  <div class="text-subtitle-2 min-width-100">
+                    Created:
+                  </div>
                   <div>{{ formatDate(selectedSubject.createdAt) }}</div>
                 </div>
                 <div class="d-flex align-center">
-                  <div class="text-subtitle-2 min-width-100">Last Updated:</div>
+                  <div class="text-subtitle-2 min-width-100">
+                    Last Updated:
+                  </div>
                   <div>{{ formatDate(selectedSubject.updatedAt) }}</div>
                 </div>
               </div>
@@ -148,19 +185,34 @@
             
             <!-- Associated Courses - Removed management button -->
             <div class="mb-4">
-              <h4 class="text-h6 mb-2">Related Courses</h4>
+              <h4 class="text-h6 mb-2">
+                Related Courses
+              </h4>
               
               <!-- Display courses table or empty state -->
-              <VTable v-if="selectedSubject.courses?.length" density="compact" class="bg-surface-100 rounded">
+              <VTable
+                v-if="selectedSubject.courses?.length"
+                density="compact"
+                class="bg-surface-100 rounded"
+              >
                 <thead>
                   <tr>
-                    <th class="text-left">Course Name</th>
-                    <th class="text-left">Teacher</th>
-                    <th class="text-left">Students</th>
+                    <th class="text-left">
+                      Course Name
+                    </th>
+                    <th class="text-left">
+                      Teacher
+                    </th>
+                    <th class="text-left">
+                      Students
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="course in selectedSubject.courses" :key="course.id">
+                  <tr
+                    v-for="course in selectedSubject.courses"
+                    :key="course.id"
+                  >
                     <td>{{ course.name }}</td>
                     <td>{{ course.teacher?.name || 'N/A' }}</td>
                     <td>{{ course.students?.length || 0 }} students</td>
@@ -168,9 +220,18 @@
                 </tbody>
               </VTable>
               
-              <div v-else class="text-center pa-4 bg-surface-100 rounded">
-                <VIcon icon="tabler-book-off" size="32" class="mb-2" />
-                <p class="text-medium-emphasis">No courses associated with this subject</p>
+              <div
+                v-else
+                class="text-center pa-4 bg-surface-100 rounded"
+              >
+                <VIcon
+                  icon="tabler-book-off"
+                  size="32"
+                  class="mb-2"
+                />
+                <p class="text-medium-emphasis">
+                  No courses associated with this subject
+                </p>
               </div>
             </div>
             
@@ -178,19 +239,34 @@
             
             <!-- Assessment Weights - Removed management button -->
             <div>
-              <h4 class="text-h6 mb-2">Bobot Penilaian</h4>
+              <h4 class="text-h6 mb-2">
+                Bobot Penilaian
+              </h4>
               
               <!-- Display weights table or empty state -->
-              <VTable v-if="selectedSubject.weights?.length" density="compact" class="bg-surface-100 rounded">
+              <VTable
+                v-if="selectedSubject.weights?.length"
+                density="compact"
+                class="bg-surface-100 rounded"
+              >
                 <thead>
                   <tr>
-                    <th class="text-left">Exam Type</th>
-                    <th class="text-left">Weight</th>
-                    <th class="text-left">Quota</th>
+                    <th class="text-left">
+                      Exam Type
+                    </th>
+                    <th class="text-left">
+                      Weight
+                    </th>
+                    <th class="text-left">
+                      Quota
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="weight in selectedSubject.weights" :key="weight.id">
+                  <tr
+                    v-for="weight in selectedSubject.weights"
+                    :key="weight.id"
+                  >
                     <td>{{ formatExamType(weight.examType) }}</td>
                     <td>{{ (weight.weight * 100).toFixed(0) }}%</td>
                     <td>{{ weight.quota || 'N/A' }}</td>
@@ -198,9 +274,18 @@
                 </tbody>
               </VTable>
               
-              <div v-else class="text-center pa-4 bg-surface-100 rounded">
-                <VIcon icon="tabler-scale" size="32" class="mb-2" />
-                <p class="text-medium-emphasis">No assessment weights defined for this subject</p>
+              <div
+                v-else
+                class="text-center pa-4 bg-surface-100 rounded"
+              >
+                <VIcon
+                  icon="tabler-scale"
+                  size="32"
+                  class="mb-2"
+                />
+                <p class="text-medium-emphasis">
+                  No assessment weights defined for this subject
+                </p>
               </div>
             </div>
           </div>
@@ -227,14 +312,14 @@
 </template>
 
 <script setup>
-import axiosInstance from "@/utils/axios";
-import { SwalDelete } from "@/utils/sweetalert";
-import { useVuex } from "@/utils/vuex";
-import { onMounted, ref } from "vue";
-import { toast } from "vue-sonner";
-import AssessmentWeightsModal from "./assessment-weights-modal.vue";
-import CourseManagementModal from "./course-management-modal.vue";
-import SubjectFormDrawer from "./subject-form-drawer.vue";
+import axiosInstance from "@/utils/axios"
+import { SwalDelete } from "@/utils/sweetalert"
+import { useVuex } from "@/utils/vuex"
+import { onMounted, ref } from "vue"
+import { toast } from "vue-sonner"
+import AssessmentWeightsModal from "./assessment-weights-modal.vue"
+import CourseManagementModal from "./course-management-modal.vue"
+import SubjectFormDrawer from "./subject-form-drawer.vue"
 
 const headers = ref([
   { title: "Subject Name", key: "name" },
@@ -243,18 +328,19 @@ const headers = ref([
   {
     title: "Created At",
     key: "createdAt",
-    sortable: true
+    sortable: true,
   },
   { title: "Actions", align: "end", key: "actions", sortable: false },
-]);
+])
 
-const store = useVuex();
-const drawerForm = ref(false);
-const detailsDialog = ref(false);
-const isEditing = ref(false);
-const editingId = ref(null);
-const loadingDetails = ref(false);
-const selectedSubject = ref({});
+const store = useVuex()
+const router = useRouter()
+const drawerForm = ref(false)
+const detailsDialog = ref(false)
+const isEditing = ref(false)
+const editingId = ref(null)
+const loadingDetails = ref(false)
+const selectedSubject = ref({})
 
 const table_options = ref({
   page: 1,
@@ -262,90 +348,96 @@ const table_options = ref({
   total_pages: 0,
   total_items: 0,
   search: "",
-});
+})
 
 // Mock data for development
 // Replace with actual store implementation
-const subjects = ref([]);
-const loading = ref(false);
+const subjects = ref([])
+const loading = ref(false)
+
+const onRowClick = (event, { item }) => {
+  router.push(`/subject/${item.id}`)
+}
 
 const handleDrawerForm = (value, id = null) => {
   if (!value) {
-    isEditing.value = false;
-    editingId.value = null;
+    isEditing.value = false
+    editingId.value = null
     
     // When closing the form, refresh the list to ensure data consistency
-    refetch();
+    refetch()
   }
   
-  drawerForm.value = value;
-};
+  drawerForm.value = value
+}
 
-const handleUpdate = (id) => {
-  isEditing.value = true;
-  editingId.value = id;
-  handleDrawerForm(true);
-};
+const handleUpdate = id => {
+  isEditing.value = true
+  editingId.value = id
+  handleDrawerForm(true)
+}
 
-const handleDelete = async (id) => {
+const handleDelete = async id => {
   const confirm = await SwalDelete({
     title: "Delete subject?",
     text: "This will remove the subject and may affect related courses and assessments. This action cannot be undone.",
     confirmButtonText: "Yes, delete subject",
-  });
+  })
 
   if (confirm) {
     try {
-      loading.value = true;
+      loading.value = true
       
       const result = await axiosInstance({
         method: "DELETE",
         url: `/subject/${id}`,
-      });
+      })
       
-      toast.success("Subject deleted successfully");
+      toast.success("Subject deleted successfully")
       
       // Ensure we refresh after deletion 
-      await refetch();
+      await refetch()
     } catch (error) {
-      console.error("Failed to delete subject:", error);
-      toast.error("Failed to delete subject");
+      console.error("Failed to delete subject:", error)
+      toast.error("Failed to delete subject")
     } finally {
-      loading.value = false;
+      loading.value = false
     }
   }
-};
+}
 
-const handleViewDetails = async (id) => {
-  loadingDetails.value = true;
+const handleViewDetails = async id => {
+  loadingDetails.value = true
   
   try {
     const result = await axiosInstance({
       method: "GET",
       url: `/subject/${id}`,
-    });
+    })
     
-    selectedSubject.value = result.data.data;
-    detailsDialog.value = true;
+    selectedSubject.value = result.data.data
+    detailsDialog.value = true
   } catch (error) {
-    console.error("Failed to fetch subject details:", error);
-    toast.error("Failed to load subject details");
+    console.error("Failed to fetch subject details:", error)
+    toast.error("Failed to load subject details")
   } finally {
-    loadingDetails.value = false;
+    loadingDetails.value = false
   }
-};
+}
 
-const formatDate = (dateString) => {
-  if (!dateString) return "N/A";
-  const date = new Date(dateString);
-  return date.toLocaleString();
-};
+const formatDate = dateString => {
+  if (!dateString) return "N/A"
+  const date = new Date(dateString)
+  
+  return date.toLocaleString()
+}
 
 const refetch = async () => {
-  loading.value = true;
+  loading.value = true
   
   try {
-    console.log("Refreshing subject data...");
+    console.log("Refreshing subject data...")
+
     const result = await axiosInstance({
       method: "GET",
       url: "/subject",
@@ -353,12 +445,12 @@ const refetch = async () => {
         search: table_options.value.search,
         page: table_options.value.page,
         page_size: table_options.value.page_size,
-        _t: new Date().getTime() // Cache busting
-      }
-    });
+        _t: new Date().getTime(), // Cache busting
+      },
+    })
     
-    subjects.value = result.data.data;
-    console.log(`Loaded ${subjects.value.length} subjects`);
+    subjects.value = result.data.data
+    console.log(`Loaded ${subjects.value.length} subjects`)
     
     // Update pagination
     if (result.data.pagination) {
@@ -366,81 +458,84 @@ const refetch = async () => {
         ...table_options.value,
         total_items: result.data.pagination.total_items || 0,
         total_pages: result.data.pagination.total_pages || 0,
-      };
+      }
     }
     
-    return result.data;
+    return result.data
   } catch (error) {
-    console.error("Failed to fetch subjects:", error);
-    toast.error("Failed to load subjects");
-    return null;
+    console.error("Failed to fetch subjects:", error)
+    toast.error("Failed to load subjects")
+    
+    return null
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 // Add new refs for assessment weights modal
-const assessmentWeightsModal = ref(false);
-const selectedWeightsSubjectId = ref(null);
-const selectedWeightsSubjectName = ref('');
+const assessmentWeightsModal = ref(false)
+const selectedWeightsSubjectId = ref(null)
+const selectedWeightsSubjectName = ref('')
 
 // Open assessment weights modal
 const openAssessmentWeightsModal = (subjectId, subjectName) => {
-  selectedWeightsSubjectId.value = subjectId;
-  selectedWeightsSubjectName.value = subjectName;
-  assessmentWeightsModal.value = true;
-};
+  selectedWeightsSubjectId.value = subjectId
+  selectedWeightsSubjectName.value = subjectName
+  assessmentWeightsModal.value = true
+}
 
 // Handle weights updated
 const handleWeightsUpdated = async () => {
   // If we're currently viewing a subject's details, refresh them
   if (detailsDialog.value && selectedSubject.value?.id) {
-    await handleViewDetails(selectedSubject.value.id);
+    await handleViewDetails(selectedSubject.value.id)
   }
   
   // Refresh the main table as weights count might have changed
-  await refetch();
-};
+  await refetch()
+}
 
 // Add new refs for course management modal
-const courseManagementModal = ref(false);
-const selectedCourseSubjectId = ref(null);
-const selectedCourseSubjectName = ref('');
+const courseManagementModal = ref(false)
+const selectedCourseSubjectId = ref(null)
+const selectedCourseSubjectName = ref('')
 
 // Open course management modal
 const openCourseManagementModal = (subjectId, subjectName) => {
-  selectedCourseSubjectId.value = subjectId;
-  selectedCourseSubjectName.value = subjectName;
-  courseManagementModal.value = true;
-};
+  selectedCourseSubjectId.value = subjectId
+  selectedCourseSubjectName.value = subjectName
+  courseManagementModal.value = true
+}
 
 // Handle courses updated
+// eslint-disable-next-line sonarjs/no-identical-functions
 const handleCoursesUpdated = async () => {
   // If we're currently viewing a subject's details, refresh them
   if (detailsDialog.value && selectedSubject.value?.id) {
-    await handleViewDetails(selectedSubject.value.id);
+    await handleViewDetails(selectedSubject.value.id)
   }
   
   // Refresh the main table as course count might have changed
-  await refetch();
-};
+  await refetch()
+}
 
 onMounted(() => {
-  refetch();
-});
+  refetch()
+})
 
 // Helper to format exam types
-const formatExamType = (type) => {
-  if (!type) return 'N/A';
+const formatExamType = type => {
+  if (!type) return 'N/A'
+  
   return type.replace('_', ' ').split(' ')
     .map(word => word.charAt(0) + word.slice(1).toLowerCase())
-    .join(' ');
-};
+    .join(' ')
+}
 </script>
 
 <style scoped>
 .min-width-100 {
-  min-width: 100px;
+  min-inline-size: 100px;
 }
 
 .cursor-pointer {

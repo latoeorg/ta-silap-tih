@@ -50,6 +50,7 @@ declare module 'vue-router/auto/routes' {
     'settings': RouteRecordInfo<'settings', '/settings', Record<never, never>, Record<never, never>>,
     'setup-facility': RouteRecordInfo<'setup-facility', '/setup/facility', Record<never, never>, Record<never, never>>,
     'subject': RouteRecordInfo<'subject', '/subject', Record<never, never>, Record<never, never>>,
+    'subject-id': RouteRecordInfo<'subject-id', '/subject/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     'subject-assessment-weights-modal': RouteRecordInfo<'subject-assessment-weights-modal', '/subject/assessment-weights-modal', Record<never, never>, Record<never, never>>,
     'subject-course-management-modal': RouteRecordInfo<'subject-course-management-modal', '/subject/course-management-modal', Record<never, never>, Record<never, never>>,
     'subject-grade-component-modal': RouteRecordInfo<'subject-grade-component-modal', '/subject/grade-component-modal', Record<never, never>, Record<never, never>>,
