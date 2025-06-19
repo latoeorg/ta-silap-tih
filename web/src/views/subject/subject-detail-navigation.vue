@@ -28,7 +28,7 @@
       </VWindowItem>
       
       <VWindowItem value="assessment-weight">
-        <!-- <AssessmentWeight :subject-id="route.params.id" /> -->
+        <AssessmentWeight :subject-id="route.params.id" />
       </VWindowItem>
     </VWindow>
   </div>
@@ -38,7 +38,7 @@
 import { useRouter, useRoute } from 'vue-router'
 import { computed, ref, onMounted } from 'vue'
 import Course from './course.vue'
-// import AssessmentWeight from './assessment-weight.vue'
+import AssessmentWeight from './assessment-weight.vue'
 import axiosInstance from '@/utils/axios'
 
 const router = useRouter()
