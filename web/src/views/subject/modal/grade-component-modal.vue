@@ -78,7 +78,6 @@
                       <VTable density="comfortable" class="grade-components-table">
                         <thead>
                           <tr>
-                            <th width="30%" class="text-left">Name</th>
                             <th width="15%" class="text-left">Weight (%)</th>
                             <th width="15%" class="text-left">Max Score</th>
                             <th width="15%" class="text-left">Index</th>
@@ -87,17 +86,6 @@
                         </thead>
                         <tbody>
                           <tr v-for="(component, index) in components" :key="index">
-                            <td width="30%">
-                              <VTextField
-                                v-model="component.name"
-                                density="compact"
-                                variant="outlined"
-                                hide-details
-                                placeholder="Component name"
-                                :rules="[v => !!v || 'Name is required']"
-                                class="component-input"
-                              />
-                            </td>
                             <td width="15%">
                               <VTextField
                                 v-model.number="component.weight"

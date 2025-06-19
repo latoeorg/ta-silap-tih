@@ -33,6 +33,8 @@
               <VBtn
                 prepend-icon="tabler-settings"
                 @click="openComponentsModal"
+                variant="tonal"
+                color="info"
               >
                Manage Components
               </VBtn>
@@ -107,24 +109,120 @@
             </VCard>
           </div>
 
+          <!-- Grades Distribution Chart -->
+          <VCard class="mb-6" border>
+            <VCardTitle class="d-flex justify-space-between align-center pt-4 px-4 pb-0">
+              <span class="text-subtitle-1">Grade Distribution</span>
+              <div class="d-flex align-center">
+                <span class="text-caption text-medium-emphasis me-2">Students: {{ gradedStudentCount }}</span>
+                <VChip size="small" color="primary" label>{{ selectedExamType }}</VChip>
+              </div>
+            </VCardTitle>
+            <VCardText class="pa-4">
+              <div class="grade-distribution">
+                <div class="grade-bars">
+                  <div 
+                    v-for="(count, range) in gradeDistribution" 
+                    :key="range"
+                    class="grade-bar-container"
+                  >
+                    <div class="grade-bar-label">{{ range }}</div>
+                    <div class="grade-bar-wrapper">
+                      <div 
+                        class="grade-bar" 
+                        :class="getGradeRangeClass(range)"
+                        :style="{ width: `${(count / Math.max(...Object.values(gradeDistribution), 1)) * 100}%` }"
+                      ></div>
+                    </div>
+                    <div class="grade-bar-count">{{ count }}</div>
+                  </div>
+                </div>
+              </div>
+            </VCardText>
+          </VCard>
+
           <!-- Grades Table -->
           <VCard v-if="courseStudents.length > 0" border>
-            <VCardText class="pa-2">
-              <VTextField
-                v-model="search"
-                prepend-inner-icon="tabler-search"
-                label="Search Students"
-                hide-details
-                density="compact"
-                variant="outlined"
-                class="mb-4"
-              />
+            <VCardText class="pa-4">
+              <div class="d-flex justify-space-between align-center mb-4">
+                <VTextField
+                  v-model="search"
+                  prepend-inner-icon="tabler-search"
+                  label="Search Students"
+                  hide-details
+                  density="compact"
+                  variant="outlined"
+                  class="max-width-320"
+                />
+                
+                <div class="d-flex align-center gap-2">
+                  <VBtn
+                    size="small"
+                    variant="tonal"
+                    color="secondary"
+                    prepend-icon="tabler-filter"
+                    @click="showFilters = !showFilters"
+                  >
+                    {{ showFilters ? 'Hide' : 'Show' }} Filters
+                  </VBtn>
+                  
+                  <VSelect
+                    v-model="itemsPerPage"
+                    :items="[5, 10, 15, 25, 50]"
+                    label="Items per page"
+                    density="compact"
+                    variant="outlined"
+                    hide-details
+                    class="max-width-120"
+                  />
+                </div>
+              </div>
+              
+              <!-- Filters section -->
+              <div v-if="showFilters" class="filter-section pa-3 mb-4 bg-surface-100 rounded">
+                <div class="d-flex flex-wrap gap-4">
+                  <VSelect
+                    v-model="gradeFilter"
+                    :items="['All', 'Graded', 'Not Graded']"
+                    label="Grade Status"
+                    density="compact"
+                    variant="outlined"
+                    hide-details
+                    class="max-width-200"
+                  />
+                  
+                  <VRangeSlider
+                    v-model="scoreRange"
+                    :max="100"
+                    :min="0"
+                    :step="5"
+                    label="Score Range"
+                    thumb-label="always"
+                    color="primary"
+                    class="max-width-300 mt-2"
+                  />
+                  
+                  <VSpacer />
+                  
+                  <VBtn
+                    color="primary"
+                    variant="tonal"
+                    size="small"
+                    prepend-icon="tabler-refresh"
+                    @click="resetFilters"
+                    class="align-self-center"
+                  >
+                    Reset Filters
+                  </VBtn>
+                </div>
+              </div>
 
               <VDataTable
                 :headers="gradeHeaders"
                 :items="filteredStudents"
                 :search="search"
                 density="comfortable"
+                :items-per-page="itemsPerPage"
                 class="elevation-0"
               >
                 <!-- Student Name -->
@@ -157,7 +255,30 @@
                     {{ item.grade ? "Graded" : "Not Graded" }}
                   </VChip>
                 </template>
-
+                
+                <!-- Components -->
+                <template #item.components="{ item }">
+                  <div v-if="item.grade && item.grade.components && item.grade.components.length > 0">
+                    <VTooltip location="top">
+                      <template #activator="{ props }">
+                        <div class="d-flex gap-1" v-bind="props">
+                          <VChip
+                            v-if="item.grade.components.length > 2"
+                            size="x-small"
+                            label
+                            variant="tonal"
+                            color="secondary"
+                            class="text-caption"
+                          >
+                            +{{ item.grade.components.length - 2 }} more
+                          </VChip>
+                        </div>
+                      </template>
+                     
+                    </VTooltip>
+                  </div>
+                  <span v-else>-</span>
+                </template>
 
                 <!-- Total Score -->
                 <template #item.totalScore="{ item }">
@@ -179,7 +300,11 @@
                       <VIcon icon="tabler-pencil" />
                       <VTooltip activator="parent">Grade Student</VTooltip>
                     </IconBtn>
-
+                    
+                    <IconBtn v-if="item.grade" @click="viewGradeDetails(item)">
+                      <VIcon icon="tabler-eye" />
+                      <VTooltip activator="parent">View Details</VTooltip>
+                    </IconBtn>
                   </div>
                 </template>
               </VDataTable>
@@ -195,6 +320,19 @@
           </VAlert>
         </div>
       </VCardText>
+
+      <VDivider />
+      
+      <VCardActions class="pa-4">
+        <VSpacer />
+        <VBtn
+          color="secondary"
+          variant="tonal"
+          @click="closeDialog"
+        >
+          Close
+        </VBtn>
+      </VCardActions>
     </VCard>
   </VDialog>
 
@@ -293,8 +431,7 @@
               class="d-flex gap-3 align-center mb-3"
             >
               <div style="flex: 2">
-                <strong>{{ component.name }}</strong>
-                <div class="text-caption">
+                <div>
                   Weight: {{ (component.weight * 100).toFixed(0) }}%
                 </div>
               </div>
@@ -377,6 +514,176 @@
     </VCard>
   </VDialog>
 
+  <!-- Grade Details Dialog -->
+  <VDialog v-model="gradeDetailsDialog" max-width="700px">
+    <VCard>
+      <VCardTitle class="d-flex justify-space-between align-center">
+        <span>Grade Details</span>
+        <VBtn variant="text" icon="tabler-x" @click="gradeDetailsDialog = false" />
+      </VCardTitle>
+
+      <VDivider />
+
+      <VCardText>
+        <div v-if="selectedGrade && selectedStudent" class="pa-2">
+          <!-- Student info -->
+          <div class="d-flex align-center mb-4">
+            <VAvatar
+              size="48"
+              color="primary"
+              variant="tonal"
+              class="me-3"
+            >
+              <VIcon size="24" icon="tabler-user" />
+            </VAvatar>
+            <div>
+              <div class="text-h6">{{ selectedStudent.name }}</div>
+              <div class="text-body-2 text-medium-emphasis">{{ selectedStudent.email }}</div>
+            </div>
+          </div>
+
+          <!-- Grade summary -->
+          <VCard variant="outlined" class="mb-4">
+            <VCardItem>
+              <template #prepend>
+                <VAvatar rounded color="primary" variant="tonal">
+                  <VIcon icon="tabler-license" />
+                </VAvatar>
+              </template>
+
+              <VCardTitle>{{ selectedExamType }}</VCardTitle>
+              <VCardSubtitle>Exam Type</VCardSubtitle>
+            </VCardItem>
+
+            <VDivider />
+
+            <VCardText>
+              <div class="d-flex justify-space-between align-center mb-3">
+                <span class="text-subtitle-1">Total Score</span>
+                <VChip
+                  size="large"
+                  :color="getScoreColorClass(selectedGrade.totalScore).replace('text-', '')"
+                  variant="tonal"
+                >
+                  <span class="text-h6">{{ selectedGrade.totalScore.toFixed(1) }}</span>
+                </VChip>
+              </div>
+
+              <div class="text-caption text-medium-emphasis">
+                Last updated: {{ formatDate(selectedGrade.updatedAt || selectedGrade.createdAt) }}
+              </div>
+            </VCardText>
+          </VCard>
+
+          <!-- Component scores -->
+          <h6 class="text-subtitle-1 mb-3">Component Scores</h6>
+
+          <div v-if="selectedGrade.components && selectedGrade.components.length > 0">
+            <VTable density="compact" class="mb-4">
+              <thead>
+                <tr>
+                  <th>Score</th>
+                  <th>Max</th>
+                  <th>Weight</th>
+                  <th>Weighted</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="comp in selectedGrade.components" :key="comp.id">
+                  <td>{{ comp.score }}</td>
+                  <td>{{ getComponentMaxScore(comp.id) }}</td>
+                  <td>{{ getComponentWeight(comp.id) }}%</td>
+                  <td>
+                    {{ calculateWeightedScore(comp.score, comp.id).toFixed(1) }}
+                  </td>
+                </tr>
+              </tbody>
+            </VTable>
+            
+            <!-- Score visualization -->
+            <VCard variant="flat" class="mb-4 pa-3 bg-surface-100 rounded">
+              <div class="grade-visualization">
+                <h6 class="text-subtitle-2 mb-3">Score Distribution</h6>
+                <div class="component-bars">
+                  <div v-for="comp in selectedGrade.components" :key="comp.id" class="component-bar-container mb-2">
+                    <div class="d-flex justify-space-between mb-1">
+                      <span class="text-caption">{{ comp.score }} / {{ getComponentMaxScore(comp.id) }}</span>
+                    </div>
+                    <div class="progress-container">
+                      <div 
+                        class="progress-bar" 
+                        :style="{ 
+                          width: `${(comp.score / getComponentMaxScore(comp.id)) * 100}%`,
+                          backgroundColor: getScoreBarColor(comp.score / getComponentMaxScore(comp.id))
+                        }"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </VCard>
+          </div>
+          <VAlert v-else type="info" variant="tonal" density="compact">
+            No component scores available
+          </VAlert>
+          
+          <!-- Grade history (placeholder for future feature) -->
+          <div class="mt-4">
+            <h6 class="text-subtitle-1 mb-2">Grade History</h6>
+            <VCard variant="outlined">
+              <VList lines="two">
+                <VListItem
+                  prepend-icon="tabler-history"
+                  title="Initial grade recorded"
+                  :subtitle="`Score: ${selectedGrade.totalScore.toFixed(1)}`"
+                >
+                  <template #append>
+                    <div class="text-caption">
+                      {{ formatDate(selectedGrade.createdAt) }}
+                    </div>
+                  </template>
+                </VListItem>
+                
+                <!-- If we have update history, we could show it here -->
+                <VListItem
+                  v-if="selectedGrade.updatedAt && selectedGrade.updatedAt !== selectedGrade.createdAt"
+                  prepend-icon="tabler-pencil"
+                  title="Grade updated"
+                  :subtitle="`Current score: ${selectedGrade.totalScore.toFixed(1)}`"
+                >
+                  <template #append>
+                    <div class="text-caption">
+                      {{ formatDate(selectedGrade.updatedAt) }}
+                    </div>
+                  </template>
+                </VListItem>
+              </VList>
+            </VCard>
+          </div>
+        </div>
+      </VCardText>
+
+      <VDivider />
+
+      <VCardActions class="pa-4">
+        <VSpacer />
+        <VBtn
+          variant="tonal" 
+          color="secondary"
+          @click="gradeDetailsDialog = false"
+        >
+          Close
+        </VBtn>
+        <VBtn
+          color="primary"
+          @click="editGrade(selectedStudent)"
+        >
+          Edit Grade
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
+
   <!-- Grade Component Modal -->
   <GradeComponentModal
     v-model="componentsModalOpen"
@@ -388,7 +695,6 @@
 
 <script setup>
 import axiosInstance from "@/utils/axios";
-import { formatDate } from "@/utils/utils";
 import GradeComponentModal from "./grade-component-modal.vue";
 
 import { computed, ref, watch } from "vue";
@@ -416,6 +722,12 @@ const loading = ref(false);
 const exportLoading = ref(false);
 const search = ref("");
 const selectedExamType = ref(null);
+const itemsPerPage = ref(10);
+const showFilters = ref(false);
+
+// Filters
+const gradeFilter = ref("All");
+const scoreRange = ref([0, 100]);
 
 // Grade UI state
 const gradeFormDialog = ref(false);
@@ -455,6 +767,7 @@ const gradeHeaders = computed(() => {
   const baseHeaders = [
     { title: "Student", key: "name", sortable: true },
     { title: "Status", key: "status", sortable: true },
+    { title: "Components", key: "components", sortable: false },
   ];
 
 
@@ -491,9 +804,36 @@ const averageGrade = computed(() => {
   return total / studentGrades.length;
 });
 
+// Grade distribution
+const gradeDistribution = computed(() => {
+  const distribution = {
+    '91-100': 0,
+    '81-90': 0,
+    '71-80': 0,
+    '61-70': 0,
+    '51-60': 0,
+    '0-50': 0,
+  };
+
+  grades.value.forEach(grade => {
+    if (grade.examType !== selectedExamType.value || grade.totalScore === null) return;
+    
+    const score = grade.totalScore;
+    
+    if (score > 90) distribution['91-100']++;
+    else if (score > 80) distribution['81-90']++;
+    else if (score > 70) distribution['71-80']++;
+    else if (score > 60) distribution['61-70']++;
+    else if (score > 50) distribution['51-60']++;
+    else distribution['0-50']++;
+  });
+  
+  return distribution;
+});
+
 // Filtered students with grades
 const filteredStudents = computed(() => {
-  return courseStudents.value.map((student) => {
+  let students = courseStudents.value.map((student) => {
     const studentGrade = grades.value.find(
       (grade) =>
         grade.userId === student.id && grade.examType === selectedExamType.value
@@ -504,11 +844,23 @@ const filteredStudents = computed(() => {
       grade: studentGrade || null,
     };
   });
-});
 
-// Available grade components for the selected exam type
-const gradeComponents = computed(() => {
-  return gradeComponentDefinitions.value;
+  // Apply filters
+  if (gradeFilter.value === 'Graded') {
+    students = students.filter(student => student.grade);
+  } else if (gradeFilter.value === 'Not Graded') {
+    students = students.filter(student => !student.grade);
+  }
+
+  // Apply score range filter
+  if (gradeFilter.value === 'Graded') {
+    students = students.filter(student => {
+      const score = student.grade?.totalScore || 0;
+      return score >= scoreRange.value[0] && score <= scoreRange.value[1];
+    });
+  }
+
+  return students;
 });
 
 // Calculate total score based on components
@@ -532,6 +884,13 @@ const calculatedTotalScore = computed(() => {
   // Normalize by total weight if not 1.0
   return weightTotal > 0 ? total / weightTotal : 0;
 });
+
+// Reset filters
+const resetFilters = () => {
+  gradeFilter.value = "All";
+  scoreRange.value = [0, 100];
+  search.value = "";
+};
 
 // API operations with unified error handling
 const apiOperation = async (
@@ -557,6 +916,19 @@ const apiOperation = async (
     toast.error(errorMsg);
     throw error;
   }
+};
+
+// Format date for display
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  const date = new Date(dateString);
+  return date.toLocaleString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 };
 
 // Load data
@@ -754,17 +1126,19 @@ const resetGradeForm = () => {
 
 const openCreateGradeForm = () => {
   resetGradeForm();
+  selectedStudent.value = null;
   gradeFormDialog.value = true;
 };
 
 const editGrade = (student) => {
   // Make sure we have the complete student object
   selectedStudent.value = student;
-  editingGrade.value = true;
+  
   const existingGrade = grades.value.find(
     (grade) => grade.userId === student.id && grade.examType === selectedExamType.value
   );
 
+  resetGradeForm();
 
   if (existingGrade) {
     editingGrade.value = true;
@@ -792,12 +1166,17 @@ const editGrade = (student) => {
     gradeForm.value.examType = selectedExamType.value;
   }
 
+  // Close the details dialog if it's open
+  gradeDetailsDialog.value = false;
+  
+  // Open the grade form dialog
   gradeFormDialog.value = true;
 };
 
 const closeGradeForm = () => {
   gradeFormDialog.value = false;
   resetGradeForm();
+  selectedStudent.value = null;
 };
 
 const saveGrade = async () => {
@@ -828,10 +1207,10 @@ const saveGrade = async () => {
       }
     );
 
-    // Calculate the final score
+    // Calculate the final score (round to 1 decimal place to avoid floating point issues)
     const totalScore = (overrideTotal.value || components.length === 0)
-      ? parseFloat(gradeForm.value.totalScore)
-      : calculatedTotalScore.value;
+      ? parseFloat(parseFloat(gradeForm.value.totalScore).toFixed(1))
+      : parseFloat(calculatedTotalScore.value.toFixed(1));
 
     if (editingGrade.value && selectedStudent.value) {
       // Update an existing grade
@@ -891,6 +1270,7 @@ const saveGrade = async () => {
     savingGrade.value = false;
   }
 };
+
 // Grade details
 const viewGradeDetails = (student) => {
   selectedStudent.value = student;
@@ -925,16 +1305,27 @@ const findComponentScore = (components, componentDef) => {
 
 const getScoreColorClass = (score) => {
   if (score === null || score === undefined) return "";
-  if (score >= 75) return "text-success";
-  if (score >= 50) return "text-warning";
+  if (score >= 80) return "text-success";
+  if (score >= 60) return "text-warning";
   return "text-danger";
 };
 
-const getComponentName = (componentId) => {
-  const component = gradeComponentDefinitions.value.find(
-    (comp) => comp.id === componentId
-  );
-  return component ? component.name : "Unknown Component";
+const getGradeRangeClass = (range) => {
+  const rangeStart = parseInt(range.split('-')[0]);
+  if (rangeStart >= 80) return "grade-bar-a";
+  if (rangeStart >= 70) return "grade-bar-b";
+  if (rangeStart >= 60) return "grade-bar-c";
+  if (rangeStart >= 50) return "grade-bar-d";
+  return "grade-bar-f";
+};
+
+const getScoreBarColor = (percentage) => {
+  if (percentage >= 0.9) return '#4caf50';
+  if (percentage >= 0.8) return '#8bc34a';
+  if (percentage >= 0.7) return '#cddc39';
+  if (percentage >= 0.6) return '#ffc107';
+  if (percentage >= 0.5) return '#ff9800';
+  return '#f44336';
 };
 
 const getComponentMaxScore = (componentId) => {
@@ -942,6 +1333,22 @@ const getComponentMaxScore = (componentId) => {
     (comp) => comp.id === componentId
   );
   return component ? component.maxScore : 0;
+};
+
+const getComponentWeight = (componentId) => {
+  const component = gradeComponentDefinitions.value.find(
+    (comp) => comp.id === componentId
+  );
+  return component ? (component.weight * 100).toFixed(0) : 0;
+};
+
+const calculateWeightedScore = (score, componentId) => {
+  const component = gradeComponentDefinitions.value.find(
+    (comp) => comp.id === componentId
+  );
+  if (!component) return 0;
+  
+  return (score / component.maxScore) * component.weight * 100;
 };
 
 // Watchers
@@ -953,11 +1360,30 @@ watch(
     }
   }
 );
+
+watch([() => selectedExamType.value], () => {
+  if (selectedExamType.value) {
+    loadGradeComponentDefinitions();
+    loadGrades();
+  }
+});
 </script>
 
 <style scoped>
-.v-data-table {
-  /* Custom styles for the data table */
+.max-width-120 {
+  max-width: 120px;
+}
+
+.max-width-200 {
+  max-width: 200px;
+}
+
+.max-width-300 {
+  max-width: 300px;
+}
+
+.max-width-320 {
+  max-width: 320px;
 }
 
 .v-card {
@@ -965,7 +1391,7 @@ watch(
 }
 
 .v-card:hover {
-  transform: scale(1.02);
+  transform: scale(1.01);
 }
 
 .text-success {
@@ -978,5 +1404,92 @@ watch(
 
 .text-danger {
   color: #f44336 !important;
+}
+
+/* Grade distribution styling */
+.grade-distribution {
+  padding: 10px 0;
+}
+
+.grade-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.grade-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.grade-bar-label {
+  width: 60px;
+  font-size: 0.875rem;
+  text-align: right;
+}
+
+.grade-bar-wrapper {
+  flex-grow: 1;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  height: 20px;
+  overflow: hidden;
+}
+
+.grade-bar {
+  height: 100%;
+  min-width: 2%;
+  transition: width 0.5s ease;
+}
+
+.grade-bar-count {
+  width: 30px;
+  text-align: right;
+  font-weight: bold;
+}
+
+.grade-bar-a {
+  background-color: #4caf50;
+}
+
+.grade-bar-b {
+  background-color: #8bc34a;
+}
+
+.grade-bar-c {
+  background-color: #ffc107;
+}
+
+.grade-bar-d {
+  background-color: #ff9800;
+}
+
+.grade-bar-f {
+  background-color: #f44336;
+}
+
+/* Filter section */
+.filter-section {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Component visualization */
+.component-bar-container {
+  width: 100%;
+}
+
+.progress-container {
+  width: 100%;
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  min-width: 2%;
+  transition: width 0.3s ease;
 }
 </style>
