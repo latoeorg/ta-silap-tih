@@ -7,6 +7,7 @@ import { dashboardRouter } from "../api/dashboard/dashboard.route";
 import courseRouter from "../api/course/course.route";
 import gradeRouter from "../api/grade/grade.route";
 import gradeComponentRoute from "../api/gradeComponent/gradeComponent.route";
+import attandanceRoute from "../api/attandance/attandance.route";
 const router = Router();
 
 // Mount the routes correctly
@@ -18,6 +19,7 @@ router.use("/course", courseRouter); // Assuming course is an alias for subject
 router.use("/dashboard", dashboardRouter);
 router.use("/grade", gradeRouter);
 router.use("/grade-components", gradeComponentRoute);
+router.use("/attandances", attandanceRoute);
 
 // Export the router
 export const ProtectedRoutes = router;
