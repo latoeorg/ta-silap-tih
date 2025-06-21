@@ -222,4 +222,29 @@ export class GradeController {
       });
     }
   }
+
+  static async getGradeEachStudent(req: Request, res: Response) {
+    const { userId, teacherId } = req.params;
+    console.log(userId, teacherId);
+    try {
+      const grades = await GradeService.getGradeEachStudnet({
+        userId: userId as string,
+        teacherId: teacherId as string,
+      });
+
+      ApiResponse.success({
+        res,
+        data: grades,
+        message: "Grades retrieved successfully",
+      });
+    } catch (error) {
+      console.error("Get each student grade error:", error);
+      ApiResponse.error({
+        res,
+        message:
+          JSON.stringify(error) || "Failed to retrieve each student grade",
+        error,
+      });
+    }
+  }
 }

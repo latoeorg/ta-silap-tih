@@ -15,5 +15,8 @@ router.get("/components", GradeController.getGradeComponents);
 router.get("/:userId/:courseId/:examType", GradeController.getGradeByKey);
 router.put("/:userId/:courseId/:examType", GradeController.updateGrade);
 router.delete("/:userId/:courseId/:examType", GradeController.deleteGrade);
-
+router.get(
+  "/student/:userId/teacher/:teacherId",
+  GradeController.getGradeEachStudent
+);
 export default router;

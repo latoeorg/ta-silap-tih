@@ -346,4 +346,38 @@ export class GradeService {
       });
     });
   }
+
+  static async getGradeEachStudnet({
+    userId,
+    teacherId,
+  }: {
+    userId: string;
+    teacherId: string;
+  }): Promise<Grade[]> {
+    return prisma.grade.findMany({
+      where: {
+        ...(userId !== "all" && { userId: userId }),
+        ...(teacherId !== "all" && { course: { teacherId: teacherId } }),
+      },
+      include: {
+        components: true,
+        course: {
+          select: {
+            id: true,
+            name: true,
+            subject: {
+              select: {
+                weights: true,
+              },
+            },
+          },
+        },
+        user: {
+          select: {
+            studentProfile: true,
+          },
+        },
+      },
+    });
+  }
 }

@@ -745,11 +745,9 @@ const grades = ref([]);
 const examTypes = ref([
   "DAILY",
   "MID_TERM",
-  "FINAL_TERM",
+  "FINAL",
   "ASSIGNMENT",
-  "PROJECT",
   "QUIZ",
-  "LAB",
 ]);
 const gradeComponentDefinitions = ref([]);
 

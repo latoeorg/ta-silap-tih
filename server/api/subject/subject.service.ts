@@ -14,14 +14,26 @@ export class SubjectService {
 
   static async findAll(
     page = 1,
-    limit = 10
+    limit = 10,
+    where: { userId?: string; role?: string } = {}
   ): Promise<{
     subjects: Subject[];
     meta: { total: number; page: number; limit: number };
   }> {
+    let condition: any = {};
+    if (where.role === "TEACHER") {
+      condition = {
+        courses: {
+          some: {
+            teacherId: where.userId,
+          },
+        },
+      };
+    }
     const skip = (page - 1) * limit;
     const [subjects, total] = await Promise.all([
       prisma.subject.findMany({
+        where: condition,
         skip,
         take: limit,
         orderBy: { name: "asc" },

@@ -253,7 +253,7 @@ const formRef = ref(null);
 
 // Data
 const examTypes = ref([
-  'DAILY', 'MID_TERM', 'FINAL_TERM', 'ASSIGNMENT', 'PROJECT', 'QUIZ', 'LAB'
+  'DAILY', 'MID_TERM', 'FINAL', 'ASSIGNMENT', 'QUIZ',
 ]);
 const selectedExamType = ref(props.examType);
 const currentExamType = computed(() => props.examType || selectedExamType.value);
