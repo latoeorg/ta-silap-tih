@@ -14,9 +14,7 @@
         </div>
         <div v-else>
           <!-- Header with exam type selection -->
-          <div
-            class="d-flex flex-wrap justify-space-between align-center mb-4 gap-3"
-          >
+          <div class="d-flex flex-wrap justify-space-between align-center mb-4 gap-3">
             <div class="d-flex align-center gap-3">
               <h4 class="text-h6 mb-0">Student Grades</h4>
 
@@ -30,12 +28,7 @@
                 @update:model-value="loadGrades"
               />
 
-              <VBtn
-                prepend-icon="tabler-settings"
-                @click="openComponentsModal"
-              >
-               Manage Components
-              </VBtn>
+              <VBtn prepend-icon="tabler-settings" @click="openComponentsModal"> Manage Components </VBtn>
             </div>
 
             <div class="d-flex gap-2">
@@ -48,24 +41,13 @@
               >
                 Export
               </VBtn>
-              <VBtn
-                prepend-icon="tabler-plus"
-                color="primary"
-                @click="openCreateGradeForm"
-              >
-                Add Grades
-              </VBtn>
+              <VBtn prepend-icon="tabler-plus" color="primary" @click="openCreateGradeForm"> Add Grades </VBtn>
             </div>
           </div>
 
           <!-- Grade summary cards -->
           <div class="d-flex flex-wrap gap-4 mb-6">
-            <VCard
-              width="240"
-              color="primary"
-              variant="tonal"
-              class="flex-grow-1"
-            >
+            <VCard width="240" color="primary" variant="tonal" class="flex-grow-1">
               <VCardItem>
                 <template #prepend>
                   <VAvatar rounded="lg" color="primary" variant="flat">
@@ -77,12 +59,7 @@
               </VCardItem>
             </VCard>
 
-            <VCard
-              width="240"
-              color="success"
-              variant="tonal"
-              class="flex-grow-1"
-            >
+            <VCard width="240" color="success" variant="tonal" class="flex-grow-1">
               <VCardItem>
                 <template #prepend>
                   <VAvatar rounded="lg" color="success" variant="flat">
@@ -130,12 +107,7 @@
                 <!-- Student Name -->
                 <template #item.name="{ item }">
                   <div class="d-flex align-center">
-                    <VAvatar
-                      size="32"
-                      color="primary"
-                      variant="tonal"
-                      class="me-2"
-                    >
+                    <VAvatar size="32" color="primary" variant="tonal" class="me-2">
                       <VIcon size="16" icon="tabler-user" />
                     </VAvatar>
                     <div>
@@ -149,11 +121,7 @@
 
                 <!-- Status -->
                 <template #item.status="{ item }">
-                  <VChip
-                    :color="item.grade ? 'success' : 'warning'"
-                    size="small"
-                    label
-                  >
+                  <VChip :color="item.grade ? 'success' : 'warning'" size="small" label>
                     {{ item.grade ? "Graded" : "Not Graded" }}
                   </VChip>
                 </template>
@@ -175,10 +143,7 @@
                 <!-- Total Score -->
                 <template #item.totalScore="{ item }">
                   <template v-if="item.grade">
-                    <div
-                      class="font-weight-bold"
-                      :class="getScoreColorClass(item.grade.totalScore)"
-                    >
+                    <div class="font-weight-bold" :class="getScoreColorClass(item.grade.totalScore)">
                       {{ item.grade.totalScore?.toFixed(1) || "-" }}
                     </div>
                   </template>
@@ -219,9 +184,7 @@
   <VDialog v-model="gradeFormDialog" max-width="700px" persistent>
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
-        <span>{{
-          selectedStudent ? `Grade: ${selectedStudent.name}` : "Batch Grading"
-        }}</span>
+        <span>{{ selectedStudent ? `Grade: ${selectedStudent.name}` : "Batch Grading" }}</span>
         <VBtn variant="text" icon="tabler-x" @click="closeGradeForm" />
       </VCardTitle>
 
@@ -267,22 +230,10 @@
           <!-- Grade Components -->
           <h5 class="text-h6 mb-3">Grade Components</h5>
 
-          <div
-            v-if="gradeComponentDefinitions.length === 0"
-            class="text-center pa-4 bg-surface-100 rounded mb-4"
-          >
-            <VIcon
-              icon="tabler-scale-outline"
-              size="32"
-              class="mb-2"
-              color="warning"
-            />
-            <p class="text-medium-emphasis">
-              No grade components defined for this exam type
-            </p>
-            <p class="text-caption">
-              Please define components or enter a total score directly
-            </p>
+          <div v-if="gradeComponentDefinitions.length === 0" class="text-center pa-4 bg-surface-100 rounded mb-4">
+            <VIcon icon="tabler-scale-outline" size="32" class="mb-2" color="warning" />
+            <p class="text-medium-emphasis">No grade components defined for this exam type</p>
+            <p class="text-caption">Please define components or enter a total score directly</p>
           </div>
 
           <div v-else class="mb-4 pb-2">
@@ -293,9 +244,7 @@
             >
               <div style="flex: 2">
                 <strong>{{ component.name }}</strong>
-                <div class="text-caption">
-                  Weight: {{ (component.weight * 100).toFixed(0) }}%
-                </div>
+                <div class="text-caption">Weight: {{ (component.weight * 100).toFixed(0) }}%</div>
               </div>
 
               <VTextField
@@ -307,9 +256,7 @@
                 style="flex: 1"
                 :rules="[
                   (v) => v !== null || 'Score is required',
-                  (v) =>
-                    (v >= 0 && v <= component.maxScore) ||
-                    `Score must be between 0 and ${component.maxScore}`,
+                  (v) => (v >= 0 && v <= component.maxScore) || `Score must be between 0 and ${component.maxScore}`,
                 ]"
                 :min="0"
                 :max="component.maxScore"
@@ -325,20 +272,11 @@
             <!-- Manual Score Override -->
             <div class="d-flex align-center justify-space-between">
               <div class="text-subtitle-1 font-weight-bold">Total Score:</div>
-              <div
-                v-if="gradeComponentDefinitions.length > 0"
-                class="d-flex align-center"
-              >
+              <div v-if="gradeComponentDefinitions.length > 0" class="d-flex align-center">
                 <div class="me-3 text-h6 font-weight-bold">
                   {{ calculatedTotalScore.toFixed(1) }}
                 </div>
-                <VSwitch
-                  v-model="overrideTotal"
-                  color="warning"
-                  label="Override"
-                  density="comfortable"
-                  hide-details
-                />
+                <VSwitch v-model="overrideTotal" color="warning" label="Override" density="comfortable" hide-details />
               </div>
             </div>
 
@@ -351,8 +289,7 @@
               variant="outlined"
               :rules="[
                 (v) => v !== null || 'Total score is required',
-                (v) =>
-                  (v >= 0 && v <= 100) || 'Score must be between 0 and 100',
+                (v) => (v >= 0 && v <= 100) || 'Score must be between 0 and 100',
               ]"
               :min="0"
               :max="100"
@@ -366,9 +303,7 @@
 
       <VCardActions class="pa-4">
         <VSpacer />
-        <VBtn variant="text" color="secondary" @click="closeGradeForm">
-          Cancel
-        </VBtn>
+        <VBtn variant="text" color="secondary" @click="closeGradeForm"> Cancel </VBtn>
         <VBtn color="primary" :loading="savingGrade" @click="saveGrade">
           {{ editingGrade ? "Update" : "Save" }} Grade
         </VBtn>
@@ -381,11 +316,7 @@
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
         <span>Grade Details</span>
-        <VBtn
-          variant="text"
-          icon="tabler-x"
-          @click="gradeDetailsDialog = false"
-        />
+        <VBtn variant="text" icon="tabler-x" @click="gradeDetailsDialog = false" />
       </VCardTitle>
 
       <VDivider />
@@ -406,32 +337,21 @@
 
           <div class="d-flex justify-space-between align-center mb-3">
             <div class="text-subtitle-1">Exam Type:</div>
-            <VChip color="primary" size="small">{{
-              selectedGrade.examType
-            }}</VChip>
+            <VChip color="primary" size="small">{{ selectedGrade.examType }}</VChip>
           </div>
 
           <VDivider class="my-3" />
 
           <!-- Component Scores -->
-          <div
-            v-if="
-              selectedGrade.components && selectedGrade.components.length > 0
-            "
-          >
+          <div v-if="selectedGrade.components && selectedGrade.components.length > 0">
             <h6 class="text-subtitle-2 mb-2">Component Scores:</h6>
             <VList density="compact" border class="mb-4 rounded">
-              <VListItem
-                v-for="component in selectedGrade.components"
-                :key="component.id"
-              >
+              <VListItem v-for="component in selectedGrade.components" :key="component.id">
                 <div class="d-flex justify-space-between align-center w-100">
                   <div>{{ getComponentName(component.componentId) }}</div>
                   <div class="d-flex align-center">
                     <strong>{{ component.score.toFixed(1) }}</strong>
-                    <div class="text-caption ms-1">
-                      / {{ getComponentMaxScore(component.componentId) }}
-                    </div>
+                    <div class="text-caption ms-1">/ {{ getComponentMaxScore(component.componentId) }}</div>
                   </div>
                 </div>
               </VListItem>
@@ -439,25 +359,16 @@
           </div>
 
           <!-- Total Score -->
-          <div
-            class="d-flex justify-space-between align-center pa-3 bg-primary-lighten-5 rounded"
-          >
+          <div class="d-flex justify-space-between align-center pa-3 bg-primary-lighten-5 rounded">
             <div class="text-subtitle-1 font-weight-bold">Total Score:</div>
-            <div
-              class="text-h6 font-weight-bold"
-              :class="getScoreColorClass(selectedGrade.totalScore)"
-            >
+            <div class="text-h6 font-weight-bold" :class="getScoreColorClass(selectedGrade.totalScore)">
               {{ selectedGrade.totalScore.toFixed(1) }}
             </div>
           </div>
 
           <div class="d-flex justify-space-between mt-4">
-            <div class="text-caption">
-              Created: {{ formatDate(selectedGrade.createdAt) }}
-            </div>
-            <div class="text-caption">
-              Last Updated: {{ formatDate(selectedGrade.updatedAt) }}
-            </div>
+            <div class="text-caption">Created: {{ formatDate(selectedGrade.createdAt) }}</div>
+            <div class="text-caption">Last Updated: {{ formatDate(selectedGrade.updatedAt) }}</div>
           </div>
         </div>
       </VCardText>
@@ -466,13 +377,7 @@
 
       <VCardActions class="pa-4">
         <VSpacer />
-        <VBtn
-          color="primary"
-          variant="tonal"
-          @click="editGrade(selectedStudent)"
-        >
-          Edit Grade
-        </VBtn>
+        <VBtn color="primary" variant="tonal" @click="editGrade(selectedStudent)"> Edit Grade </VBtn>
       </VCardActions>
     </VCard>
   </VDialog>
@@ -508,6 +413,10 @@ const dialogModel = computed({
   set: (value) => emit("update:open", value),
 });
 
+const closeDialog = () => {
+  dialogModel.value = false;
+};
+
 // UI state
 const loading = ref(false);
 const exportLoading = ref(false);
@@ -527,15 +436,7 @@ const componentsModalOpen = ref(false);
 // Data collections
 const courseStudents = ref([]);
 const grades = ref([]);
-const examTypes = ref([
-  "DAILY",
-  "MID_TERM",
-  "FINAL_TERM",
-  "ASSIGNMENT",
-  "PROJECT",
-  "QUIZ",
-  "LAB",
-]);
+const examTypes = ref(["DAILY", "MID_TERM", "FINAL_TERM", "ASSIGNMENT", "PROJECT", "QUIZ", "LAB"]);
 const gradeComponentDefinitions = ref([]);
 
 // Form for creating/editing grades
@@ -572,25 +473,18 @@ const gradeHeaders = computed(() => {
 // Computed values for summary stats
 const gradedStudentCount = computed(() => {
   return courseStudents.value.filter((student) =>
-    grades.value.some(
-      (grade) =>
-        grade.userId === student.id && grade.examType === selectedExamType.value
-    )
+    grades.value.some((grade) => grade.userId === student.id && grade.examType === selectedExamType.value)
   ).length;
 });
 
 const averageGrade = computed(() => {
   const studentGrades = grades.value.filter(
-    (grade) =>
-      grade.examType === selectedExamType.value && grade.totalScore !== null
+    (grade) => grade.examType === selectedExamType.value && grade.totalScore !== null
   );
 
   if (studentGrades.length === 0) return 0;
 
-  const total = studentGrades.reduce(
-    (sum, grade) => sum + (grade.totalScore || 0),
-    0
-  );
+  const total = studentGrades.reduce((sum, grade) => sum + (grade.totalScore || 0), 0);
   return total / studentGrades.length;
 });
 
@@ -598,8 +492,7 @@ const averageGrade = computed(() => {
 const filteredStudents = computed(() => {
   return courseStudents.value.map((student) => {
     const studentGrade = grades.value.find(
-      (grade) =>
-        grade.userId === student.id && grade.examType === selectedExamType.value
+      (grade) => grade.userId === student.id && grade.examType === selectedExamType.value
     );
 
     return {
@@ -625,8 +518,7 @@ const calculatedTotalScore = computed(() => {
     const score = gradeForm.value.components[component.id];
     if (score !== undefined && score !== null) {
       // Calculate weighted score based on component weight
-      const weightedScore =
-        (score / component.maxScore) * component.weight * 100;
+      const weightedScore = (score / component.maxScore) * component.weight * 100;
       total += weightedScore;
       weightTotal += component.weight;
     }
@@ -637,13 +529,7 @@ const calculatedTotalScore = computed(() => {
 });
 
 // API operations with unified error handling
-const apiOperation = async (
-  method,
-  url,
-  data = null,
-  params = null,
-  successMsg = ""
-) => {
+const apiOperation = async (method, url, data = null, params = null, successMsg = "") => {
   try {
     const config = { method, url };
     if (data) config.data = data;
@@ -654,9 +540,7 @@ const apiOperation = async (
     if (successMsg) toast.success(successMsg);
     return result.data;
   } catch (error) {
-    const errorMsg =
-      error.response?.data?.message ||
-      `Failed to ${method.toLowerCase()} resource`;
+    const errorMsg = error.response?.data?.message || `Failed to ${method.toLowerCase()} resource`;
     toast.error(errorMsg);
     throw error;
   }
@@ -668,12 +552,7 @@ const loadData = async () => {
 
   try {
     // Fetch course with its students
-    const result = await apiOperation(
-      "GET",
-      `/course/${props.courseId}`,
-      null,
-      { include: "students" }
-    );
+    const result = await apiOperation("GET", `/course/${props.courseId}`, null, { include: "students" });
     courseStudents.value = result.data?.students || [];
 
     // Set default exam type if not already set
@@ -783,9 +662,7 @@ const loadGradeComponentDefinitions = async () => {
       }
 
       // For demo purposes, sort by index if available
-      gradeComponentDefinitions.value.sort(
-        (a, b) => (a.index || 0) - (b.index || 0)
-      );
+      gradeComponentDefinitions.value.sort((a, b) => (a.index || 0) - (b.index || 0));
     }
   } catch (error) {
     console.error("Error loading grade component definitions:", error);
@@ -864,8 +741,7 @@ const openCreateGradeForm = () => {
 const editGrade = (student) => {
   selectedStudent.value = student;
   const existingGrade = grades.value.find(
-    (grade) =>
-      grade.userId === student.id && grade.examType === selectedExamType.value
+    (grade) => grade.userId === student.id && grade.examType === selectedExamType.value
   );
 
   resetGradeForm();
@@ -913,31 +789,24 @@ const saveGrade = async () => {
     // Prepare component data to match the GradeComponent Prisma schema
     const components = [];
 
-    Object.entries(gradeForm.value.components).forEach(
-      ([componentId, score], idx) => {
-        if (score !== null && score !== undefined) {
-          // Find the component definition to get the index
-          const componentDef = gradeComponentDefinitions.value.find(
-            (c) => c.id === componentId
-          );
+    Object.entries(gradeForm.value.components).forEach(([componentId, score], idx) => {
+      if (score !== null && score !== undefined) {
+        // Find the component definition to get the index
+        const componentDef = gradeComponentDefinitions.value.find((c) => c.id === componentId);
 
-          components.push({
-            score: parseFloat(score),
-            index: componentDef?.index || idx + 1,
-          });
-        }
+        components.push({
+          score: parseFloat(score),
+          index: componentDef?.index || idx + 1,
+        });
       }
-    );
+    });
 
     // Prepare grade data
     const gradeData = {
       examType: gradeForm.value.examType,
       components,
       // If override is set or no components, use manual total score
-      totalScore:
-        overrideTotal.value || !components.length
-          ? gradeForm.value.totalScore
-          : calculatedTotalScore.value,
+      totalScore: overrideTotal.value || !components.length ? gradeForm.value.totalScore : calculatedTotalScore.value,
     };
 
     if (selectedStudent.value) {
@@ -985,8 +854,7 @@ const saveGrade = async () => {
 const viewGradeDetails = (student) => {
   selectedStudent.value = student;
   selectedGrade.value = grades.value.find(
-    (grade) =>
-      grade.userId === student.id && grade.examType === selectedExamType.value
+    (grade) => grade.userId === student.id && grade.examType === selectedExamType.value
   );
 
   if (selectedGrade.value) {
@@ -1021,16 +889,12 @@ const getScoreColorClass = (score) => {
 };
 
 const getComponentName = (componentId) => {
-  const component = gradeComponentDefinitions.value.find(
-    (comp) => comp.id === componentId
-  );
+  const component = gradeComponentDefinitions.value.find((comp) => comp.id === componentId);
   return component ? component.name : "Unknown Component";
 };
 
 const getComponentMaxScore = (componentId) => {
-  const component = gradeComponentDefinitions.value.find(
-    (comp) => comp.id === componentId
-  );
+  const component = gradeComponentDefinitions.value.find((comp) => comp.id === componentId);
   return component ? component.maxScore : 0;
 };
 
