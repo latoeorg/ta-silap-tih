@@ -293,21 +293,9 @@
       </VCard>
     </VDialog>
 
-    <!-- Assessment Weights Modal -->
-    <AssessmentWeightsModal
-      v-model:open="assessmentWeightsModal"
-      :subject-id="selectedWeightsSubjectId"
-      :subject-name="selectedWeightsSubjectName"
-      @refresh="handleWeightsUpdated"
-    />
 
-    <!-- Course Management Modal -->
-    <CourseManagementModal
-      v-model:open="courseManagementModal"
-      :subject-id="selectedCourseSubjectId"
-      :subject-name="selectedCourseSubjectName"
-      @refresh="handleCoursesUpdated"
-    />
+
+  
   </div>
 </template>
 
@@ -317,8 +305,6 @@ import { SwalDelete } from "@/utils/sweetalert"
 import { useVuex } from "@/utils/vuex"
 import { onMounted, ref } from "vue"
 import { toast } from "vue-sonner"
-import AssessmentWeightsModal from "./assessment-weights-modal.vue"
-import CourseManagementModal from "./course-management-modal.vue"
 import SubjectFormDrawer from "./subject-form-drawer.vue"
 
 const headers = ref([
