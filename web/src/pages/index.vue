@@ -18,14 +18,20 @@
               <th rowspan="2" class="header-main">Student Name</th>
               <th rowspan="2" class="header-main">Course Name</th>
               <th colspan="3" class="header-group assignment">
-                Assignment ({{ getWeightPercent('ASSIGNMENT') }})
+                Assignment ({{ getWeightPercent("ASSIGNMENT") }})
               </th>
-              <th colspan="2" class="header-group quiz">Quiz ({{ getWeightPercent('QUIZ') }})</th>
-              <th colspan="2" class="header-group daily">Daily Exam ({{ getWeightPercent('DAILY') }})</th>
+              <th colspan="2" class="header-group quiz">
+                Quiz ({{ getWeightPercent("QUIZ") }})
+              </th>
+              <th colspan="2" class="header-group daily">
+                Daily Exam ({{ getWeightPercent("DAILY") }})
+              </th>
               <th colspan="3" class="header-group midterm">
-                Mid Term Exam ({{ getWeightPercent('MID_TERM') }})
+                Mid Term Exam ({{ getWeightPercent("MID_TERM") }})
               </th>
-              <th colspan="2" class="header-group final">Final Exam ({{ getWeightPercent('FINAL') }})</th>
+              <th colspan="2" class="header-group final">
+                Final Exam ({{ getWeightPercent("FINAL") }})
+              </th>
               <th rowspan="2" class="header-main total">Total Score</th>
               <th rowspan="2" class="header-main grade">Grade</th>
               <th rowspan="2" class="header-main status">Status</th>
@@ -314,20 +320,26 @@ const overallAverage = computed(() => {
 });
 
 const passedCourses = computed(() => {
-  return processedGrades.value.filter((grade) => grade.status === "PASS").length;
+  return processedGrades.value.filter((grade) => grade.status === "PASS")
+    .length;
 });
 
 const failedCourses = computed(() => {
-  return processedGrades.value.filter((grade) => grade.status === "FAIL").length;
+  return processedGrades.value.filter((grade) => grade.status === "FAIL")
+    .length;
 });
 
 const uniqueStudentsCount = computed(() => {
-  const uniqueStudents = new Set(processedGrades.value.map(grade => grade.studentId));
+  const uniqueStudents = new Set(
+    processedGrades.value.map((grade) => grade.studentId)
+  );
   return uniqueStudents.size;
 });
 
 const uniqueCoursesCount = computed(() => {
-  const uniqueCourses = new Set(processedGrades.value.map(grade => grade.courseId));
+  const uniqueCourses = new Set(
+    processedGrades.value.map((grade) => grade.courseId)
+  );
   return uniqueCourses.size;
 });
 
@@ -339,9 +351,9 @@ const calculateTotalScore = (gradeData) => {
     QUIZ: 0.2,
     DAILY: 0.2,
     MID_TERM: 0.3,
-    FINAL: 0.1
+    FINAL: 0.1,
   };
-  
+
   let totalScore = 0;
   let hasScores = false;
 
@@ -359,7 +371,9 @@ const calculateTotalScore = (gradeData) => {
   }
 
   // Quiz average (weight from API or default 20%)
-  const quizScores = [gradeData.quiz.q1, gradeData.quiz.q2].filter((s) => s !== null);
+  const quizScores = [gradeData.quiz.q1, gradeData.quiz.q2].filter(
+    (s) => s !== null
+  );
   if (quizScores.length > 0) {
     const quizAvg = quizScores.reduce((a, b) => a + b, 0) / quizScores.length;
     totalScore += quizAvg * weights.QUIZ;
@@ -437,19 +451,39 @@ const getStatusClass = (status) => {
   return status === "PASS" ? "status-pass" : "status-fail";
 };
 
+// Returns the weight percentage for a given exam type (e.g., "ASSIGNMENT")
+const getWeightPercent = (examType) => {
+  // Use the first subject's weights as a reference (or fallback to default)
+  let weights = null;
+  if (processedGrades.value.length > 0) {
+    const subjectId = processedGrades.value[0].subjectId;
+    weights = subjectWeights.value[subjectId];
+  }
+  // Default weights if not found
+  const defaultWeights = {
+    ASSIGNMENT: 0.2,
+    QUIZ: 0.2,
+    DAILY: 0.2,
+    MID_TERM: 0.3,
+    FINAL: 0.1,
+  };
+  const weight = weights?.[examType] ?? defaultWeights[examType] ?? 0;
+  return `${Math.round(weight * 100)}%`;
+};
+
 // Process weights from API data
 const processWeights = (apiData) => {
   const weights = {};
-  
+
   if (apiData && apiData.id && apiData.weights) {
     // Create weight object for this subject
     const weightObj = {};
-    apiData.weights.forEach(w => {
+    apiData.weights.forEach((w) => {
       weightObj[w.examType] = w.weight; // Store weight as a decimal
     });
     weights[apiData.id] = weightObj;
   }
-  
+
   return weights;
 };
 
@@ -461,7 +495,7 @@ const fetchGrades = async () => {
 
   try {
     let gradeResponse;
-    
+
     if (user.value.role === "STUDENT") {
       gradeResponse = await axiosInstance.get(
         `/grade/student/${user.value.id}/teacher/all`
@@ -471,40 +505,43 @@ const fetchGrades = async () => {
         `/grade/student/all/teacher/${user.value.id}`
       );
     } else if (user.value.role === "ADMIN") {
-      gradeResponse = await axiosInstance.get(
-        `/grade/student/all/teacher/all`
-      );
+      gradeResponse = await axiosInstance.get(`/grade/student/all/teacher/all`);
     }
 
     if (gradeResponse?.data?.success) {
       grades.value = gradeResponse.data.data;
-      
+
       // Extract subjects from the API response
       const subjects = extractSubjects(gradeResponse.data.data);
-      
+
       // Fetch subject weights for each subject
       const weightsData = {};
-      
+
       for (const subjectId of subjects) {
         try {
-          const subjectResponse = await axiosInstance.get(`/subject/${subjectId}`);
+          const subjectResponse = await axiosInstance.get(
+            `/subject/${subjectId}`
+          );
           if (subjectResponse?.data?.success) {
             const subjectData = subjectResponse.data.data;
             // Process weights for this subject
             const subjectWeightObj = {};
-            
+
             if (subjectData.weights) {
-              subjectData.weights.forEach(w => {
+              subjectData.weights.forEach((w) => {
                 subjectWeightObj[w.examType] = w.weight;
               });
               weightsData[subjectId] = subjectWeightObj;
             }
           }
         } catch (err) {
-          console.error(`Error fetching weights for subject ${subjectId}:`, err);
+          console.error(
+            `Error fetching weights for subject ${subjectId}:`,
+            err
+          );
         }
       }
-      
+
       subjectWeights.value = weightsData;
     } else {
       error.value = gradeResponse?.data?.message || "Failed to fetch grades";
@@ -521,14 +558,14 @@ const fetchGrades = async () => {
 // Extract unique subject IDs from grades data
 const extractSubjects = (gradesData) => {
   if (!gradesData || !Array.isArray(gradesData)) return [];
-  
+
   const subjectIds = new Set();
-  gradesData.forEach(grade => {
+  gradesData.forEach((grade) => {
     if (grade.course?.subjectId) {
       subjectIds.add(grade.course.subjectId);
     }
   });
-  
+
   return Array.from(subjectIds);
 };
 
