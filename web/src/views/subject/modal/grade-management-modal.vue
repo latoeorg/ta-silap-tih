@@ -366,8 +366,9 @@
 
       <VCardText>
         <VForm ref="gradeFormRef">
-          <!-- Exam Type Selection (only for new grades) -->
+          <!-- Exam Type Selection (only when editing single student) -->
           <VSelect
+            v-if="selectedStudent && !editingGrade"
             v-model="selectedExamType"
             :items="examTypes"
             density="comfortable"
@@ -420,7 +421,7 @@
           <h5 class="text-h6 mb-3">Komponen Nilai</h5>
 
           <div
-            v-if="gradeComponentDefinitions.length === 0"
+            v-if="groupedComponents.length === 0"
             class="text-center pa-4 bg-surface-100 rounded mb-4"
           >
             <VIcon
@@ -430,7 +431,7 @@
               color="warning"
             />
             <p class="text-medium-emphasis">
-              Tidak ada komponen nilai yang ditentukan untuk jenis ujian ini
+              Tidak ada komponen nilai yang ditentukan
             </p>
             <p class="text-caption">
               Silakan tentukan komponen atau masukkan nilai total langsung
@@ -438,33 +439,50 @@
           </div>
 
           <div v-else class="mb-4 pb-2">
-            <div
-              v-for="component in gradeComponentDefinitions"
-              :key="component.id"
-              class="d-flex gap-3 align-center mb-3"
-            >
-              <div style="flex: 2">
-                <div>Bobot: {{ (component.weight * 100).toFixed(0) }}%</div>
-              </div>
+            <VExpansionPanels multiple>
+              <VExpansionPanel
+                v-for="group in groupedComponents"
+                :key="group.examType"
+              >
+                <VExpansionPanelTitle>
+                  <div class="d-flex align-center justify-space-between">
+                    <span class="font-weight-medium">{{ formatExamType(group.examType) }}</span>
+                    <VChip color="primary" size="small" class="ms-2">
+                      Bobot Total: {{ (group.totalWeight * 100).toFixed(0) }}%
+                    </VChip>
+                  </div>
+                </VExpansionPanelTitle>
+                <VExpansionPanelText>
+                  <div
+                    v-for="component in group.components"
+                    :key="component.id"
+                    class="d-flex gap-3 align-center mb-3"
+                  >
+                    <div style="flex: 2">
+                      <div>Bobot: {{ (component.weight * 100).toFixed(0) }}%</div>
+                    </div>
 
-              <VTextField
-                v-model.number="gradeForm.components[component.id]"
-                :label="`Nilai (maks: ${component.maxScore})`"
-                type="number"
-                density="comfortable"
-                variant="outlined"
-                style="flex: 1"
-                :rules="[
-                  (v) => v !== null || 'Nilai wajib diisi',
-                  (v) =>
-                    (v >= 0 && v <= component.maxScore) ||
-                    `Nilai harus antara 0 dan ${component.maxScore}`,
-                ]"
-                :min="0"
-                :max="component.maxScore"
-                hide-spin-buttons
-              />
-            </div>
+                    <VTextField
+                      v-model.number="gradeForm.components[component.id]"
+                      :label="`Nilai (maks: ${component.maxScore})`"
+                      type="number"
+                      density="comfortable"
+                      variant="outlined"
+                      style="flex: 1"
+                      :rules="[
+                        (v) => v !== null || 'Nilai wajib diisi',
+                        (v) =>
+                          (v >= 0 && v <= component.maxScore) ||
+                          `Nilai harus antara 0 dan ${component.maxScore}`,
+                      ]"
+                      :min="0"
+                      :max="component.maxScore"
+                      hide-spin-buttons
+                    />
+                  </div>
+                </VExpansionPanelText>
+              </VExpansionPanel>
+            </VExpansionPanels>
           </div>
 
           <!-- Total Score (manual override or shown as calculated) -->
@@ -863,6 +881,34 @@ const gradeDistribution = computed(() => {
 });
 
 // Filtered students with grades
+const formatExamType = (type) => {
+  const translations = {
+    'DAILY': 'Ujian Harian',
+    'MID_TERM': 'Ujian Tengah Semester',
+    'FINAL': 'Ujian Akhir Semester',
+    'QUIZ': 'Kuis',
+    'ASSIGNMENT': 'Tugas'
+  };
+  return translations[type] || type;
+};
+
+// Group components by exam type
+const groupedComponents = computed(() => {
+  const groups = {};
+  gradeComponentDefinitions.value.forEach(component => {
+    if (!groups[component.examType]) {
+      groups[component.examType] = {
+        examType: component.examType,
+        components: [],
+        totalWeight: 0
+      };
+    }
+    groups[component.examType].components.push(component);
+    groups[component.examType].totalWeight += component.weight;
+  });
+  return Object.values(groups);
+});
+
 const filteredStudents = computed(() => {
   let students = courseStudents.value.map((student) => {
     const studentGrade = grades.value.find(
@@ -901,7 +947,12 @@ const calculatedTotalScore = computed(() => {
   let total = 0;
   let weightTotal = 0;
 
-  for (const component of gradeComponentDefinitions.value) {
+  // If editing a single student, only consider components for the selected exam type
+  const componentsToConsider = selectedStudent.value && !editingGrade.value
+    ? gradeComponentDefinitions.value.filter(c => c.examType === selectedExamType.value)
+    : gradeComponentDefinitions.value;
+
+  for (const component of componentsToConsider) {
     const score = gradeForm.value.components[component.id];
     if (score !== undefined && score !== null) {
       // Calculate weighted score based on component weight
@@ -1010,57 +1061,44 @@ const loadGradeComponentDefinitions = async () => {
       return;
     }
 
-    // Fetch assessment weights from API based on subject ID and exam type
+    // Fetch assessment weights from API based on subject ID for all exam types
     const result = await apiOperation("GET", "/assessment-weight", null, {
-      subjectId: subjectId,
-      examType: selectedExamType.value,
+      subjectId: subjectId
     });
 
     if (result.data && result.data.length > 0) {
-      // Find the assessment weight for the current exam type
-      const assessmentWeight = result.data.find(
-        (w) => w.examType === selectedExamType.value
-      );
+      const components = [];
 
-      if (assessmentWeight) {
-        // Create component definitions based on the quota from assessment weight
+      // Process all assessment weights
+      result.data.forEach((assessmentWeight) => {
         const quota = assessmentWeight.quota || 1;
         const componentWeight = assessmentWeight.weight || 1;
+        const examType = assessmentWeight.examType;
 
-        // Generate component definitions based on quota
-        gradeComponentDefinitions.value = Array.from(
-          { length: quota },
-          (_, i) => ({
-            id: `${selectedExamType.value.toLowerCase()}_${i + 1}`,
+        // Generate component definitions based on quota for each exam type
+        for (let i = 0; i < quota; i++) {
+          components.push({
+            id: `${examType.toLowerCase()}_${i + 1}`,
             name: `Komponen ${i + 1}`,
+            examType: examType,
             weight: componentWeight / quota,
             maxScore: 100,
             index: i + 1,
-          })
-        );
-      } else {
-        // Fallback if no matching assessment weight found
-        gradeComponentDefinitions.value = [
-          {
-            id: `${selectedExamType.value.toLowerCase()}_1`,
-            name: "Komponen 1",
-            weight: 1,
-            maxScore: 100,
-            index: 1,
-          },
-        ];
-      }
+          });
+        }
+      });
+
+      gradeComponentDefinitions.value = components;
     } else {
-      // Fallback to a single component if no assessment weights
-      gradeComponentDefinitions.value = [
-        {
-          id: `${selectedExamType.value.toLowerCase()}_1`,
-          name: "Komponen 1",
-          weight: 1,
-          maxScore: 100,
-          index: 1,
-        },
-      ];
+      // Fallback to a single component for each exam type
+      gradeComponentDefinitions.value = examTypes.value.map((examType) => ({
+        id: `${examType.toLowerCase()}_1`,
+        name: "Komponen 1",
+        examType: examType,
+        weight: 1,
+        maxScore: 100,
+        index: 1,
+      }));
     }
   } catch (error) {
     console.error("Error loading assessment weights:", error);
