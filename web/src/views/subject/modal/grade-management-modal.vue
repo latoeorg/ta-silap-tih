@@ -27,9 +27,8 @@
                 label="Jenis Ujian"
                 variant="outlined"
                 style="min-width: 200px"
-                @update:model-value="loadGrades"
+                @update:model-value="handleExamTypeChange"
               />
-
             </div>
 
             <div class="d-flex gap-2">
@@ -103,27 +102,42 @@
 
           <!-- Grades Distribution Chart -->
           <VCard class="mb-6" border>
-            <VCardTitle class="d-flex justify-space-between align-center pt-4 px-4 pb-0">
+            <VCardTitle
+              class="d-flex justify-space-between align-center pt-4 px-4 pb-0"
+            >
               <span class="text-subtitle-1">Distribusi Nilai</span>
               <div class="d-flex align-center">
-                <span class="text-caption text-medium-emphasis me-2">Siswa: {{ gradedStudentCount }}</span>
-                <VChip size="small" color="primary" label>{{ selectedExamType }}</VChip>
+                <span class="text-caption text-medium-emphasis me-2"
+                  >Siswa: {{ gradedStudentCount }}</span
+                >
+                <VChip size="small" color="primary" label>{{
+                  selectedExamType
+                }}</VChip>
               </div>
             </VCardTitle>
             <VCardText class="pa-4">
               <div class="grade-distribution">
                 <div class="grade-bars">
-                  <div 
-                    v-for="(count, range) in gradeDistribution" 
+                  <div
+                    v-for="(count, range) in gradeDistribution"
                     :key="range"
                     class="grade-bar-container"
                   >
                     <div class="grade-bar-label">{{ range }}</div>
                     <div class="grade-bar-wrapper">
-                      <div 
-                        class="grade-bar" 
+                      <div
+                        class="grade-bar"
                         :class="getGradeRangeClass(range)"
-                        :style="{ width: `${(count / Math.max(...Object.values(gradeDistribution), 1)) * 100}%` }"
+                        :style="{
+                          width: `${
+                            (count /
+                              Math.max(
+                                ...Object.values(gradeDistribution),
+                                1
+                              )) *
+                            100
+                          }%`,
+                        }"
                       ></div>
                     </div>
                     <div class="grade-bar-count">{{ count }}</div>
@@ -146,7 +160,7 @@
                   variant="outlined"
                   class="max-width-320"
                 />
-                
+
                 <div class="d-flex align-center gap-2">
                   <VBtn
                     size="small"
@@ -155,9 +169,9 @@
                     prepend-icon="tabler-filter"
                     @click="showFilters = !showFilters"
                   >
-                    {{ showFilters ? 'Sembunyikan' : 'Tampilkan' }} Filter
+                    {{ showFilters ? "Sembunyikan" : "Tampilkan" }} Filter
                   </VBtn>
-                  
+
                   <VSelect
                     v-model="itemsPerPage"
                     :items="[5, 10, 15, 25, 50]"
@@ -169,9 +183,12 @@
                   />
                 </div>
               </div>
-              
+
               <!-- Filters section -->
-              <div v-if="showFilters" class="filter-section pa-3 mb-4 bg-surface-100 rounded">
+              <div
+                v-if="showFilters"
+                class="filter-section pa-3 mb-4 bg-surface-100 rounded"
+              >
                 <div class="d-flex flex-wrap gap-4">
                   <VSelect
                     v-model="gradeFilter"
@@ -182,7 +199,7 @@
                     hide-details
                     class="max-width-200"
                   />
-                  
+
                   <VRangeSlider
                     v-model="scoreRange"
                     :max="100"
@@ -193,9 +210,9 @@
                     color="primary"
                     class="max-width-300 mt-2"
                   />
-                  
+
                   <VSpacer />
-                  
+
                   <VBtn
                     color="primary"
                     variant="tonal"
@@ -247,10 +264,16 @@
                     {{ item.grade ? "Sudah Dinilai" : "Belum Dinilai" }}
                   </VChip>
                 </template>
-                
+
                 <!-- Components -->
                 <template #item.components="{ item }">
-                  <div v-if="item.grade && item.grade.components && item.grade.components.length > 0">
+                  <div
+                    v-if="
+                      item.grade &&
+                      item.grade.components &&
+                      item.grade.components.length > 0
+                    "
+                  >
                     <VTooltip location="top">
                       <template #activator="{ props }">
                         <div class="d-flex gap-1" v-bind="props">
@@ -266,7 +289,6 @@
                           </VChip>
                         </div>
                       </template>
-                     
                     </VTooltip>
                   </div>
                   <span v-else>-</span>
@@ -292,7 +314,7 @@
                       <VIcon icon="tabler-pencil" />
                       <VTooltip activator="parent">Beri Nilai</VTooltip>
                     </IconBtn>
-                    
+
                     <IconBtn v-if="item.grade" @click="viewGradeDetails(item)">
                       <VIcon icon="tabler-eye" />
                       <VTooltip activator="parent">Lihat Detail</VTooltip>
@@ -306,22 +328,22 @@
           <VAlert v-else type="info" class="mt-4" variant="tonal">
             <div class="d-flex align-center">
               <VIcon icon="tabler-users-off" class="me-2" />
-              <span>Tidak ada siswa yang terdaftar dalam mata pelajaran ini.</span>
+              <span
+                >Tidak ada siswa yang terdaftar dalam mata pelajaran ini.</span
+              >
             </div>
-            <div class="mt-2">Silakan tambahkan siswa ke mata pelajaran terlebih dahulu.</div>
+            <div class="mt-2">
+              Silakan tambahkan siswa ke mata pelajaran terlebih dahulu.
+            </div>
           </VAlert>
         </div>
       </VCardText>
 
       <VDivider />
-      
+
       <VCardActions class="pa-4">
         <VSpacer />
-        <VBtn
-          color="secondary"
-          variant="tonal"
-          @click="closeDialog"
-        >
+        <VBtn color="secondary" variant="tonal" @click="closeDialog">
           Tutup
         </VBtn>
       </VCardActions>
@@ -333,7 +355,9 @@
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
         <span>{{
-          selectedStudent ? `Nilai: ${selectedStudent.name}` : "Penilaian Massal"
+          selectedStudent
+            ? `Nilai: ${selectedStudent.name}`
+            : "Penilaian Massal"
         }}</span>
         <VBtn variant="text" icon="tabler-x" @click="closeGradeForm" />
       </VCardTitle>
@@ -344,13 +368,13 @@
         <VForm ref="gradeFormRef">
           <!-- Exam Type Selection (only for new grades) -->
           <VSelect
-            v-if="!editingGrade"
-            v-model="gradeForm.examType"
+            v-model="selectedExamType"
             :items="examTypes"
-            label="Jenis Ujian"
             density="comfortable"
+            label="Jenis Ujian"
             variant="outlined"
-            :rules="[(v) => !!v || 'Jenis ujian wajib dipilih']"
+            style="min-width: 200px"
+            @update:model-value="handleExamTypeChange"
             class="mb-4"
           />
 
@@ -380,17 +404,14 @@
           <!-- Show selected student when editing -->
           <div v-else-if="selectedStudent" class="mb-4">
             <div class="d-flex align-center py-2">
-              <VAvatar
-                size="36"
-                color="primary"
-                variant="tonal"
-                class="me-3"
-              >
+              <VAvatar size="36" color="primary" variant="tonal" class="me-3">
                 <VIcon icon="tabler-user" />
               </VAvatar>
               <div>
                 <div class="font-weight-medium">{{ selectedStudent.name }}</div>
-                <div class="text-caption text-medium-emphasis">{{ selectedStudent.email }}</div>
+                <div class="text-caption text-medium-emphasis">
+                  {{ selectedStudent.email }}
+                </div>
               </div>
             </div>
           </div>
@@ -423,9 +444,7 @@
               class="d-flex gap-3 align-center mb-3"
             >
               <div style="flex: 2">
-                <div>
-                  Bobot: {{ (component.weight * 100).toFixed(0) }}%
-                </div>
+                <div>Bobot: {{ (component.weight * 100).toFixed(0) }}%</div>
               </div>
 
               <VTextField
@@ -462,13 +481,13 @@
                 <div class="me-3 text-h6 font-weight-bold">
                   {{ calculatedTotalScore.toFixed(1) }}
                 </div>
-                <VSwitch
+                <!-- <VSwitch
                   v-model="overrideTotal"
                   color="warning"
                   label="Ganti"
                   density="comfortable"
                   hide-details
-                />
+                /> -->
               </div>
             </div>
 
@@ -477,12 +496,12 @@
               v-model.number="gradeForm.totalScore"
               label="Nilai Total"
               type="number"
+              readonly
               density="comfortable"
               variant="outlined"
               :rules="[
                 (v) => v !== null || 'Nilai total wajib diisi',
-                (v) =>
-                  (v >= 0 && v <= 100) || 'Nilai harus antara 0 dan 100',
+                (v) => (v >= 0 && v <= 100) || 'Nilai harus antara 0 dan 100',
               ]"
               :min="0"
               :max="100"
@@ -511,7 +530,11 @@
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
         <span>Detail Nilai</span>
-        <VBtn variant="text" icon="tabler-x" @click="gradeDetailsDialog = false" />
+        <VBtn
+          variant="text"
+          icon="tabler-x"
+          @click="gradeDetailsDialog = false"
+        />
       </VCardTitle>
 
       <VDivider />
@@ -520,17 +543,14 @@
         <div v-if="selectedGrade && selectedStudent" class="pa-2">
           <!-- Student info -->
           <div class="d-flex align-center mb-4">
-            <VAvatar
-              size="48"
-              color="primary"
-              variant="tonal"
-              class="me-3"
-            >
+            <VAvatar size="48" color="primary" variant="tonal" class="me-3">
               <VIcon size="24" icon="tabler-user" />
             </VAvatar>
             <div>
               <div class="text-h6">{{ selectedStudent.name }}</div>
-              <div class="text-body-2 text-medium-emphasis">{{ selectedStudent.email }}</div>
+              <div class="text-body-2 text-medium-emphasis">
+                {{ selectedStudent.email }}
+              </div>
             </div>
           </div>
 
@@ -554,15 +574,25 @@
                 <span class="text-subtitle-1">Nilai Total</span>
                 <VChip
                   size="large"
-                  :color="getScoreColorClass(selectedGrade.totalScore).replace('text-', '')"
+                  :color="
+                    getScoreColorClass(selectedGrade.totalScore).replace(
+                      'text-',
+                      ''
+                    )
+                  "
                   variant="tonal"
                 >
-                  <span class="text-h6">{{ selectedGrade.totalScore.toFixed(1) }}</span>
+                  <span class="text-h6">{{
+                    selectedGrade.totalScore.toFixed(1)
+                  }}</span>
                 </VChip>
               </div>
 
               <div class="text-caption text-medium-emphasis">
-                Terakhir diperbarui: {{ formatDate(selectedGrade.updatedAt || selectedGrade.createdAt) }}
+                Terakhir diperbarui:
+                {{
+                  formatDate(selectedGrade.updatedAt || selectedGrade.createdAt)
+                }}
               </div>
             </VCardText>
           </VCard>
@@ -570,7 +600,11 @@
           <!-- Component scores -->
           <h6 class="text-subtitle-1 mb-3">Komponen Nilai</h6>
 
-          <div v-if="selectedGrade.components && selectedGrade.components.length > 0">
+          <div
+            v-if="
+              selectedGrade.components && selectedGrade.components.length > 0
+            "
+          >
             <VTable density="compact" class="mb-4">
               <thead>
                 <tr>
@@ -591,22 +625,33 @@
                 </tr>
               </tbody>
             </VTable>
-            
+
             <!-- Score visualization -->
             <VCard variant="flat" class="mb-4 pa-3 bg-surface-100 rounded">
               <div class="grade-visualization">
                 <h6 class="text-subtitle-2 mb-3">Distribusi Nilai</h6>
                 <div class="component-bars">
-                  <div v-for="comp in selectedGrade.components" :key="comp.id" class="component-bar-container mb-2">
+                  <div
+                    v-for="comp in selectedGrade.components"
+                    :key="comp.id"
+                    class="component-bar-container mb-2"
+                  >
                     <div class="d-flex justify-space-between mb-1">
-                      <span class="text-caption">{{ comp.score }} / {{ getComponentMaxScore(comp.id) }}</span>
+                      <span class="text-caption"
+                        >{{ comp.score }} /
+                        {{ getComponentMaxScore(comp.id) }}</span
+                      >
                     </div>
                     <div class="progress-container">
-                      <div 
-                        class="progress-bar" 
-                        :style="{ 
-                          width: `${(comp.score / getComponentMaxScore(comp.id)) * 100}%`,
-                          backgroundColor: getScoreBarColor(comp.score / getComponentMaxScore(comp.id))
+                      <div
+                        class="progress-bar"
+                        :style="{
+                          width: `${
+                            (comp.score / getComponentMaxScore(comp.id)) * 100
+                          }%`,
+                          backgroundColor: getScoreBarColor(
+                            comp.score / getComponentMaxScore(comp.id)
+                          ),
                         }"
                       ></div>
                     </div>
@@ -618,7 +663,7 @@
           <VAlert v-else type="info" variant="tonal" density="compact">
             Tidak ada nilai komponen tersedia
           </VAlert>
-          
+
           <!-- Grade history (placeholder for future feature) -->
           <div class="mt-4">
             <h6 class="text-subtitle-1 mb-2">Riwayat Nilai</h6>
@@ -635,13 +680,18 @@
                     </div>
                   </template>
                 </VListItem>
-                
+
                 <!-- If we have update history, we could show it here -->
                 <VListItem
-                  v-if="selectedGrade.updatedAt && selectedGrade.updatedAt !== selectedGrade.createdAt"
+                  v-if="
+                    selectedGrade.updatedAt &&
+                    selectedGrade.updatedAt !== selectedGrade.createdAt
+                  "
                   prepend-icon="tabler-pencil"
                   title="Nilai diperbarui"
-                  :subtitle="`Nilai saat ini: ${selectedGrade.totalScore.toFixed(1)}`"
+                  :subtitle="`Nilai saat ini: ${selectedGrade.totalScore.toFixed(
+                    1
+                  )}`"
                 >
                   <template #append>
                     <div class="text-caption">
@@ -660,16 +710,13 @@
       <VCardActions class="pa-4">
         <VSpacer />
         <VBtn
-          variant="tonal" 
+          variant="tonal"
           color="secondary"
           @click="gradeDetailsDialog = false"
         >
           Tutup
         </VBtn>
-        <VBtn
-          color="primary"
-          @click="editGrade(selectedStudent)"
-        >
+        <VBtn color="primary" @click="editGrade(selectedStudent)">
           Edit Nilai
         </VBtn>
       </VCardActions>
@@ -734,13 +781,7 @@ const componentsModalOpen = ref(false);
 // Data collections
 const courseStudents = ref([]);
 const grades = ref([]);
-const examTypes = ref([
-  "DAILY",
-  "MID_TERM",
-  "FINAL",
-  "ASSIGNMENT",
-  "QUIZ",
-]);
+const examTypes = ref(["DAILY", "MID_TERM", "FINAL", "ASSIGNMENT", "QUIZ"]);
 const gradeComponentDefinitions = ref([]);
 
 // Form for creating/editing grades
@@ -759,7 +800,6 @@ const gradeHeaders = computed(() => {
     { title: "Status", key: "status", sortable: true },
     { title: "Components", key: "components", sortable: false },
   ];
-
 
   const endHeaders = [
     { title: "Total Score", key: "totalScore", sortable: true },
@@ -797,27 +837,28 @@ const averageGrade = computed(() => {
 // Grade distribution
 const gradeDistribution = computed(() => {
   const distribution = {
-    '91-100': 0,
-    '81-90': 0,
-    '71-80': 0,
-    '61-70': 0,
-    '51-60': 0,
-    '0-50': 0,
+    "91-100": 0,
+    "81-90": 0,
+    "71-80": 0,
+    "61-70": 0,
+    "51-60": 0,
+    "0-50": 0,
   };
 
-  grades.value.forEach(grade => {
-    if (grade.examType !== selectedExamType.value || grade.totalScore === null) return;
-    
+  grades.value.forEach((grade) => {
+    if (grade.examType !== selectedExamType.value || grade.totalScore === null)
+      return;
+
     const score = grade.totalScore;
-    
-    if (score > 90) distribution['91-100']++;
-    else if (score > 80) distribution['81-90']++;
-    else if (score > 70) distribution['71-80']++;
-    else if (score > 60) distribution['61-70']++;
-    else if (score > 50) distribution['51-60']++;
-    else distribution['0-50']++;
+
+    if (score > 90) distribution["91-100"]++;
+    else if (score > 80) distribution["81-90"]++;
+    else if (score > 70) distribution["71-80"]++;
+    else if (score > 60) distribution["61-70"]++;
+    else if (score > 50) distribution["51-60"]++;
+    else distribution["0-50"]++;
   });
-  
+
   return distribution;
 });
 
@@ -836,15 +877,15 @@ const filteredStudents = computed(() => {
   });
 
   // Apply filters
-  if (gradeFilter.value === 'Graded') {
-    students = students.filter(student => student.grade);
-  } else if (gradeFilter.value === 'Not Graded') {
-    students = students.filter(student => !student.grade);
+  if (gradeFilter.value === "Graded") {
+    students = students.filter((student) => student.grade);
+  } else if (gradeFilter.value === "Not Graded") {
+    students = students.filter((student) => !student.grade);
   }
 
   // Apply score range filter
-  if (gradeFilter.value === 'Graded') {
-    students = students.filter(student => {
+  if (gradeFilter.value === "Graded") {
+    students = students.filter((student) => {
       const score = student.grade?.totalScore || 0;
       return score >= scoreRange.value[0] && score <= scoreRange.value[1];
     });
@@ -910,14 +951,14 @@ const apiOperation = async (
 
 // Format date for display
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A';
+  if (!dateString) return "N/A";
   const date = new Date(dateString);
   return date.toLocaleString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 };
 
@@ -955,9 +996,14 @@ const loadData = async () => {
 const loadGradeComponentDefinitions = async () => {
   try {
     // Get the subject ID from the course
-    const courseResult = await apiOperation("GET", `/course/${props.courseId}`, null, {});
+    const courseResult = await apiOperation(
+      "GET",
+      `/course/${props.courseId}`,
+      null,
+      {}
+    );
     const subjectId = courseResult.data?.subjectId;
-    
+
     if (!subjectId) {
       console.error("No subject ID found for this course");
       gradeComponentDefinitions.value = [];
@@ -972,21 +1018,26 @@ const loadGradeComponentDefinitions = async () => {
 
     if (result.data && result.data.length > 0) {
       // Find the assessment weight for the current exam type
-      const assessmentWeight = result.data.find(w => w.examType === selectedExamType.value);
-      
+      const assessmentWeight = result.data.find(
+        (w) => w.examType === selectedExamType.value
+      );
+
       if (assessmentWeight) {
         // Create component definitions based on the quota from assessment weight
         const quota = assessmentWeight.quota || 1;
         const componentWeight = assessmentWeight.weight || 1;
-        
+
         // Generate component definitions based on quota
-        gradeComponentDefinitions.value = Array.from({ length: quota }, (_, i) => ({
-          id: `${selectedExamType.value.toLowerCase()}_${i+1}`,
-          name: `Komponen ${i+1}`,
-          weight: componentWeight / quota, 
-          maxScore: 100,
-          index: i + 1,
-        }));
+        gradeComponentDefinitions.value = Array.from(
+          { length: quota },
+          (_, i) => ({
+            id: `${selectedExamType.value.toLowerCase()}_${i + 1}`,
+            name: `Komponen ${i + 1}`,
+            weight: componentWeight / quota,
+            maxScore: 100,
+            index: i + 1,
+          })
+        );
       } else {
         // Fallback if no matching assessment weight found
         gradeComponentDefinitions.value = [
@@ -996,7 +1047,7 @@ const loadGradeComponentDefinitions = async () => {
             weight: 1,
             maxScore: 100,
             index: 1,
-          }
+          },
         ];
       }
     } else {
@@ -1008,7 +1059,7 @@ const loadGradeComponentDefinitions = async () => {
           weight: 1,
           maxScore: 100,
           index: 1,
-        }
+        },
       ];
     }
   } catch (error) {
@@ -1088,9 +1139,10 @@ const openCreateGradeForm = () => {
 const editGrade = (student) => {
   // Make sure we have the complete student object
   selectedStudent.value = student;
-  
+
   const existingGrade = grades.value.find(
-    (grade) => grade.userId === student.id && grade.examType === selectedExamType.value
+    (grade) =>
+      grade.userId === student.id && grade.examType === selectedExamType.value
   );
 
   resetGradeForm();
@@ -1108,7 +1160,9 @@ const editGrade = (student) => {
 
       // If the grade has components but calculated total is different,
       // assume it was manually overridden
-      if (Math.abs(calculatedTotalScore.value - existingGrade.totalScore) > 0.1) {
+      if (
+        Math.abs(calculatedTotalScore.value - existingGrade.totalScore) > 0.1
+      ) {
         overrideTotal.value = true;
       }
     } else {
@@ -1123,7 +1177,7 @@ const editGrade = (student) => {
 
   // Close the details dialog if it's open
   gradeDetailsDialog.value = false;
-  
+
   // Open the grade form dialog
   gradeFormDialog.value = true;
 };
@@ -1154,7 +1208,7 @@ const saveGrade = async () => {
           );
 
           components.push({
-            componentId, 
+            componentId,
             score: parseFloat(score),
             index: componentDef?.index || idx + 1,
           });
@@ -1163,9 +1217,10 @@ const saveGrade = async () => {
     );
 
     // Calculate the final score (round to 1 decimal place to avoid floating point issues)
-    const totalScore = (overrideTotal.value || components.length === 0)
-      ? parseFloat(parseFloat(gradeForm.value.totalScore).toFixed(1))
-      : parseFloat(calculatedTotalScore.value.toFixed(1));
+    const totalScore =
+      overrideTotal.value || components.length === 0
+        ? parseFloat(parseFloat(gradeForm.value.totalScore).toFixed(1))
+        : parseFloat(calculatedTotalScore.value.toFixed(1));
 
     if (editingGrade.value && selectedStudent.value) {
       // Update an existing grade
@@ -1174,7 +1229,7 @@ const saveGrade = async () => {
         `/grade/${selectedStudent.value.id}/${props.courseId}/${selectedExamType.value}`,
         {
           totalScore,
-          components
+          components,
         },
         null,
         "Grade updated successfully"
@@ -1189,7 +1244,7 @@ const saveGrade = async () => {
           courseId: props.courseId,
           examType: gradeForm.value.examType || selectedExamType.value,
           totalScore,
-          components
+          components,
         },
         null,
         "Grade created successfully"
@@ -1205,7 +1260,7 @@ const saveGrade = async () => {
             courseId: props.courseId,
             examType: gradeForm.value.examType || selectedExamType.value,
             totalScore,
-            components
+            components,
           })),
         },
         null,
@@ -1216,7 +1271,7 @@ const saveGrade = async () => {
     // Close form and reload data
     closeGradeForm();
     await loadGrades();
-    
+
     // Emit refresh event to notify parent component
     emit("refresh");
   } catch (error) {
@@ -1266,7 +1321,7 @@ const getScoreColorClass = (score) => {
 };
 
 const getGradeRangeClass = (range) => {
-  const rangeStart = parseInt(range.split('-')[0]);
+  const rangeStart = parseInt(range.split("-")[0]);
   if (rangeStart >= 80) return "grade-bar-a";
   if (rangeStart >= 70) return "grade-bar-b";
   if (rangeStart >= 60) return "grade-bar-c";
@@ -1275,12 +1330,12 @@ const getGradeRangeClass = (range) => {
 };
 
 const getScoreBarColor = (percentage) => {
-  if (percentage >= 0.9) return '#4caf50';
-  if (percentage >= 0.8) return '#8bc34a';
-  if (percentage >= 0.7) return '#cddc39';
-  if (percentage >= 0.6) return '#ffc107';
-  if (percentage >= 0.5) return '#ff9800';
-  return '#f44336';
+  if (percentage >= 0.9) return "#4caf50";
+  if (percentage >= 0.8) return "#8bc34a";
+  if (percentage >= 0.7) return "#cddc39";
+  if (percentage >= 0.6) return "#ffc107";
+  if (percentage >= 0.5) return "#ff9800";
+  return "#f44336";
 };
 
 const getComponentMaxScore = (componentId) => {
@@ -1302,8 +1357,15 @@ const calculateWeightedScore = (score, componentId) => {
     (comp) => comp.id === componentId
   );
   if (!component) return 0;
-  
+
   return (score / component.maxScore) * component.weight * 100;
+};
+
+// Handle exam type change directly from dropdown
+const handleExamTypeChange = async (newExamType) => {
+  console.log("Dropdown change event with exam type:", newExamType);
+  await loadGradeComponentDefinitions();
+  await loadGrades();
 };
 
 // Watchers
@@ -1316,10 +1378,20 @@ watch(
   }
 );
 
-watch([() => selectedExamType.value], () => {
-  if (selectedExamType.value) {
-    loadGradeComponentDefinitions();
-    loadGrades();
+// Watch for exam type changes
+watch(selectedExamType, async (newExamType) => {
+  console.log("Watch triggered with exam type:", newExamType);
+  if (newExamType) {
+    await loadGradeComponentDefinitions();
+    await loadGrades();
+  }
+});
+
+watch(gradeForm.examType, async (newExamType) => {
+  console.log("Watch triggered with exam type:", newExamType);
+  if (newExamType) {
+    await loadGradeComponentDefinitions();
+    await loadGrades();
   }
 });
 </script>
