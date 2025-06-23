@@ -54,6 +54,8 @@ declare module 'vue-router/auto/routes' {
     'subject-subject-form-drawer': RouteRecordInfo<'subject-subject-form-drawer', '/subject/subject-form-drawer', Record<never, never>, Record<never, never>>,
     'user': RouteRecordInfo<'user', '/user', Record<never, never>, Record<never, never>>,
     'user-username': RouteRecordInfo<'user-username', '/user/:username', { username: ParamValue<true> }, { username: ParamValue<false> }>,
+    'user-student': RouteRecordInfo<'user-student', '/user/student', Record<never, never>, Record<never, never>>,
+    'user-teacher': RouteRecordInfo<'user-teacher', '/user/teacher', Record<never, never>, Record<never, never>>,
     'user-user-form-drawer': RouteRecordInfo<'user-user-form-drawer', '/user/user-form-drawer', Record<never, never>, Record<never, never>>,
   }
 }

@@ -33,7 +33,6 @@ router.get(
 
 router.put(
   "/:id",
-  validate(assessmentWeightParamsSchema),
   validate(assessmentWeightUpdateSchema),
   authorize([Role.ADMIN, Role.TEACHER]),
   checkAssessmentWeightAccess,

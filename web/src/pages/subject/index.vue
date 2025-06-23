@@ -1,13 +1,13 @@
 <template>
   <div>
-    <VCard title="Subjects">
+    <VCard title="Jurusan">
       <VCardText>
         <div class="d-flex align-center justify-end flex-wrap gap-4">
           <div style="inline-size: 20rem">
             <AppTextField
               v-model="table_options.search"
               density="compact"
-              placeholder="Search subjects..."
+              placeholder="Cari jurusan..."
               append-inner-icon="tabler-search"
             />
           </div>
@@ -17,7 +17,7 @@
               start
               icon="tabler-plus"
             />
-            Add Subject
+            Tambah Jurusan
           </VBtn>
         </div>
       </VCardText>
@@ -51,7 +51,7 @@
             </div>
           </template>
 
-          <!-- Courses Count - Now clickable -->
+          <!-- Mata Pelajaran Count - Now clickable -->
           <template #item.courses="{ item }">
             <VChip 
               size="small" 
@@ -59,7 +59,7 @@
               class="cursor-pointer"
               @click="openCourseManagementModal(item.id, item.name)"
             >
-              {{ item.courses?.length || 0 }} courses
+              {{ item.courses?.length || 0 }} mata pelajaran
               <VIcon
                 size="14"
                 icon="tabler-chevron-right"
@@ -76,7 +76,7 @@
               class="cursor-pointer"
               @click="openAssessmentWeightsModal(item.id, item.name)"
             >
-              {{ item.weights?.length || 0 }} weights
+              {{ item.weights?.length || 0 }} bobot
               <VIcon
                 size="14"
                 icon="tabler-chevron-right"
@@ -96,7 +96,7 @@
               <IconBtn @click="handleViewDetails(item.id)">
                 <VIcon icon="tabler-eye" />
                 <VTooltip activator="parent">
-                  View Details
+                  Lihat Detail
                 </VTooltip>
               </IconBtn>
 
@@ -110,7 +110,7 @@
               <IconBtn @click="handleDelete(item.id)">
                 <VIcon icon="tabler-trash" />
                 <VTooltip activator="parent">
-                  Delete
+                  Hapus
                 </VTooltip>
               </IconBtn>
             </div>
@@ -119,7 +119,7 @@
       </VCardText>
     </VCard>
 
-    <!-- Subject Form Drawer with refresh handler -->
+    <!-- Jurusan Form Drawer with refresh handler -->
     <SubjectFormDrawer 
       :open="drawerForm" 
       :is-editing="isEditing"
@@ -128,14 +128,14 @@
       @refresh="refetch"
     />
 
-    <!-- Subject Details Dialog - Modified to remove management buttons -->
+    <!-- Jurusan Details Dialog - Modified to remove management buttons -->
     <VDialog
       v-model="detailsDialog"
       max-width="800px"
     >
       <VCard>
         <VCardTitle class="d-flex justify-space-between align-center">
-          <span>Subject Details: {{ selectedSubject.name }}</span>
+          <span>Detail Jurusan: {{ selectedSubject.name }}</span>
           <VBtn
             variant="text"
             icon="tabler-x"
@@ -157,24 +157,24 @@
             <!-- Basic Subject Information -->
             <div class="mb-4">
               <h4 class="text-h6 mb-2">
-                Basic Information
+                Informasi Dasar
               </h4>
               <div class="d-flex flex-column gap-2">
                 <div class="d-flex align-center">
                   <div class="text-subtitle-2 min-width-100">
-                    Name:
+                    Nama:
                   </div>
                   <div>{{ selectedSubject.name }}</div>
                 </div>
                 <div class="d-flex align-center">
                   <div class="text-subtitle-2 min-width-100">
-                    Created:
+                    Dibuat:
                   </div>
                   <div>{{ formatDate(selectedSubject.createdAt) }}</div>
                 </div>
                 <div class="d-flex align-center">
                   <div class="text-subtitle-2 min-width-100">
-                    Last Updated:
+                    Diperbarui:
                   </div>
                   <div>{{ formatDate(selectedSubject.updatedAt) }}</div>
                 </div>
@@ -183,10 +183,10 @@
             
             <VDivider class="my-4" />
             
-            <!-- Associated Courses - Removed management button -->
+            <!-- Associated Mata Pelajaran - Removed management button -->
             <div class="mb-4">
               <h4 class="text-h6 mb-2">
-                Related Courses
+                Mata Pelajaran Terkait
               </h4>
               
               <!-- Display courses table or empty state -->
@@ -198,13 +198,13 @@
                 <thead>
                   <tr>
                     <th class="text-left">
-                      Course Name
+                      Nama Mata Pelajaran
                     </th>
                     <th class="text-left">
-                      Teacher
+                      Guru
                     </th>
                     <th class="text-left">
-                      Students
+                      Siswa
                     </th>
                   </tr>
                 </thead>
@@ -215,7 +215,7 @@
                   >
                     <td>{{ course.name }}</td>
                     <td>{{ course.teacher?.name || 'N/A' }}</td>
-                    <td>{{ course.students?.length || 0 }} students</td>
+                    <td>{{ course.students?.length || 0 }} siswa</td>
                   </tr>
                 </tbody>
               </VTable>
@@ -230,7 +230,7 @@
                   class="mb-2"
                 />
                 <p class="text-medium-emphasis">
-                  No courses associated with this subject
+                  Tidak ada mata pelajaran yang terkait dengan jurusan ini
                 </p>
               </div>
             </div>
@@ -252,13 +252,13 @@
                 <thead>
                   <tr>
                     <th class="text-left">
-                      Exam Type
+                      Jenis Ujian
                     </th>
                     <th class="text-left">
-                      Weight
+                      Bobot
                     </th>
                     <th class="text-left">
-                      Quota
+                      Kuota
                     </th>
                   </tr>
                 </thead>
@@ -284,7 +284,7 @@
                   class="mb-2"
                 />
                 <p class="text-medium-emphasis">
-                  No assessment weights defined for this subject
+                  Belum ada bobot penilaian yang ditentukan untuk jurusan ini
                 </p>
               </div>
             </div>
@@ -308,15 +308,15 @@ import { toast } from "vue-sonner"
 import SubjectFormDrawer from "./subject-form-drawer.vue"
 
 const headers = ref([
-  { title: "Subject Name", key: "name" },
-  { title: "Courses", key: "courses" },
-  { title: "Assessment Weights", key: "weights" },
+  { title: "Nama Jurusan", key: "name" },
+  { title: "Mata Pelajaran", key: "courses" },
+  { title: "Bobot Penilaian", key: "weights" },
   {
-    title: "Created At",
+    title: "Dibuat Pada",
     key: "createdAt",
     sortable: true,
   },
-  { title: "Actions", align: "end", key: "actions", sortable: false },
+  { title: "Aksi", align: "end", key: "actions", sortable: false },
 ])
 
 const store = useVuex()
@@ -365,9 +365,9 @@ const handleUpdate = id => {
 
 const handleDelete = async id => {
   const confirm = await SwalDelete({
-    title: "Delete subject?",
-    text: "This will remove the subject and may affect related courses and assessments. This action cannot be undone.",
-    confirmButtonText: "Yes, delete subject",
+    title: "Hapus jurusan?",
+    text: "Tindakan ini akan menghapus jurusan dan dapat mempengaruhi mata pelajaran dan penilaian terkait. Tindakan ini tidak dapat dibatalkan.",
+    confirmButtonText: "Ya, hapus jurusan",
   })
 
   if (confirm) {
@@ -379,13 +379,13 @@ const handleDelete = async id => {
         url: `/subject/${id}`,
       })
       
-      toast.success("Subject deleted successfully")
+      toast.success("Jurusan berhasil dihapus")
       
       // Ensure we refresh after deletion 
       await refetch()
     } catch (error) {
       console.error("Failed to delete subject:", error)
-      toast.error("Failed to delete subject")
+      toast.error("Gagal menghapus jurusan")
     } finally {
       loading.value = false
     }
@@ -405,7 +405,7 @@ const handleViewDetails = async id => {
     detailsDialog.value = true
   } catch (error) {
     console.error("Failed to fetch subject details:", error)
-    toast.error("Failed to load subject details")
+    toast.error("Gagal memuat detail jurusan")
   } finally {
     loadingDetails.value = false
   }
@@ -422,7 +422,7 @@ const refetch = async () => {
   loading.value = true
   
   try {
-    console.log("Refreshing subject data...")
+    console.log("Memperbarui data jurusan...")
 
     const result = await axiosInstance({
       method: "GET",
@@ -436,7 +436,7 @@ const refetch = async () => {
     })
     
     subjects.value = result.data.data
-    console.log(`Loaded ${subjects.value.length} subjects`)
+    console.log(`Memuat ${subjects.value.length} jurusan`)
     
     // Update pagination
     if (result.data.pagination) {
@@ -450,7 +450,7 @@ const refetch = async () => {
     return result.data
   } catch (error) {
     console.error("Failed to fetch subjects:", error)
-    toast.error("Failed to load subjects")
+    toast.error("Gagal memuat jurusan")
     
     return null
   } finally {

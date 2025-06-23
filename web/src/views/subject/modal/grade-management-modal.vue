@@ -2,7 +2,7 @@
   <VDialog v-model="dialogModel" max-width="1000px" persistent>
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
-        <span>Manage Grades: {{ courseName }}</span>
+        <span>Kelola Nilai: {{ courseName }}</span>
         <VBtn variant="text" icon="tabler-x" @click="closeDialog" />
       </VCardTitle>
 
@@ -18,26 +18,18 @@
             class="d-flex flex-wrap justify-space-between align-center mb-4 gap-3"
           >
             <div class="d-flex align-center gap-3">
-              <h4 class="text-h6 mb-0">Student Grades</h4>
+              <h4 class="text-h6 mb-0">Nilai Siswa</h4>
 
               <VSelect
                 v-model="selectedExamType"
                 :items="examTypes"
                 density="comfortable"
-                label="Exam Type"
+                label="Jenis Ujian"
                 variant="outlined"
                 style="min-width: 200px"
                 @update:model-value="loadGrades"
               />
 
-              <VBtn
-                prepend-icon="tabler-settings"
-                @click="openComponentsModal"
-                variant="tonal"
-                color="info"
-              >
-               Manage Components
-              </VBtn>
             </div>
 
             <div class="d-flex gap-2">
@@ -48,14 +40,14 @@
                 :loading="exportLoading"
                 @click="exportGrades"
               >
-                Export
+                Ekspor
               </VBtn>
               <VBtn
                 prepend-icon="tabler-plus"
                 color="primary"
                 @click="openCreateGradeForm"
               >
-                Add Grades
+                Tambah Nilai
               </VBtn>
             </div>
           </div>
@@ -75,7 +67,7 @@
                   </VAvatar>
                 </template>
                 <VCardTitle>{{ courseStudents.length }}</VCardTitle>
-                <VCardSubtitle>Total Students</VCardSubtitle>
+                <VCardSubtitle>Total Siswa</VCardSubtitle>
               </VCardItem>
             </VCard>
 
@@ -92,7 +84,7 @@
                   </VAvatar>
                 </template>
                 <VCardTitle>{{ gradedStudentCount }}</VCardTitle>
-                <VCardSubtitle>Students Graded</VCardSubtitle>
+                <VCardSubtitle>Siswa Dinilai</VCardSubtitle>
               </VCardItem>
             </VCard>
 
@@ -104,7 +96,7 @@
                   </VAvatar>
                 </template>
                 <VCardTitle>{{ averageGrade.toFixed(1) }}</VCardTitle>
-                <VCardSubtitle>Average Grade</VCardSubtitle>
+                <VCardSubtitle>Nilai Rata-rata</VCardSubtitle>
               </VCardItem>
             </VCard>
           </div>
@@ -112,9 +104,9 @@
           <!-- Grades Distribution Chart -->
           <VCard class="mb-6" border>
             <VCardTitle class="d-flex justify-space-between align-center pt-4 px-4 pb-0">
-              <span class="text-subtitle-1">Grade Distribution</span>
+              <span class="text-subtitle-1">Distribusi Nilai</span>
               <div class="d-flex align-center">
-                <span class="text-caption text-medium-emphasis me-2">Students: {{ gradedStudentCount }}</span>
+                <span class="text-caption text-medium-emphasis me-2">Siswa: {{ gradedStudentCount }}</span>
                 <VChip size="small" color="primary" label>{{ selectedExamType }}</VChip>
               </div>
             </VCardTitle>
@@ -148,7 +140,7 @@
                 <VTextField
                   v-model="search"
                   prepend-inner-icon="tabler-search"
-                  label="Search Students"
+                  label="Cari Siswa"
                   hide-details
                   density="compact"
                   variant="outlined"
@@ -163,13 +155,13 @@
                     prepend-icon="tabler-filter"
                     @click="showFilters = !showFilters"
                   >
-                    {{ showFilters ? 'Hide' : 'Show' }} Filters
+                    {{ showFilters ? 'Sembunyikan' : 'Tampilkan' }} Filter
                   </VBtn>
                   
                   <VSelect
                     v-model="itemsPerPage"
                     :items="[5, 10, 15, 25, 50]"
-                    label="Items per page"
+                    label="Item per halaman"
                     density="compact"
                     variant="outlined"
                     hide-details
@@ -183,8 +175,8 @@
                 <div class="d-flex flex-wrap gap-4">
                   <VSelect
                     v-model="gradeFilter"
-                    :items="['All', 'Graded', 'Not Graded']"
-                    label="Grade Status"
+                    :items="['Semua', 'Sudah Dinilai', 'Belum Dinilai']"
+                    label="Status Nilai"
                     density="compact"
                     variant="outlined"
                     hide-details
@@ -196,7 +188,7 @@
                     :max="100"
                     :min="0"
                     :step="5"
-                    label="Score Range"
+                    label="Rentang Nilai"
                     thumb-label="always"
                     color="primary"
                     class="max-width-300 mt-2"
@@ -212,7 +204,7 @@
                     @click="resetFilters"
                     class="align-self-center"
                   >
-                    Reset Filters
+                    Reset Filter
                   </VBtn>
                 </div>
               </div>
@@ -252,7 +244,7 @@
                     size="small"
                     label
                   >
-                    {{ item.grade ? "Graded" : "Not Graded" }}
+                    {{ item.grade ? "Sudah Dinilai" : "Belum Dinilai" }}
                   </VChip>
                 </template>
                 
@@ -270,7 +262,7 @@
                             color="secondary"
                             class="text-caption"
                           >
-                            +{{ item.grade.components.length - 2 }} more
+                            +{{ item.grade.components.length - 2 }} lainnya
                           </VChip>
                         </div>
                       </template>
@@ -298,12 +290,12 @@
                   <div class="d-flex gap-2 justify-end">
                     <IconBtn @click="editGrade(item)">
                       <VIcon icon="tabler-pencil" />
-                      <VTooltip activator="parent">Grade Student</VTooltip>
+                      <VTooltip activator="parent">Beri Nilai</VTooltip>
                     </IconBtn>
                     
                     <IconBtn v-if="item.grade" @click="viewGradeDetails(item)">
                       <VIcon icon="tabler-eye" />
-                      <VTooltip activator="parent">View Details</VTooltip>
+                      <VTooltip activator="parent">Lihat Detail</VTooltip>
                     </IconBtn>
                   </div>
                 </template>
@@ -314,9 +306,9 @@
           <VAlert v-else type="info" class="mt-4" variant="tonal">
             <div class="d-flex align-center">
               <VIcon icon="tabler-users-off" class="me-2" />
-              <span>No students enrolled in this course.</span>
+              <span>Tidak ada siswa yang terdaftar dalam mata pelajaran ini.</span>
             </div>
-            <div class="mt-2">Please add students to the course first.</div>
+            <div class="mt-2">Silakan tambahkan siswa ke mata pelajaran terlebih dahulu.</div>
           </VAlert>
         </div>
       </VCardText>
@@ -330,7 +322,7 @@
           variant="tonal"
           @click="closeDialog"
         >
-          Close
+          Tutup
         </VBtn>
       </VCardActions>
     </VCard>
@@ -341,7 +333,7 @@
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
         <span>{{
-          selectedStudent ? `Grade: ${selectedStudent.name}` : "Batch Grading"
+          selectedStudent ? `Nilai: ${selectedStudent.name}` : "Penilaian Massal"
         }}</span>
         <VBtn variant="text" icon="tabler-x" @click="closeGradeForm" />
       </VCardTitle>
@@ -355,10 +347,10 @@
             v-if="!editingGrade"
             v-model="gradeForm.examType"
             :items="examTypes"
-            label="Exam Type"
+            label="Jenis Ujian"
             density="comfortable"
             variant="outlined"
-            :rules="[(v) => !!v || 'Exam type is required']"
+            :rules="[(v) => !!v || 'Jenis ujian wajib dipilih']"
             class="mb-4"
           />
 
@@ -369,13 +361,13 @@
               :items="courseStudents"
               item-title="name"
               item-value="id"
-              label="Select Students"
+              label="Pilih Siswa"
               density="comfortable"
               variant="outlined"
               multiple
               chips
               closable-chips
-              :rules="[(v) => v.length > 0 || 'Select at least one student']"
+              :rules="[(v) => v.length > 0 || 'Pilih minimal satu siswa']"
             >
               <template #selection="{ item }">
                 <VChip closable>
@@ -404,7 +396,7 @@
           </div>
 
           <!-- Grade Components -->
-          <h5 class="text-h6 mb-3">Grade Components</h5>
+          <h5 class="text-h6 mb-3">Komponen Nilai</h5>
 
           <div
             v-if="gradeComponentDefinitions.length === 0"
@@ -417,10 +409,10 @@
               color="warning"
             />
             <p class="text-medium-emphasis">
-              No grade components defined for this exam type
+              Tidak ada komponen nilai yang ditentukan untuk jenis ujian ini
             </p>
             <p class="text-caption">
-              Please define components or enter a total score directly
+              Silakan tentukan komponen atau masukkan nilai total langsung
             </p>
           </div>
 
@@ -432,22 +424,22 @@
             >
               <div style="flex: 2">
                 <div>
-                  Weight: {{ (component.weight * 100).toFixed(0) }}%
+                  Bobot: {{ (component.weight * 100).toFixed(0) }}%
                 </div>
               </div>
 
               <VTextField
                 v-model.number="gradeForm.components[component.id]"
-                :label="`Score (max: ${component.maxScore})`"
+                :label="`Nilai (maks: ${component.maxScore})`"
                 type="number"
                 density="comfortable"
                 variant="outlined"
                 style="flex: 1"
                 :rules="[
-                  (v) => v !== null || 'Score is required',
+                  (v) => v !== null || 'Nilai wajib diisi',
                   (v) =>
                     (v >= 0 && v <= component.maxScore) ||
-                    `Score must be between 0 and ${component.maxScore}`,
+                    `Nilai harus antara 0 dan ${component.maxScore}`,
                 ]"
                 :min="0"
                 :max="component.maxScore"
@@ -462,7 +454,7 @@
 
             <!-- Manual Score Override -->
             <div class="d-flex align-center justify-space-between">
-              <div class="text-subtitle-1 font-weight-bold">Total Score:</div>
+              <div class="text-subtitle-1 font-weight-bold">Nilai Total:</div>
               <div
                 v-if="gradeComponentDefinitions.length > 0"
                 class="d-flex align-center"
@@ -473,7 +465,7 @@
                 <VSwitch
                   v-model="overrideTotal"
                   color="warning"
-                  label="Override"
+                  label="Ganti"
                   density="comfortable"
                   hide-details
                 />
@@ -483,14 +475,14 @@
             <VTextField
               v-if="overrideTotal || gradeComponentDefinitions.length === 0"
               v-model.number="gradeForm.totalScore"
-              label="Total Score"
+              label="Nilai Total"
               type="number"
               density="comfortable"
               variant="outlined"
               :rules="[
-                (v) => v !== null || 'Total score is required',
+                (v) => v !== null || 'Nilai total wajib diisi',
                 (v) =>
-                  (v >= 0 && v <= 100) || 'Score must be between 0 and 100',
+                  (v >= 0 && v <= 100) || 'Nilai harus antara 0 dan 100',
               ]"
               :min="0"
               :max="100"
@@ -505,10 +497,10 @@
       <VCardActions class="pa-4">
         <VSpacer />
         <VBtn variant="text" color="secondary" @click="closeGradeForm">
-          Cancel
+          Batal
         </VBtn>
         <VBtn color="primary" :loading="savingGrade" @click="saveGrade">
-          {{ editingGrade ? "Update" : "Save" }} Grade
+          {{ editingGrade ? "Perbarui" : "Simpan" }} Nilai
         </VBtn>
       </VCardActions>
     </VCard>
@@ -518,7 +510,7 @@
   <VDialog v-model="gradeDetailsDialog" max-width="700px">
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
-        <span>Grade Details</span>
+        <span>Detail Nilai</span>
         <VBtn variant="text" icon="tabler-x" @click="gradeDetailsDialog = false" />
       </VCardTitle>
 
@@ -552,14 +544,14 @@
               </template>
 
               <VCardTitle>{{ selectedExamType }}</VCardTitle>
-              <VCardSubtitle>Exam Type</VCardSubtitle>
+              <VCardSubtitle>Jenis Ujian</VCardSubtitle>
             </VCardItem>
 
             <VDivider />
 
             <VCardText>
               <div class="d-flex justify-space-between align-center mb-3">
-                <span class="text-subtitle-1">Total Score</span>
+                <span class="text-subtitle-1">Nilai Total</span>
                 <VChip
                   size="large"
                   :color="getScoreColorClass(selectedGrade.totalScore).replace('text-', '')"
@@ -570,22 +562,22 @@
               </div>
 
               <div class="text-caption text-medium-emphasis">
-                Last updated: {{ formatDate(selectedGrade.updatedAt || selectedGrade.createdAt) }}
+                Terakhir diperbarui: {{ formatDate(selectedGrade.updatedAt || selectedGrade.createdAt) }}
               </div>
             </VCardText>
           </VCard>
 
           <!-- Component scores -->
-          <h6 class="text-subtitle-1 mb-3">Component Scores</h6>
+          <h6 class="text-subtitle-1 mb-3">Komponen Nilai</h6>
 
           <div v-if="selectedGrade.components && selectedGrade.components.length > 0">
             <VTable density="compact" class="mb-4">
               <thead>
                 <tr>
-                  <th>Score</th>
-                  <th>Max</th>
-                  <th>Weight</th>
-                  <th>Weighted</th>
+                  <th>Nilai</th>
+                  <th>Maks</th>
+                  <th>Bobot</th>
+                  <th>Tertimbang</th>
                 </tr>
               </thead>
               <tbody>
@@ -603,7 +595,7 @@
             <!-- Score visualization -->
             <VCard variant="flat" class="mb-4 pa-3 bg-surface-100 rounded">
               <div class="grade-visualization">
-                <h6 class="text-subtitle-2 mb-3">Score Distribution</h6>
+                <h6 class="text-subtitle-2 mb-3">Distribusi Nilai</h6>
                 <div class="component-bars">
                   <div v-for="comp in selectedGrade.components" :key="comp.id" class="component-bar-container mb-2">
                     <div class="d-flex justify-space-between mb-1">
@@ -624,18 +616,18 @@
             </VCard>
           </div>
           <VAlert v-else type="info" variant="tonal" density="compact">
-            No component scores available
+            Tidak ada nilai komponen tersedia
           </VAlert>
           
           <!-- Grade history (placeholder for future feature) -->
           <div class="mt-4">
-            <h6 class="text-subtitle-1 mb-2">Grade History</h6>
+            <h6 class="text-subtitle-1 mb-2">Riwayat Nilai</h6>
             <VCard variant="outlined">
               <VList lines="two">
                 <VListItem
                   prepend-icon="tabler-history"
-                  title="Initial grade recorded"
-                  :subtitle="`Score: ${selectedGrade.totalScore.toFixed(1)}`"
+                  title="Nilai awal tercatat"
+                  :subtitle="`Nilai: ${selectedGrade.totalScore.toFixed(1)}`"
                 >
                   <template #append>
                     <div class="text-caption">
@@ -648,8 +640,8 @@
                 <VListItem
                   v-if="selectedGrade.updatedAt && selectedGrade.updatedAt !== selectedGrade.createdAt"
                   prepend-icon="tabler-pencil"
-                  title="Grade updated"
-                  :subtitle="`Current score: ${selectedGrade.totalScore.toFixed(1)}`"
+                  title="Nilai diperbarui"
+                  :subtitle="`Nilai saat ini: ${selectedGrade.totalScore.toFixed(1)}`"
                 >
                   <template #append>
                     <div class="text-caption">
@@ -672,13 +664,13 @@
           color="secondary"
           @click="gradeDetailsDialog = false"
         >
-          Close
+          Tutup
         </VBtn>
         <VBtn
           color="primary"
           @click="editGrade(selectedStudent)"
         >
-          Edit Grade
+          Edit Nilai
         </VBtn>
       </VCardActions>
     </VCard>
@@ -962,100 +954,65 @@ const loadData = async () => {
 
 const loadGradeComponentDefinitions = async () => {
   try {
-    // Fetch grade components from API based on exam type
-    const result = await apiOperation("GET", "/grade-components", null, {
+    // Get the subject ID from the course
+    const courseResult = await apiOperation("GET", `/course/${props.courseId}`, null, {});
+    const subjectId = courseResult.data?.subjectId;
+    
+    if (!subjectId) {
+      console.error("No subject ID found for this course");
+      gradeComponentDefinitions.value = [];
+      return;
+    }
+
+    // Fetch assessment weights from API based on subject ID and exam type
+    const result = await apiOperation("GET", "/assessment-weight", null, {
+      subjectId: subjectId,
       examType: selectedExamType.value,
     });
 
     if (result.data && result.data.length > 0) {
-      // Convert weights from decimal to percentage for UI display
-      gradeComponentDefinitions.value = result.data.map((comp) => ({
-        id: comp.id,
-        name: comp.name,
-        weight: comp.weight, // API should return decimal weights (0.3 = 30%)
-        maxScore: comp.maxScore,
-        index: comp.index || 0,
-      }));
-
-      // Sort by index
-      gradeComponentDefinitions.value.sort((a, b) => a.index - b.index);
-    } else {
-      // Fallback to default components if none defined
-      if (selectedExamType.value === "MID_TERM") {
-        gradeComponentDefinitions.value = [
-          { id: "written", name: "Written Test", weight: 0.6, maxScore: 100 },
-          {
-            id: "practical",
-            name: "Practical Assignment",
-            weight: 0.3,
-            maxScore: 50,
-          },
-          {
-            id: "participation",
-            name: "Participation",
-            weight: 0.1,
-            maxScore: 20,
-          },
-        ];
-      } else if (selectedExamType.value === "FINAL_TERM") {
-        gradeComponentDefinitions.value = [
-          { id: "written", name: "Final Exam", weight: 0.5, maxScore: 100 },
-          { id: "project", name: "Project", weight: 0.3, maxScore: 50 },
-          {
-            id: "presentation",
-            name: "Presentation",
-            weight: 0.2,
-            maxScore: 30,
-          },
-        ];
-      } else if (selectedExamType.value === "QUIZ") {
-        gradeComponentDefinitions.value = [
-          { id: "quiz1", name: "Quiz 1", weight: 0.5, maxScore: 20, index: 1 },
-          { id: "quiz2", name: "Quiz 2", weight: 0.5, maxScore: 20, index: 2 },
-        ];
-      } else if (selectedExamType.value === "ASSIGNMENT") {
-        gradeComponentDefinitions.value = [
-          {
-            id: "assignment1",
-            name: "Assignment 1",
-            weight: 0.4,
-            maxScore: 100,
-            index: 1,
-          },
-          {
-            id: "assignment2",
-            name: "Assignment 2",
-            weight: 0.6,
-            maxScore: 100,
-            index: 2,
-          },
-        ];
+      // Find the assessment weight for the current exam type
+      const assessmentWeight = result.data.find(w => w.examType === selectedExamType.value);
+      
+      if (assessmentWeight) {
+        // Create component definitions based on the quota from assessment weight
+        const quota = assessmentWeight.quota || 1;
+        const componentWeight = assessmentWeight.weight || 1;
+        
+        // Generate component definitions based on quota
+        gradeComponentDefinitions.value = Array.from({ length: quota }, (_, i) => ({
+          id: `${selectedExamType.value.toLowerCase()}_${i+1}`,
+          name: `Komponen ${i+1}`,
+          weight: componentWeight / quota, 
+          maxScore: 100,
+          index: i + 1,
+        }));
       } else {
+        // Fallback if no matching assessment weight found
         gradeComponentDefinitions.value = [
           {
-            id: "component1",
-            name: "Component 1",
-            weight: 0.7,
+            id: `${selectedExamType.value.toLowerCase()}_1`,
+            name: "Komponen 1",
+            weight: 1,
             maxScore: 100,
             index: 1,
-          },
-          {
-            id: "component2",
-            name: "Component 2",
-            weight: 0.3,
-            maxScore: 50,
-            index: 2,
-          },
+          }
         ];
       }
-
-      // For demo purposes, sort by index if available
-      gradeComponentDefinitions.value.sort(
-        (a, b) => (a.index || 0) - (b.index || 0)
-      );
+    } else {
+      // Fallback to a single component if no assessment weights
+      gradeComponentDefinitions.value = [
+        {
+          id: `${selectedExamType.value.toLowerCase()}_1`,
+          name: "Komponen 1",
+          weight: 1,
+          maxScore: 100,
+          index: 1,
+        }
+      ];
     }
   } catch (error) {
-    console.error("Error loading grade component definitions:", error);
+    console.error("Error loading assessment weights:", error);
     gradeComponentDefinitions.value = [];
   }
 };

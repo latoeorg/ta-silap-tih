@@ -15,10 +15,10 @@
         </VAvatar>
         <div>
           <h5 class="text-h5 font-weight-medium">
-            <b>[Subject]</b> {{ report?.name }}
+            <b>Jurusan</b> {{ report?.name }}
           </h5>
           <div class="text-disabled">
-            Last updated: {{ formatCalendar(report?.updatedAt) }}
+            Terakhir diperbarui: {{ formatCalendar(report?.updatedAt) }}
           </div>
         </div>
       </div>
@@ -27,7 +27,6 @@
 
   <Navigation />
 </template>
-
 <script setup>
 import Navigation from '@/views/subject/subject-detail-navigation.vue'
 const store = useVuex()

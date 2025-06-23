@@ -1,7 +1,7 @@
 <template>
   <VCard>
     <VCardTitle class="d-flex justify-space-between align-center">
-      <span>Manage Courses: {{ subjectName }}</span>
+      <span>Kelola Mata Pelajaran: {{ subjectName }}</span>
     </VCardTitle>
 
     <VDivider />
@@ -10,7 +10,7 @@
       <!-- Course Management Header -->
       <div class="d-flex justify-space-between align-center mb-4">
         <h4 class="text-h6">
-          Subject Courses
+          Mata Pelajaran Jurusan
         </h4>
         <VBtn
           color="primary"
@@ -18,7 +18,7 @@
           variant="tonal"
           @click="openAddCourseForm"
         >
-          Add New Course
+          Tambah Mata Pelajaran Baru
         </VBtn>
       </div>
 
@@ -28,7 +28,7 @@
         class="mb-6 pa-4 bg-surface-200 rounded"
       >
         <h5 class="text-subtitle-1 mb-3">
-          {{ isEditing ? 'Edit' : 'Add New' }} Course
+          {{ isEditing ? 'Edit' : 'Tambah' }} Mata Pelajaran
         </h5>
         
         <VForm
@@ -39,9 +39,9 @@
           <!-- Course Name -->
           <VTextField
             v-model="courseForm.name"
-            label="Course Name"
+            label="Nama Mata Pelajaran"
             density="comfortable"
-            :rules="[v => !!v || 'Course name is required']"
+            :rules="[v => !!v || 'Nama mata pelajaran wajib diisi']"
             variant="outlined"
           />
           
@@ -52,9 +52,9 @@
               :items="teachers"
               item-title="name"
               item-value="id"
-              label="Teacher"
+              label="Guru"
               density="comfortable"
-              :rules="[v => !!v || 'Teacher is required']"
+              :rules="[v => !!v || 'Guru wajib dipilih']"
               variant="outlined"
               style="flex: 1; min-inline-size: 250px"
             >
@@ -82,7 +82,7 @@
               variant="tonal"
               @click="cancelForm"
             >
-              Cancel
+              Batal
             </VBtn>
             
             <VBtn
@@ -90,7 +90,7 @@
               type="submit"
               :loading="formLoading"
             >
-              {{ isEditing ? 'Update' : 'Save' }}
+              {{ isEditing ? 'Perbarui' : 'Simpan' }}
             </VBtn>
           </div>
         </VForm>
@@ -155,7 +155,7 @@
                 style="cursor: pointer"
                 @click="openStudentManagement(item)"
               >
-                {{ item.students?.length || 0 }} students
+                {{ item.students?.length || 0 }} siswa
                 <VIcon
                   size="14"
                   icon="tabler-chevron-right"
@@ -171,7 +171,7 @@
                 style="cursor: pointer"
                 @click="openGradeManagement(item)"
               >
-                Grades
+                Nilai
                 <VIcon
                   size="14"
                   icon="tabler-chart-bar"
@@ -202,7 +202,7 @@
                   color="error"
                 />
                 <VTooltip activator="parent">
-                  Delete
+                  Hapus
                 </VTooltip>
               </IconBtn>
             </div>
@@ -221,10 +221,10 @@
             icon="tabler-info-circle"
             class="me-2"
           />
-          <span>No courses defined for this subject yet.</span>
+          <span>Belum ada mata pelajaran yang ditentukan untuk jurusan ini.</span>
         </div>
         <div class="mt-2">
-          Click "Add New Course" to create your first course for this subject.
+          Klik "Tambah Mata Pelajaran Baru" untuk membuat mata pelajaran pertama untuk jurusan ini.
         </div>
       </VAlert>
     </VCardText>
@@ -251,10 +251,10 @@
 import axiosInstance from '@/utils/axios'
 import { SwalDelete } from '@/utils/sweetalert'
 import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { toast } from 'vue-sonner'
 import GradeManagementModal from './modal/grade-management-modal.vue'
 import StudentManagementModal from './modal/student-management-modal.vue'
-import { useRoute } from 'vue-router'
 
 // Get route parameters
 const route = useRoute()

@@ -10,7 +10,7 @@ export default [
     to: { name: 'root' },
   },
   {
-    title: "Mata Pelajaran",
+    title: "Jurusan",
     icon: { icon: 'tabler-book' },
     to: { name: 'subject' },
     hidden: !IsCan("GET_SUBJECT"),
@@ -19,23 +19,23 @@ export default [
     heading: 'Setup',     
   },
   {
-    title: 'Class',
+    title: 'Kelas',
     icon: { icon: 'tabler-school' },
     to: { name: 'class' },
     hidden: !IsCan("GET_CLASS"),
   },
   {
-    title: "User Management",
+    title: "Manajemen User",
     icon: { icon: 'tabler-user' },
     to: { name: 'user' },
     hidden: !IsCan("GET_USER"),
   },
-  {
-    title: 'Settings',
-    icon: { icon: 'tabler-settings' },
-    to: { name: 'settings' },
-    hidden: !IsCan("GET_SETTINGS"),
-  },
+  // {
+  //   title: 'Pengaturan',
+  //   icon: { icon: 'tabler-settings' },
+  //   to: { name: 'settings' },
+  //   hidden: !IsCan("GET_SETTINGS"),
+  // },
 ].map(item => {
   if (item.children) {
     item.children = item.children.filter(child => !child.hidden)
