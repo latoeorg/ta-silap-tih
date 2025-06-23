@@ -1,7 +1,7 @@
 <template>
   <VCard class="weight-management">
     <VCardTitle class="d-flex justify-space-between align-center">
-      <span>Manage Assessment Weights: {{ subjectName }}</span>
+      <span>Kelola Bobot Penilaian: {{ subjectName }}</span>
       <VBtn
         variant="text"
         icon="tabler-x"
@@ -14,20 +14,20 @@
     <VCardText>
       <!-- Assessment Weights List -->
       <div class="d-flex justify-space-between align-center mb-4">
-        <h4 class="text-h6">Assessment Weights</h4>
+        <h4 class="text-h6">Bobot Penilaian</h4>
         <VBtn
           color="primary"
           prepend-icon="tabler-plus"
           variant="tonal"
           @click="openAddWeightForm"
         >
-          Add Assessment Weight
+          Tambah Bobot Penilaian
         </VBtn>
       </div>
 
       <!-- Weight Form -->
       <div v-if="showForm" class="mb-6 pa-4 bg-surface-200 rounded">
-        <h5 class="text-subtitle-1 mb-3">{{ isEditing ? 'Edit' : 'Add New' }} Assessment Weight</h5>
+        <h5 class="text-subtitle-1 mb-3">{{ isEditing ? 'Edit' : 'Tambah Baru' }} Bobot Penilaian</h5>
         
         <VForm ref="formRef" @submit.prevent="saveWeight" class="d-flex flex-column gap-4">
           <div class="d-flex flex-wrap gap-4">
@@ -35,9 +35,9 @@
             <VSelect
               v-model="weightForm.examType"
               :items="examTypes"
-              label="Exam Type"
+              label="Jenis Ujian"
               density="comfortable"
-              :rules="[v => !!v || 'Exam type is required']"
+              :rules="[v => !!v || 'Jenis ujian wajib diisi']"
               style="min-width: 200px; flex: 1"
               clearable
             />
@@ -46,12 +46,12 @@
             <VTextField
               v-model="weightForm.weight"
               type="number"
-              label="Weight"
-              hint="Enter decimal value between 0 and 1 (e.g., 0.3 = 30%)"
+              label="Bobot"
+              hint="Masukkan nilai desimal antara 0 dan 1 (contoh: 0,3 = 30%)"
               density="comfortable"
               :rules="[
-                v => !!v || 'Weight is required',
-                v => (v >= 0 && v <= 1) || 'Weight must be between 0 and 1'
+                v => !!v || 'Bobot wajib diisi',
+                v => (v >= 0 && v <= 1) || 'Bobot harus antara 0 dan 1'
               ]"
               step="0.01"
               style="min-width: 150px; flex: 1"
@@ -61,12 +61,12 @@
             <VTextField
               v-model="weightForm.quota"
               type="number"
-              label="Quota"
-              hint="Number of assessments of this type"
+              label="Kuota"
+              hint="Jumlah penilaian untuk jenis ini"
               density="comfortable"
               :rules="[
-                v => !!v || 'Quota is required',
-                v => v > 0 || 'Quota must be greater than 0'
+                v => !!v || 'Kuota wajib diisi',
+                v => v > 0 || 'Kuota harus lebih dari 0'
               ]"
               style="min-width: 150px; flex: 1"
             />
@@ -78,7 +78,7 @@
               variant="tonal"
               @click="cancelForm"
             >
-              Cancel
+              Batal
             </VBtn>
             
             <VBtn
@@ -86,7 +86,7 @@
               type="submit"
               :loading="formLoading"
             >
-              {{ isEditing ? 'Update' : 'Save' }}
+              {{ isEditing ? 'Perbarui' : 'Simpan' }}
             </VBtn>
           </div>
         </VForm>
@@ -158,17 +158,17 @@
       >
         <div class="d-flex align-center">
           <VIcon icon="tabler-info-circle" class="me-2" />
-          <span>No assessment weights defined for this subject yet.</span>
+          <span>Belum ada bobot penilaian yang ditetapkan untuk mata pelajaran ini.</span>
         </div>
         <div class="mt-2">
-          Click "Add Assessment Weight" to define how student grades will be calculated.
+          Klik "Tambah Bobot Penilaian" untuk menentukan cara perhitungan nilai siswa.
         </div>
       </VAlert>
 
       <!-- Total Weight Display -->
       <div v-if="weights.length > 0" class="d-flex align-center justify-space-between mt-4">
         <div class="text-subtitle-2">
-          Total Weight: 
+          Total Bobot: 
           <span 
             :class="{
               'text-error': Math.abs(totalWeight - 1) > 0.01, 
@@ -188,10 +188,10 @@
           class="text-caption"
         >
           <span v-if="totalWeight < 0.99">
-            The total weight should be 100%. You are {{ ((1 - totalWeight) * 100).toFixed(0) }}% short.
+            Total bobot seharusnya 100%. Anda kurang {{ ((1 - totalWeight) * 100).toFixed(0) }}%.
           </span>
           <span v-else>
-            The total weight exceeds 100% by {{ ((totalWeight - 1) * 100).toFixed(0) }}%. Please adjust.
+            Total bobot melebihi 100% sebesar {{ ((totalWeight - 1) * 100).toFixed(0) }}%. Harap sesuaikan.
           </span>
         </VAlert>
       </div>
@@ -206,7 +206,7 @@
         variant="tonal"
         @click="closePanel"
       >
-        Close
+        Tutup
       </VBtn>
     </VCardActions>
   </VCard>
@@ -266,11 +266,11 @@ const resetForm = () => {
 
 // Table headers for weights
 const weightHeaders = [
-  { title: 'Exam Type', key: 'examType', sortable: true },
-  { title: 'Weight (%)', key: 'weight', sortable: true },
-  { title: 'Quota', key: 'quota', sortable: true },
-  { title: 'Created At', key: 'createdAt', sortable: true, formatter: (date) => new Date(date).toLocaleString() },
-  { title: 'Actions', key: 'actions', sortable: false, align: 'end' }
+  { title: 'Jenis Ujian', key: 'examType', sortable: true },
+  { title: 'Bobot (%)', key: 'weight', sortable: true },
+  { title: 'Kuota', key: 'quota', sortable: true },
+  { title: 'Tanggal Dibuat', key: 'createdAt', sortable: true, formatter: (date) => new Date(date).toLocaleString() },
+  { title: 'Tindakan', key: 'actions', sortable: false, align: 'end' }
 ];
 
 // Exam types from your actual schema
@@ -284,7 +284,15 @@ const examTypes = [
 
 // Format exam type for display
 const formatExamType = (type) => {
-  return type.replace('_', ' ').split(' ')
+  const translations = {
+    'DAILY': 'Harian',
+    'MID_TERM': 'Ujian Tengah Semester',
+    'FINAL': 'Ujian Akhir',
+    'QUIZ': 'Kuis',
+    'ASSIGNMENT': 'Tugas'
+  };
+  
+  return translations[type] || type.replace('_', ' ').split(' ')
     .map(word => word.charAt(0) + word.slice(1).toLowerCase())
     .join(' ');
 };
@@ -416,9 +424,9 @@ const updateWeight = async (id, data) => {
 // Confirm delete weight
 const confirmDeleteWeight = async (id) => {
   const confirmed = await SwalDelete({
-    title: 'Delete assessment weight?',
-    text: 'This weight will be permanently removed from the subject.',
-    confirmButtonText: 'Yes, delete it'
+    title: 'Hapus bobot penilaian?',
+    text: 'Bobot ini akan dihapus permanen dari mata pelajaran.',
+    confirmButtonText: 'Ya, hapus'
   });
   
   if (confirmed) {

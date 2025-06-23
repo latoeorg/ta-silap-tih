@@ -288,11 +288,11 @@ const editingCourseId = ref(null)
 
 // Table configuration
 const courseHeaders = [
-  { title: 'Course Name', key: 'name', sortable: true },
-  { title: 'Teacher', key: 'teacherId', sortable: true },
-  { title: 'Students', key: 'students', sortable: false },
-  { title: 'Created', key: 'createdAt', sortable: true },
-  { title: 'Actions', key: 'actions', sortable: false, align: 'end' },
+  { title: 'Mata Pelajaran', key: 'name', sortable: true },
+  { title: 'Guru', key: 'teacherId', sortable: true },
+  { title: 'Siswa', key: 'students', sortable: false },
+  { title: 'Di Buat', key: 'createdAt', sortable: true },
+  { title: 'Aksi', key: 'actions', sortable: false, align: 'end' },
 ]
 
 // Helper functions

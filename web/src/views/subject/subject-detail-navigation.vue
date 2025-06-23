@@ -35,11 +35,11 @@
 </template>
 
 <script setup>
-import { useRouter, useRoute } from 'vue-router'
-import { computed, ref, onMounted } from 'vue'
-import Course from './course.vue'
-import AssessmentWeight from './assessment-weight.vue'
 import axiosInstance from '@/utils/axios'
+import { computed, onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import AssessmentWeight from './assessment-weight.vue'
+import Course from './course.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -53,12 +53,12 @@ const activeTab = computed({
 const tabs = [
   {
     icon: 'tabler-file-text',
-    title: 'Courses',
+    title: 'Mata Pelajaran',
     tab: 'courses',
   },
   {
     icon: 'tabler-calendar',
-    title: 'Assessment Weight',
+    title: 'Bobot Penilaian',
     tab: 'assessment-weight',
   },
 ]
