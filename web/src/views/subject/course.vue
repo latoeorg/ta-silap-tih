@@ -178,6 +178,22 @@
                   class="ms-1"
                 />
               </VChip>
+
+              <!-- Add the Attendance management button -->
+              <VChip
+                size="small"
+                color="warning"
+                class="text-body-2"
+                style="cursor: pointer"
+                @click="openAttendanceManagement(item)"
+              >
+                Absensi
+                <VIcon
+                  size="14"
+                  icon="tabler-calendar"
+                  class="ms-1"
+                />
+              </VChip>
             </div>
           </template>
           
@@ -245,6 +261,14 @@
     :course-name="selectedGradeCourseName"
     @refresh="handleGradeUpdates"
   />
+
+  <!-- Attendance Modal -->
+  <AttendanceModal
+    v-model:open="attendanceManagementDialog"
+    :course-id="selectedAttendanceCourseId"
+    :course-name="selectedAttendanceCourseName"
+    @refresh="handleAttendanceUpdates"
+  />
 </template>
 
 <script setup>
@@ -253,6 +277,7 @@ import { SwalDelete } from '@/utils/sweetalert'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { toast } from 'vue-sonner'
+import AttendanceModal from './modal/attendance-modal.vue'
 import GradeManagementModal from './modal/grade-management-modal.vue'
 import StudentManagementModal from './modal/student-management-modal.vue'
 
@@ -273,6 +298,9 @@ const selectedCourseId = ref(null)
 const selectedCourseName = ref('')
 const selectedGradeCourseId = ref(null)
 const selectedGradeCourseName = ref('')
+const attendanceManagementDialog = ref(false)
+const selectedAttendanceCourseId = ref(null)
+const selectedAttendanceCourseName = ref('')
 
 // Loading states
 const loading = ref(false)
@@ -459,6 +487,17 @@ const openGradeManagement = course => {
 }
 
 const handleGradeUpdates = () => {
+  fetchCourses()
+}
+
+// Attendance management
+const openAttendanceManagement = course => {
+  selectedAttendanceCourseId.value = course.id
+  selectedAttendanceCourseName.value = course.name
+  attendanceManagementDialog.value = true
+}
+
+const handleAttendanceUpdates = () => {
   fetchCourses()
 }
 
