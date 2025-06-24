@@ -1,13 +1,13 @@
 <template>
   <div>
-    <VCard title="Jurusan">
+    <VCard title="Mata Pelajaran">
       <VCardText>
         <div class="d-flex align-center justify-end flex-wrap gap-4">
           <div style="inline-size: 20rem">
             <AppTextField
               v-model="table_options.search"
               density="compact"
-              placeholder="Cari jurusan..."
+              placeholder="Cari Mata Pelajaran..."
               append-inner-icon="tabler-search"
             />
           </div>
@@ -17,7 +17,7 @@
               start
               icon="tabler-plus"
             />
-            Tambah Jurusan
+            Tambah Mata Pelajaran
           </VBtn>
         </div>
       </VCardText>

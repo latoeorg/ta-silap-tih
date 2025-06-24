@@ -1,7 +1,9 @@
 <template>
   <div class="grades-container">
     <div class="header-section">
-      <h2 class="page-title">Student Grades Report</h2>
+      <h2 class="page-title">
+        Beranda
+      </h2>
       <div class="student-info" v-if="user">
         <span class="student-name">{{ user.name || "Student Name" }}</span>
         <span class="student-id">ID: {{ user.id }}</span>
@@ -578,50 +580,53 @@ onMounted(() => {
 <style scoped>
 .grades-container {
   padding: 20px;
-  max-width: 1600px;
-  margin: 0 auto;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin-block: 0;
+  margin-inline: auto;
+  max-inline-size: 1600px;
 }
 
 .header-section {
-  margin-bottom: 24px;
-  border-bottom: 2px solid #e5e7eb;
-  padding-bottom: 16px;
+  border-block-end: 2px solid #e5e7eb;
+  margin-block-end: 24px;
+  padding-block-end: 16px;
 }
 
 .page-title {
+  color: #1f2937;
   font-size: 28px;
   font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 8px 0;
+  margin-block: 0 8px;
+  margin-inline: 0;
 }
 
 .student-info {
   display: flex;
-  gap: 16px;
   align-items: center;
+  gap: 16px;
 }
 
 .student-name {
+  color: #374151;
   font-size: 16px;
   font-weight: 600;
-  color: #374151;
 }
 
 .student-id {
-  font-size: 14px;
-  color: #6b7280;
-  background: #f3f4f6;
-  padding: 4px 8px;
   border-radius: 4px;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 14px;
+  padding-block: 4px;
+  padding-inline: 8px;
 }
 
 .table-wrapper {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  margin-bottom: 24px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 10%);
+  margin-block-end: 24px;
 }
 
 .table-container {
@@ -629,17 +634,18 @@ onMounted(() => {
 }
 
 .grades-table {
-  width: 100%;
   border-collapse: collapse;
   font-size: 14px;
-  min-width: 1400px;
+  inline-size: 100%;
+  min-inline-size: 1400px;
 }
 
 .grades-table th,
 .grades-table td {
-  padding: 12px 8px;
-  text-align: center;
   border: 1px solid #e5e7eb;
+  padding-block: 12px;
+  padding-inline: 8px;
+  text-align: center;
 }
 
 .header-main {
@@ -650,8 +656,8 @@ onMounted(() => {
 }
 
 .header-group {
-  font-weight: 600;
   color: white;
+  font-weight: 600;
 }
 
 .header-group.assignment {
@@ -675,9 +681,9 @@ onMounted(() => {
 }
 
 .header-sub {
-  font-weight: 500;
   color: white;
   font-size: 12px;
+  font-weight: 500;
 }
 
 .header-sub.assignment {
@@ -709,35 +715,35 @@ onMounted(() => {
 }
 
 .cell-center {
-  font-weight: 600;
   color: #374151;
+  font-weight: 600;
 }
 
 .cell-nik {
-  text-align: left;
-  font-weight: 500;
   color: #1f2937;
-  min-width: 120px;
   font-family: monospace;
+  font-weight: 500;
+  min-inline-size: 120px;
+  text-align: start;
 }
 
 .cell-student-name {
-  text-align: left;
-  font-weight: 600;
   color: #1f2937;
-  min-width: 150px;
+  font-weight: 600;
+  min-inline-size: 150px;
+  text-align: start;
 }
 
 .cell-course {
-  text-align: left;
-  font-weight: 500;
   color: #1f2937;
-  min-width: 200px;
+  font-weight: 500;
+  min-inline-size: 200px;
+  text-align: start;
 }
 
 .cell-score {
   font-weight: 600;
-  min-width: 50px;
+  min-inline-size: 50px;
 }
 
 .score-excellent {
@@ -771,28 +777,32 @@ onMounted(() => {
 }
 
 .cell-total {
-  font-weight: 700;
-  font-size: 16px;
   background: #f8fafc;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .cell-grade {
-  font-weight: 700;
   font-size: 16px;
+  font-weight: 700;
 }
 
 .grade-a {
   color: #059669;
 }
+
 .grade-b {
   color: #2563eb;
 }
+
 .grade-c {
   color: #d97706;
 }
+
 .grade-d {
   color: #ea580c;
 }
+
 .grade-f {
   color: #dc2626;
 }
@@ -802,35 +812,35 @@ onMounted(() => {
 }
 
 .status-pass {
+  border-radius: 4px;
   background: #d1fae5;
   color: #047857;
-  border-radius: 4px;
 }
 
 .status-fail {
+  border-radius: 4px;
   background: #fecaca;
   color: #dc2626;
-  border-radius: 4px;
 }
 
 .loading-cell,
 .error-cell,
 .empty-cell {
-  text-align: center;
   padding: 40px;
   color: #6b7280;
   font-style: italic;
+  text-align: center;
 }
 
 .loading-spinner {
   display: inline-block;
-  width: 20px;
-  height: 20px;
   border: 3px solid #f3f4f6;
   border-radius: 50%;
-  border-top-color: #3b82f6;
   animation: spin 1s ease-in-out infinite;
-  margin-right: 8px;
+  block-size: 20px;
+  border-block-start-color: #3b82f6;
+  inline-size: 20px;
+  margin-inline-end: 8px;
 }
 
 @keyframes spin {
@@ -840,49 +850,51 @@ onMounted(() => {
 }
 
 .error-cell {
-  color: #dc2626;
   background: #fef2f2;
+  color: #dc2626;
 }
 
 .summary-section {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   padding: 24px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 10%);
 }
 
 .summary-card h3 {
+  color: #1f2937;
   font-size: 20px;
   font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 16px 0;
+  margin-block: 0 16px;
+  margin-inline: 0;
 }
 
 .summary-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 .stat-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  background: #f8fafc;
+  justify-content: space-between;
   border-radius: 8px;
-  border-left: 4px solid #3b82f6;
+  background: #f8fafc;
+  border-inline-start: 4px solid #3b82f6;
+  padding-block: 12px;
+  padding-inline: 16px;
 }
 
 .stat-label {
-  font-weight: 500;
   color: #374151;
+  font-weight: 500;
 }
 
 .stat-value {
-  font-weight: 700;
-  font-size: 18px;
   color: #1f2937;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 @media (max-width: 768px) {
@@ -896,7 +908,8 @@ onMounted(() => {
 
   .grades-table th,
   .grades-table td {
-    padding: 8px 4px;
+    padding-block: 8px;
+    padding-inline: 4px;
   }
 
   .summary-stats {

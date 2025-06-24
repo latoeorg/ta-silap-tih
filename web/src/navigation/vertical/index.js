@@ -5,12 +5,12 @@ export default [
     heading: 'Main',     
   },
   {
-    title: 'Overview',
+    title: 'Beranda',
     icon: { icon: 'tabler-smart-home' },
     to: { name: 'root' },
   },
   {
-    title: "Jurusan",
+    title: "Mata Pelajaran",
     icon: { icon: 'tabler-book' },
     to: { name: 'subject' },
     hidden: !IsCan("GET_SUBJECT"),
