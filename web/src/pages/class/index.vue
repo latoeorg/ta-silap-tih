@@ -241,6 +241,7 @@ const totalStudents = computed(() => {
   return classGroups.value.reduce((total, group) => total + (group.students?.length || 0), 0)
 })
 
+
 // --- Fungsi Debounce untuk Pencarian ---
 let searchTimeout = null
 
@@ -263,11 +264,8 @@ const updateOptions = options => {
   refetch()
 }
 
-// --- Event Handlers ---
 const onRowClick = (event, { item }) => {
-  // Arahkan ke halaman detail jika ada
-  // router.push(`/class-group/${item.id}`)
-  console.log('Row clicked:', item.id)
+  router.push(`/class/${item.id}`)
 }
 
 const handleDrawerForm = value => {
