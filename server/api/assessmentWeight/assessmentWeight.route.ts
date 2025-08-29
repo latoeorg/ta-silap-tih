@@ -25,11 +25,7 @@ router.post(
 
 router.get("/", AssessmentWeightController.findAll);
 
-router.get(
-  "/:id",
-  validate(assessmentWeightParamsSchema),
-  AssessmentWeightController.findById
-);
+router.get("/:id", AssessmentWeightController.findById);
 
 router.put(
   "/:id",
@@ -41,7 +37,6 @@ router.put(
 
 router.delete(
   "/:id",
-  validate(assessmentWeightParamsSchema),
   authorize([Role.ADMIN, Role.TEACHER]),
   checkAssessmentWeightAccess,
   AssessmentWeightController.delete
