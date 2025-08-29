@@ -4,26 +4,27 @@ import app from './modules/app'
 
 import dashboard from './modules/dashboard'
 
+import course from './modules/course'
 import subject from './modules/subject'
+
+import classGroup from './modules/class'
 
 import profile from './modules/profile'
 import setting from './modules/setting'
 import user from './modules/user'
 
-import setup from './modules/setup'
-
-import classGroup from './modules/class'
 
 const store = new Store({
   modules: {
     app,
     dashboard,
     subject,
+    course,
+    
+    class: classGroup,
     profile,
     setting,
     user,
-    setup,
-    class: classGroup,
   },
 })
 

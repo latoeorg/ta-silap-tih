@@ -75,8 +75,9 @@ const classGroup = {
             search: context.state.table_options.search,
             page: context.state.table_options.page,
             page_size: context.state.table_options.page_size,
+
             // Add cache buster for fresh results
-            _t: new Date().getTime()
+            _t: new Date().getTime(),
           },
         })
 
@@ -123,7 +124,7 @@ const classGroup = {
       }
     },
 
-    fetchBeforeForm: async (context) => {
+    fetchBeforeForm: async context => {
       context.commit("SET_LOADING", { key: "form", value: true })
       
       try {
@@ -134,7 +135,7 @@ const classGroup = {
           params: {
             role: "TEACHER",
             page_size: 100, // Get more teachers
-          }
+          },
         })
 
         context.commit("SET_TEACHERS", teacherResult.data.data)
@@ -145,7 +146,7 @@ const classGroup = {
           params: {
             role: "STUDENT",
             page_size: 100, // Get more students
-          }
+          },
         })
 
         context.commit("SET_STUDENTS", studentResult.data.data)
@@ -157,7 +158,7 @@ const classGroup = {
       }
     },
 
-    create: async (context) => {
+    create: async context => {
       context.commit("SET_LOADING", {
         key: "form",
         value: true,
@@ -182,6 +183,7 @@ const classGroup = {
       } catch (error) {
         console.log(error)
         toast.error(error.response?.data?.message || "Failed to create class")
+        
         return false
       } finally {
         context.commit("SET_LOADING", {
@@ -253,6 +255,7 @@ const classGroup = {
       } catch (error) {
         console.log(error)
         toast.error(error.response?.data?.message || "Failed to update class")
+        
         return false
       } finally {
         context.commit("SET_LOADING", {
@@ -281,6 +284,7 @@ const classGroup = {
       } catch (error) {
         console.log(error)
         toast.error(error.response?.data?.message || "Failed to delete class")
+        
         return false
       } finally {
         context.commit("SET_LOADING", {
@@ -307,10 +311,12 @@ const classGroup = {
         })
 
         toast.success(result.data.message || "Students added to class successfully")
+        
         return true
       } catch (error) {
         console.log(error)
         toast.error(error.response?.data?.message || "Failed to add students to class")
+        
         return false
       } finally {
         context.commit("SET_LOADING", {
@@ -328,28 +334,29 @@ const classGroup = {
       
       try {
         // Handle single studentId or array of studentIds
-        const idsArray = Array.isArray(studentIds) ? studentIds : [studentIds];
+        const idsArray = Array.isArray(studentIds) ? studentIds : [studentIds]
         
         // Process each student removal
         const promises = idsArray.map(studentId => 
           axiosInstance({
             method: "DELETE",
             url: `/class-group/${classId}/students/${studentId}`,
-          })
-        );
+          }),
+        )
         
         // Wait for all removals to complete
-        await Promise.all(promises);
+        await Promise.all(promises)
         
-        toast.success("Students removed from class successfully");
+        toast.success("Students removed from class successfully")
         
         // Refresh the class report to update student counts
-        await context.dispatch("getReport", classId);
+        await context.dispatch("getReport", classId)
         
         return true
       } catch (error) {
         console.log(error)
         toast.error(error.response?.data?.message || "Failed to remove students from class")
+        
         return false
       } finally {
         context.commit("SET_LOADING", {
@@ -374,26 +381,28 @@ const classGroup = {
             role: "STUDENT",
             class_group_id: classId,
             page_size: 100,
-          }
-        });
+          },
+        })
 
         // Save to store for reference
-        context.commit("SET_REPORT", { ...context.state.report, students: result.data.data });
-        return result.data.data;
+        context.commit("SET_REPORT", { ...context.state.report, students: result.data.data })
+        
+        return result.data.data
       } catch (error) {
-        console.log(error);
-        toast.error(error.response?.data?.message || "Failed to fetch class students");
-        return [];
+        console.log(error)
+        toast.error(error.response?.data?.message || "Failed to fetch class students")
+        
+        return []
       } finally {
         context.commit("SET_LOADING", {
           key: "report",
           value: false,
-        });
+        })
       }
     },
 
     fetchStudents: async (context, { classId } = {}) => {
-      context.commit("SET_LOADING", { key: "form", value: true });
+      context.commit("SET_LOADING", { key: "form", value: true })
       
       try {
         // Fetch students not in this class
@@ -404,19 +413,22 @@ const classGroup = {
             role: "STUDENT",
             class_group_id_not: classId,
             page_size: 100,
-            // Add cache buster for fresh results
-            _t: new Date().getTime()
-          }
-        });
 
-        context.commit("SET_STUDENTS", result.data.data);
-        return result.data.data;
+            // Add cache buster for fresh results
+            _t: new Date().getTime(),
+          },
+        })
+
+        context.commit("SET_STUDENTS", result.data.data)
+        
+        return result.data.data
       } catch (error) {
-        console.log(error);
-        toast.error("Failed to load students");
-        return [];
+        console.log(error)
+        toast.error("Failed to load students")
+        
+        return []
       } finally {
-        context.commit("SET_LOADING", { key: "form", value: false });
+        context.commit("SET_LOADING", { key: "form", value: false })
       }
     },
   },
