@@ -58,6 +58,42 @@ export class SubjectService {
   static async findById(id: string): Promise<Subject> {
     const subject = await prisma.subject.findUnique({
       where: { id },
+      include: {
+        courses: {
+          include: {
+            teacher: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+              },
+            },
+            students: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+              },
+            },
+            grades: true,
+            attendances: true,
+          },
+        },
+        weights: {
+          include: {
+            createdBy: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!subject) throw new Error("Subject not found");

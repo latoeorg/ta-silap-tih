@@ -84,16 +84,8 @@ export class CourseService {
             },
           },
           subject: true,
-          students: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              role: true,
-            },
-          },
           _count: {
-            select: { 
+            select: {
               students: true,
               grades: true,
               attendances: true,
@@ -132,7 +124,7 @@ export class CourseService {
     };
 
     // Add students if requested
-    if (include?.includes('students')) {
+    if (include?.includes("students")) {
       includeOptions.students = {
         select: {
           id: true,
@@ -145,12 +137,12 @@ export class CourseService {
     }
 
     // Add grades if requested
-    if (include?.includes('grades')) {
+    if (include?.includes("grades")) {
       includeOptions.grades = true;
     }
 
     // Add attendances if requested
-    if (include?.includes('attendances')) {
+    if (include?.includes("attendances")) {
       includeOptions.attendances = true;
     }
 
@@ -247,7 +239,10 @@ export class CourseService {
   /**
    * Update students enrolled in a course
    */
-  static async updateStudents(id: string, data: CourseStudentsInput): Promise<Course> {
+  static async updateStudents(
+    id: string,
+    data: CourseStudentsInput
+  ): Promise<Course> {
     const { studentIds } = data;
 
     // Check if course exists
@@ -278,7 +273,7 @@ export class CourseService {
       where: { id },
       data: {
         students: {
-          set: studentIds.map(id => ({ id })),
+          set: studentIds.map((id) => ({ id })),
         },
       },
       include: {

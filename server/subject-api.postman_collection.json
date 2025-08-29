@@ -1,0 +1,763 @@
+{
+  "info": {
+    "_postman_id": "ta-silap-tih-subject-api-collection",
+    "name": "TA Silap Tih - Subject API (Grouped)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for Subject API endpoints, organized into folders."
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user1@example.com\",\n  \"password\": \"Password123!\",\n  \"name\": \"User One\",\n  \"role\": \"STUDENT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user1@example.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "profile"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user2@example.com\",\n  \"password\": \"Password123!\",\n  \"name\": \"User Two\",\n  \"role\": \"TEACHER\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user",
+              "host": ["{{base_url}}"],
+              "path": ["user"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/user",
+              "host": ["{{base_url}}"],
+              "path": ["user"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/user/:id",
+              "host": ["{{base_url}}"],
+              "path": ["user", ":id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user/:id",
+              "host": ["{{base_url}}"],
+              "path": ["user", ":id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/user/:id",
+              "host": ["{{base_url}}"],
+              "path": ["user", ":id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile (Self)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Profile Name\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user/profile/update",
+              "host": ["{{base_url}}"],
+              "path": ["user", "profile", "update"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Class Groups",
+      "item": [
+        {
+          "name": "Create Class Group",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kelas 10 IPA 1\",\n  \"homeroomId\": \"teacher-id-1\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/classGroup",
+              "host": ["{{base_url}}"],
+              "path": ["classGroup"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Class Groups",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/classGroup",
+              "host": ["{{base_url}}"],
+              "path": ["classGroup"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Class Group By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/classGroup/:id",
+              "host": ["{{base_url}}"],
+              "path": ["classGroup", ":id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Class Group",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kelas 10 IPA 2\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/classGroup/:id",
+              "host": ["{{base_url}}"],
+              "path": ["classGroup", ":id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Class Group",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/classGroup/:id",
+              "host": ["{{base_url}}"],
+              "path": ["classGroup", ":id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Class Group Students",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentIds\": [\"student-id-1\", \"student-id-2\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/classGroup/:id/students",
+              "host": ["{{base_url}}"],
+              "path": ["classGroup", ":id", "students"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Class Group Students",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentIds\": [\"student-id-1\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/classGroup/:id/students",
+              "host": ["{{base_url}}"],
+              "path": ["classGroup", ":id", "students"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "item": [
+        {
+          "name": "Create Course",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Matematika\",\n  \"subjectId\": \"subject-id-1\",\n  \"teacherId\": \"teacher-id-1\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/course",
+              "host": ["{{base_url}}"],
+              "path": ["course"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Courses",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/course",
+              "host": ["{{base_url}}"],
+              "path": ["course"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Course By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/course/:id",
+              "host": ["{{base_url}}"],
+              "path": ["course", ":id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Course",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Matematika Lanjutan\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/course/:id",
+              "host": ["{{base_url}}"],
+              "path": ["course", ":id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Course",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/course/:id",
+              "host": ["{{base_url}}"],
+              "path": ["course", ":id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Course Students",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentIds\": [\"student-id-1\", \"student-id-2\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/course/:id/students",
+              "host": ["{{base_url}}"],
+              "path": ["course", ":id", "students"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Attendance",
+      "item": [
+        {
+          "name": "Create Attendance",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2025-08-29\",\n  \"status\": \"PRESENT\",\n  \"userId\": \"student-id-1\",\n  \"courseId\": \"course-id-1\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/attandance",
+              "host": ["{{base_url}}"],
+              "path": ["attandance"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Batch Create Attendance",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[{\n  \"date\": \"2025-08-29\",\n  \"status\": \"PRESENT\",\n  \"userId\": \"student-id-1\",\n  \"courseId\": \"course-id-1\"\n}]"
+            },
+            "url": {
+              "raw": "{{base_url}}/attandance/batch",
+              "host": ["{{base_url}}"],
+              "path": ["attandance", "batch"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Attendance",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/attandance",
+              "host": ["{{base_url}}"],
+              "path": ["attandance"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Attendance",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"EXCUSED\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/attandance/:userId/:courseId",
+              "host": ["{{base_url}}"],
+              "path": ["attandance", ":userId", ":courseId"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Attendance",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/attandance/:userId/:courseId",
+              "host": ["{{base_url}}"],
+              "path": ["attandance", ":userId", ":courseId"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Grades",
+      "item": [
+        {
+          "name": "Create Grade",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"examType\": \"DAILY\",\n  \"courseId\": \"course-id-1\",\n  \"userId\": \"student-id-1\",\n  \"totalScore\": 90\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/grade",
+              "host": ["{{base_url}}"],
+              "path": ["grade"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Batch Create Grades",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[{\n  \"examType\": \"DAILY\",\n  \"courseId\": \"course-id-1\",\n  \"userId\": \"student-id-1\",\n  \"totalScore\": 90\n}]"
+            },
+            "url": {
+              "raw": "{{base_url}}/grade/batch",
+              "host": ["{{base_url}}"],
+              "path": ["grade", "batch"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Grades",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/grade",
+              "host": ["{{base_url}}"],
+              "path": ["grade"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Grade",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"totalScore\": 95\n}" },
+            "url": {
+              "raw": "{{base_url}}/grade/:userId/:courseId/:examType",
+              "host": ["{{base_url}}"],
+              "path": ["grade", ":userId", ":courseId", ":examType"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Grade",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/grade/:userId/:courseId/:examType",
+              "host": ["{{base_url}}"],
+              "path": ["grade", ":userId", ":courseId", ":examType"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Grade Components (Computed)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/grade/components",
+              "host": ["{{base_url}}"],
+              "path": ["grade", "components"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Grade Components",
+      "item": [
+        {
+          "name": "Define Grade Components",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gradeId\": \"grade-id-1\",\n  \"components\": [{\n    \"score\": 10,\n    \"index\": 1\n  }]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/gradeComponent/define",
+              "host": ["{{base_url}}"],
+              "path": ["gradeComponent", "define"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Grade Components",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/gradeComponent",
+              "host": ["{{base_url}}"],
+              "path": ["gradeComponent"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Assessment Weights",
+      "item": [
+        {
+          "name": "Create Assessment Weight",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectId\": \"subject-id-1\",\n  \"examType\": \"QUIZ\",\n  \"weight\": 0.2,\n  \"quota\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/assessmentWeight",
+              "host": ["{{base_url}}"],
+              "path": ["assessmentWeight"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Assessment Weights",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/assessmentWeight",
+              "host": ["{{base_url}}"],
+              "path": ["assessmentWeight"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Assessment Weight By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/assessmentWeight/:id",
+              "host": ["{{base_url}}"],
+              "path": ["assessmentWeight", ":id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Assessment Weight",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"weight\": 0.25\n}" },
+            "url": {
+              "raw": "{{base_url}}/assessmentWeight/:id",
+              "host": ["{{base_url}}"],
+              "path": ["assessmentWeight", ":id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Assessment Weight",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/assessmentWeight/:id",
+              "host": ["{{base_url}}"],
+              "path": ["assessmentWeight", ":id"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/dashboard/stats",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "stats"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Dashboard Overview",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/dashboard/overview",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "overview"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Dashboard User Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/dashboard/user-stats",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "user-stats"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Dashboard Recent Activity",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/dashboard/recent-activity",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "recent-activity"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" }
+  ]
+}
