@@ -6,7 +6,6 @@ import { validate } from "../../lib/validate";
 import {
   classGroupCreateSchema,
   classGroupUpdateSchema,
-  classGroupParamsSchema,
   classGroupStudentsSchema,
 } from "./classGroup.schema";
 import { Role } from "@prisma/client";
@@ -24,12 +23,7 @@ router.post(
   ClassGroupController.create
 );
 
-router.delete(
-  "/:id",
-  validate(classGroupParamsSchema),
-  authorize([Role.ADMIN]),
-  ClassGroupController.delete
-);
+router.delete("/:id", authorize([Role.ADMIN]), ClassGroupController.delete);
 
 // Routes for admins and homeroom teachers
 router.get(
@@ -40,7 +34,6 @@ router.get(
 
 router.get(
   "/:id",
-  // validate(classGroupParamsSchema),
   authorize([Role.ADMIN, Role.TEACHER, Role.STUDENT]),
   checkClassGroupAccess,
   ClassGroupController.findById
