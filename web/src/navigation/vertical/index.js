@@ -9,14 +9,8 @@ export default [
     icon: { icon: 'tabler-smart-home' },
     to: { name: 'root' },
   },
-  {
-    title: "Mata Pelajaran",
-    icon: { icon: 'tabler-book' },
-    to: { name: 'subject' },
-    hidden: !IsCan("GET_SUBJECT"),
-  },
   { 
-    heading: 'Setup',     
+    heading: 'Pengaturan',     
   },
   {
     title: 'Kelas',
@@ -25,11 +19,18 @@ export default [
     hidden: !IsCan("GET_CLASS"),
   },
   {
-    title: "Manajemen User",
-    icon: { icon: 'tabler-user' },
+    title: "Mata Pelajaran",
+    icon: { icon: 'tabler-book' },
+    to: { name: 'subject' },
+    hidden: !IsCan("GET_SUBJECT"),
+  },
+  {
+    title: "Pengguna",
+    icon: { icon: 'tabler-users' },
     to: { name: 'user' },
     hidden: !IsCan("GET_USER"),
   },
+
   // {
   //   title: 'Pengaturan',
   //   icon: { icon: 'tabler-settings' },

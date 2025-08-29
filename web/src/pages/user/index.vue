@@ -1,6 +1,6 @@
 <template>
   <div>
-    <VCard :title="`${role == 'STAFF' ? 'Staff' : 'Promotor'} List` ">
+    <VCard title="Pengurusan Pengguna">
       <VDivider />
 
       <VCardText>
@@ -9,7 +9,7 @@
             <AppTextField
               v-model="table_options.search"
               density="compact"
-              placeholder="Search ..."
+              placeholder="Cari ..."
               append-inner-icon="tabler-search"
             />
           </div>
@@ -19,7 +19,7 @@
               start
               icon="tabler-plus"
             />
-            Add User
+            Tambah
           </VBtn>
         </div>
       </VCardText>
@@ -41,21 +41,6 @@
         >
           <template #item.first_name="{ item }">
             <CardUser :user="item" />
-          </template>
-          
-          <template #item.role_name="{ item }">
-            <VAvatar
-              size="30"
-              variant="tonal"
-              :color="resolveRole(item.role_name)?.color"
-              class="me-2"
-            >
-              <VIcon
-                :icon="resolveRole(item.role_name)?.icon"
-                size="18"
-              />
-            </VAvatar>
-            <span class="text-body-1 font-weight-medium">{{ item.role_name }}</span>
           </template>
 
 
@@ -84,7 +69,7 @@
 
 
 <script setup>
-import UserFormDrawer from './user-form-drawer.vue'
+import UserFormDrawer from '../../views/user/user-form-drawer.vue'
 
 const props = defineProps({
   role: {
@@ -94,10 +79,10 @@ const props = defineProps({
 })
 
 const headers = ref([
-  { title: 'User',  key: 'first_name' },
-  { title: 'email',  key: 'email' },
-  { title: 'Role',  key: 'role' },
-  { title: 'Actions', align: 'end',  key: 'actions', sortable: false },
+  { title: 'Pengguna',  key: 'first_name' },
+  { title: 'E-mel',  key: 'email' },
+  { title: 'Peranan',  key: 'role' },
+  { title: 'Tindakan', align: 'end',  key: 'actions', sortable: false },
 ])
 
 const drawerForm = ref(false)
@@ -121,34 +106,6 @@ const handleDelete = async id => {
   })
 }
 
-const resolveRole = role => {
-  switch (role) {
-  case 'B One Consulting':
-    return {
-      color: 'primary',
-      icon: 'tabler-building-skyscraper',
-    }
-
-  case 'Promotor':
-    return {
-      color: 'success',
-      icon: 'tabler-user-check',
-    }
-
-  case 'Staff':
-    return {
-      color: 'info',
-      icon: 'tabler-user',
-    }
-  
-  default:
-    return {
-      color: 'secondary',
-      icon: 'tabler-user',
-    }
-  }
-}
-
 const loading = computed(() => store.state.user.loading.reports)
 const reports = computed(() => store.state.user.reports)
 
@@ -158,8 +115,8 @@ const table_options = computed({
 })
 
 const refetch = () => store.dispatch('user/getReports', {
-  ...(props.role == 'STAFF' ? { role_exclude: 'Promotor' } : {}),
-  ...(props.role == 'PROMOTOR' ? { role_include: 'Promotor' } : {}),
+  // ...(props.role == 'STAFF' ? { role_exclude: 'Promotor' } : {}),
+  // ...(props.role == 'PROMOTOR' ? { role_include: 'Promotor' } : {}),
 })
 
 onMounted(() => refetch())
