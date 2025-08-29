@@ -41,16 +41,13 @@
       <CourseDataTable :subject-id="subjectId" />
     </VWindowItem>
     <VWindowItem :value="SubjectDetailTab.assessmentWeight">
-      <VCard>
-        <VCardText>
-          Placeholder for Assessment Weight content.
-        </VCardText>
-      </VCard>
+      <AssessmentWeightDataTable :subject-id="subjectId" />
     </VWindowItem>
   </VWindow>
 </template>
 
 <script setup>
+import AssessmentWeightDataTable from '@/views/assessment-weight/assessment-weight-data-table.vue'
 import CourseDataTable from '@/views/course/course-data-table.vue'
 import SubjectDetailSummary from '@/views/subject/detail/subject-detail-summary.vue'
 import { SubjectDetailTab } from '@/views/subject/subject-detail-navigation'

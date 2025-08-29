@@ -48,7 +48,7 @@
                 <VChip
                   color="primary"
                   size="small"
-                  class="ml-2"
+                  class="ms-2"
                 >
                   {{ currentExamType }}
                 </VChip>

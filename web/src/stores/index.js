@@ -4,6 +4,7 @@ import app from './modules/app'
 
 import dashboard from './modules/dashboard'
 
+import assessmentWeight from './modules/assessment-weight'
 import course from './modules/course'
 import subject from './modules/subject'
 
@@ -18,8 +19,10 @@ const store = new Store({
   modules: {
     app,
     dashboard,
-    subject,
+    
     course,
+    subject,
+    assessmentWeight,
     
     class: classGroup,
     profile,
