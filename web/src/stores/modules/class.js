@@ -1,33 +1,44 @@
 import axiosInstance from "@/utils/axios"
 import { toast } from "vue-sonner"
 
+// Bentuk data dasar untuk form pembuatan/pembaruan rombel
 const form = {
   name: "",
-  homeroomId: "",
+  homeroomId: "", // ID untuk Wali Kelas
 }
 
 const classGroup = {
   namespaced: true,
   state: {
+    // State untuk indikator loading pada berbagai operasi
     loading: {
-      reports: false,
-      report: false,
-      form: false,
+      reports: false, // untuk get all
+      report: false,  // untuk get by id
+      form: false,    // untuk create, update, delete
     },
+
+    // Opsi untuk tabel (paginasi & pencarian)
     table_options: {
       page: 1,
-      page_size: 5,
+      page_size: 10,
       total_pages: 0,
       total_items: 0,
       search: "",
     },
+
+    // Daftar semua rombel
     reports: [],
+
+    // Data satu rombel yang dipilih
     report: {},
     
-    teachers: [], // For homeroom teacher selection
-    students: [], // For student assignment
+    // Daftar guru untuk pilihan Wali Kelas
+    list_teacher: [],
     
+    // Data yang sedang diisi di form
     form: { ...form },
+
+    // Flag untuk menandakan mode update, berisi ID rombel yang diupdate
     is_update: false,
   },
   mutations: {
@@ -43,29 +54,24 @@ const classGroup = {
     SET_REPORT(state, payload) {
       state.report = payload
     },
-    SET_TEACHERS(state, payload) {
-      state.teachers = payload
-    },
-    SET_STUDENTS(state, payload) {
-      state.students = payload
+    SET_LIST_TEACHER(state, payload) {
+      state.list_teacher = payload
     },
     SET_FORM(state, payload) {
       state.form[payload.key] = payload.value
     },
     RESET_FORM(state) {
       state.form = { ...form }
+      state.is_update = false
     },
     SET_IS_UPDATE(state, payload) {
       state.is_update = payload
     },
   },
   actions: {
+    // Mengambil daftar semua rombel dari server
     getReports: async (context, params) => {
-      context.commit("SET_LOADING", {
-        key: "reports",
-        value: true,
-      })
-
+      context.commit("SET_LOADING", { key: "reports", value: true })
       try {
         const result = await axiosInstance({
           url: `/class-group`,
@@ -75,358 +81,195 @@ const classGroup = {
             search: context.state.table_options.search,
             page: context.state.table_options.page,
             page_size: context.state.table_options.page_size,
-
-            // Add cache buster for fresh results
-            _t: new Date().getTime(),
           },
         })
 
-        context.commit("SET_REPORTS", result.data.data)
+        context.commit("SET_REPORTS", result.data?.data || [])
 
-        context.commit("SET_TABLE_OPTIONS", {
-          page: result.data.pagination.page,
-          page_size: result.data.pagination.page_size,
-          total_pages: result.data.pagination.total_pages,
-          total_items: result.data.pagination.total_items,
-        })
+        if (result.data && result.data.pagination) {
+          context.commit("SET_TABLE_OPTIONS", result.data.pagination)
+        }
       } catch (error) {
-        console.log(error)
-        toast.error(error.response?.data?.message || "Failed to fetch class groups")
+        console.error(error)
+        toast.error(error.response?.data?.message || 'Gagal memuat daftar Rombel')
       } finally {
-        context.commit("SET_LOADING", {
-          key: "reports",
-          value: false,
-        })
+        context.commit("SET_LOADING", { key: "reports", value: false })
       }
     },
 
-    getReport: async (context, classId) => {
-      context.commit("SET_LOADING", {
-        key: "report",
-        value: true,
-      })
-      
+    // Mengambil data satu rombel berdasarkan ID
+    getReport: async (context, classGroupId) => {
+      context.commit("SET_LOADING", { key: "report", value: true })
       try {
         const result = await axiosInstance({
           method: "GET",
-          url: `/class-group/${classId}`,
+          url: `/class-group/${classGroupId}`,
         })
 
         context.commit("SET_REPORT", result.data.data)
       } catch (error) {
-        console.log(error)
-        toast.error(error.response?.data?.message || "Failed to fetch class details")
+        console.error(error)
+        toast.error(error.response?.data?.message || 'Gagal memuat data Rombel')
       } finally {
-        context.commit("SET_LOADING", {
-          key: "report",
-          value: false,
-        })
+        context.commit("SET_LOADING", { key: "report", value: false })
       }
     },
-
+    
+    // Mengambil data yang diperlukan sebelum menampilkan form (misal: daftar guru)
     fetchBeforeForm: async context => {
       context.commit("SET_LOADING", { key: "form", value: true })
-      
       try {
-        // Fetch teachers for homeroom selection
-        const teacherResult = await axiosInstance({
+        const result = await axiosInstance({
           method: "GET",
-          url: `/user`,
-          params: {
-            role: "TEACHER",
-            page_size: 100, // Get more teachers
-          },
+          url: `/user`, // Asumsi endpoint untuk mengambil user
+          params: { role: "TEACHER", page_size: 1000 }, // Mengambil semua guru
         })
 
-        context.commit("SET_TEACHERS", teacherResult.data.data)
-        
-        const studentResult = await axiosInstance({
-          method: "GET",
-          url: `/user`,
-          params: {
-            role: "STUDENT",
-            page_size: 100, // Get more students
-          },
-        })
-
-        context.commit("SET_STUDENTS", studentResult.data.data)
+        context.commit("SET_LIST_TEACHER", result.data.data)
       } catch (error) {
-        console.log(error)
-        toast.error("Failed to load form data")
+        console.error(error)
+        toast.error("Gagal memuat daftar guru.")
       } finally {
         context.commit("SET_LOADING", { key: "form", value: false })
       }
     },
 
-    create: async context => {
-      context.commit("SET_LOADING", {
-        key: "form",
-        value: true,
-      })
-      
+    // Membuat rombel baru
+    create: async (context, payload) => {
+      context.commit("SET_LOADING", { key: "form", value: true })
       try {
-        const data = context.state.form
-
         const result = await axiosInstance({
           method: "POST",
           url: `/class-group`,
-          data: {
-            name: data.name,
-            homeroomId: data.homeroomId,
-          },
+          data: payload || context.state.form,
         })
 
-        toast.success(result.data.message || "Class created successfully")
-        context.dispatch("getReports")
-
+        toast.success(result.data.message || "Rombel berhasil dibuat.")
+        context.dispatch("getReports") // Refresh daftar rombel
+        
         return true
       } catch (error) {
-        console.log(error)
-        toast.error(error.response?.data?.message || "Failed to create class")
+        console.error(error)
+        toast.error(error.response?.data?.message || "Gagal membuat Rombel.")
         
         return false
       } finally {
-        context.commit("SET_LOADING", {
-          key: "form",
-          value: false,
-        })
+        context.commit("SET_LOADING", { key: "form", value: false })
       }
     },
-
-    setFormUpdate: async (context, classId) => {
-      context.commit("SET_LOADING", {
-        key: "form",
-        value: true,
-      })
-      
+    
+    // Menyiapkan form untuk mode update dengan data yang ada
+    setFormUpdate: async (context, classGroupId) => {
+      context.commit("SET_LOADING", { key: "form", value: true })
       try {
         const result = await axiosInstance({
           method: "GET",
-          url: `/class-group/${classId}`,
+          url: `/class-group/${classGroupId}`,
         })
 
         const data = result.data.data
 
-        context.commit("SET_IS_UPDATE", classId)
-
-        // Reset form first
-        context.commit("RESET_FORM")
-
-        // Use SET_FORM mutation for each field
-        context.commit("SET_FORM", { key: "id", value: classId })
-        context.commit("SET_FORM", { key: "name", value: data.name || "" })
-        context.commit("SET_FORM", { key: "homeroomId", value: data.homeroomId || "" })
-        
-        // If there are students assigned, you might want to handle that too
-        // context.commit("SET_FORM", { key: "students", value: data.students || [] })
+        context.commit("SET_IS_UPDATE", classGroupId)
+        context.commit("SET_FORM", { key: "name", value: data.name })
+        context.commit("SET_FORM", { key: "homeroomId", value: data.homeroom.id })
       } catch (error) {
-        console.log(error)
-        toast.error("Failed to load class data")
+        console.error(error)
+        toast.error("Gagal memuat data Rombel untuk diubah.")
       } finally {
-        context.commit("SET_LOADING", {
-          key: "form",
-          value: false,
-        })
+        context.commit("SET_LOADING", { key: "form", value: false })
       }
     },
 
-    update: async (context, classId) => {
-      context.commit("SET_LOADING", {
-        key: "form",
-        value: true,
-      })
-      
+    // Memperbarui data rombel
+    update: async (context, payload) => {
+      context.commit("SET_LOADING", { key: "form", value: true })
       try {
-        const data = context.state.form
+        const classGroupId = context.state.is_update
 
         const result = await axiosInstance({
           method: "PUT",
-          url: `/class-group/${classId}`,
-          data: {
-            name: data.name,
-            homeroomId: data.homeroomId,
-          },
+          url: `/class-group/${classGroupId}`,
+          data: payload || context.state.form,
         })
 
-        toast.success(result.data.message || "Class updated successfully")
-        context.dispatch("getReports")
-
+        toast.success(result.data.message || "Rombel berhasil diperbarui.")
+        context.dispatch("getReports") // Refresh daftar rombel
+        
         return true
       } catch (error) {
-        console.log(error)
-        toast.error(error.response?.data?.message || "Failed to update class")
+        console.error(error)
+        toast.error(error.response?.data?.message || "Gagal memperbarui Rombel.")
         
         return false
       } finally {
-        context.commit("SET_LOADING", {
-          key: "form",
-          value: false,
-        })
+        context.commit("SET_LOADING", { key: "form", value: false })
       }
     },
 
-    delete: async (context, classId) => {
-      context.commit("SET_LOADING", {
-        key: "form",
-        value: true,
-      })
-      
+    // Menghapus rombel
+    delete: async (context, classGroupId) => {
+      context.commit("SET_LOADING", { key: "form", value: true })
       try {
         const result = await axiosInstance({
           method: "DELETE",
-          url: `/class-group/${classId}`,
+          url: `/class-group/${classGroupId}`,
         })
 
-        toast.success(result.data.message || "Class deleted successfully")
-        context.dispatch("getReports")
+        toast.success(result.data.message || "Rombel berhasil dihapus.")
+        context.dispatch("getReports") // Refresh daftar rombel
         
         return true
       } catch (error) {
-        console.log(error)
-        toast.error(error.response?.data?.message || "Failed to delete class")
+        console.error(error)
+        toast.error(error.response?.data?.message || "Gagal menghapus Rombel.")
         
         return false
       } finally {
-        context.commit("SET_LOADING", {
-          key: "form",
-          value: false,
-        })
+        context.commit("SET_LOADING", { key: "form", value: false })
       }
     },
-
-    // Additional methods for managing students in a class
-    addStudentsToClass: async (context, { classId, studentIds }) => {
-      context.commit("SET_LOADING", {
-        key: "form",
-        value: true,
-      })
-      
+    
+    // Menambahkan/memperbarui siswa dalam rombel
+    updateStudents: async (context, { classGroupId, studentIds }) => {
+      context.commit("SET_LOADING", { key: "form", value: true })
       try {
         const result = await axiosInstance({
           method: "PUT",
-          url: `/class-group/${classId}/students`,
-          data: {
-            studentIds: Array.isArray(studentIds) ? studentIds : [studentIds],
-          },
+          url: `/class-group/${classGroupId}/students`,
+          data: { studentIds },
         })
 
-        toast.success(result.data.message || "Students added to class successfully")
+        toast.success(result.data.message || "Siswa berhasil ditambahkan ke rombel.")
         
         return true
       } catch (error) {
-        console.log(error)
-        toast.error(error.response?.data?.message || "Failed to add students to class")
+        console.error(error)
+        toast.error(error.response?.data?.message || "Gagal menambahkan siswa.")
         
         return false
       } finally {
-        context.commit("SET_LOADING", {
-          key: "form",
-          value: false,
-        })
+        context.commit("SET_LOADING", { key: "form", value: false })
       }
     },
 
-    removeStudentFromClass: async (context, { classId, studentIds }) => {
-      context.commit("SET_LOADING", {
-        key: "form",
-        value: true,
-      })
-      
-      try {
-        // Handle single studentId or array of studentIds
-        const idsArray = Array.isArray(studentIds) ? studentIds : [studentIds]
-        
-        // Process each student removal
-        const promises = idsArray.map(studentId => 
-          axiosInstance({
-            method: "DELETE",
-            url: `/class-group/${classId}/students/${studentId}`,
-          }),
-        )
-        
-        // Wait for all removals to complete
-        await Promise.all(promises)
-        
-        toast.success("Students removed from class successfully")
-        
-        // Refresh the class report to update student counts
-        await context.dispatch("getReport", classId)
-        
-        return true
-      } catch (error) {
-        console.log(error)
-        toast.error(error.response?.data?.message || "Failed to remove students from class")
-        
-        return false
-      } finally {
-        context.commit("SET_LOADING", {
-          key: "form",
-          value: false,
-        })
-      }
-    },
-
-    // Get students in a class
-    getClassStudents: async (context, classId) => {
-      context.commit("SET_LOADING", {
-        key: "report",
-        value: true,
-      })
-      
-      try {
-        const result = await axiosInstance({
-          method: "GET",
-          url: `/user`,
-          params: {
-            role: "STUDENT",
-            class_group_id: classId,
-            page_size: 100,
-          },
-        })
-
-        // Save to store for reference
-        context.commit("SET_REPORT", { ...context.state.report, students: result.data.data })
-        
-        return result.data.data
-      } catch (error) {
-        console.log(error)
-        toast.error(error.response?.data?.message || "Failed to fetch class students")
-        
-        return []
-      } finally {
-        context.commit("SET_LOADING", {
-          key: "report",
-          value: false,
-        })
-      }
-    },
-
-    fetchStudents: async (context, { classId } = {}) => {
+    // Menghapus siswa dari rombel
+    removeStudents: async (context, { classGroupId, studentIds }) => {
       context.commit("SET_LOADING", { key: "form", value: true })
-      
       try {
-        // Fetch students not in this class
         const result = await axiosInstance({
-          method: "GET",
-          url: `/user`,
-          params: {
-            role: "STUDENT",
-            class_group_id_not: classId,
-            page_size: 100,
-
-            // Add cache buster for fresh results
-            _t: new Date().getTime(),
-          },
+          method: "DELETE",
+          url: `/class-group/${classGroupId}/students`,
+          data: { studentIds },
         })
 
-        context.commit("SET_STUDENTS", result.data.data)
+        toast.success(result.data.message || "Siswa berhasil dihapus dari rombel.")
         
-        return result.data.data
+        return true
       } catch (error) {
-        console.log(error)
-        toast.error("Failed to load students")
+        console.error(error)
+        toast.error(error.response?.data?.message || "Gagal menghapus siswa.")
         
-        return []
+        return false
       } finally {
         context.commit("SET_LOADING", { key: "form", value: false })
       }

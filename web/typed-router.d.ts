@@ -43,7 +43,6 @@ declare module 'vue-router/auto/routes' {
     '$error': RouteRecordInfo<'$error', '/:error(.*)', { error: ParamValue<true> }, { error: ParamValue<false> }>,
     'calendar': RouteRecordInfo<'calendar', '/calendar', Record<never, never>, Record<never, never>>,
     'class': RouteRecordInfo<'class', '/class', Record<never, never>, Record<never, never>>,
-    'class-class-form-drawer': RouteRecordInfo<'class-class-form-drawer', '/class/class-form-drawer', Record<never, never>, Record<never, never>>,
     'content-file': RouteRecordInfo<'content-file', '/content/file', Record<never, never>, Record<never, never>>,
     'login': RouteRecordInfo<'login', '/login', Record<never, never>, Record<never, never>>,
     'not-authorized': RouteRecordInfo<'not-authorized', '/not-authorized', Record<never, never>, Record<never, never>>,

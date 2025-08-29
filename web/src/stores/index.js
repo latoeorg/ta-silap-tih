@@ -24,7 +24,9 @@ const store = new Store({
     subject,
     assessmentWeight,
     
+    classGroup,
     class: classGroup,
+    
     profile,
     setting,
     user,
