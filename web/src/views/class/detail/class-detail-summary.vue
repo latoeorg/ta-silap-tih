@@ -130,11 +130,9 @@
       </VRow>
     </div>
 
-    <ManageStudentsModal
-      v-model="isStudentModalOpen"
+    <ClassDetailStudentAssignModal
+      v-model:open="isStudentModalOpen"
       :class-group-id="report.id"
-      :current-students="report.students"
-      @refresh="$emit('refresh')"
     />
   </div>
 </template>
@@ -144,10 +142,7 @@ import UserDataTable from '@/views/user/user-data-table.vue'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader'
-
-// --- Placeholder untuk Modal ---
-// Anda perlu membuat komponen modal ini secara terpisah
-// import ManageStudentsModal from './ManageStudentsModal.vue'
+import ClassDetailStudentAssignModal from './class-detail-student-assign-modal.vue'
 
 const props = defineProps({
   report: {
@@ -162,23 +157,8 @@ const props = defineProps({
 
 defineEmits(['edit', 'refresh'])
 
-// --- Composables ---
 const router = useRouter()
-
-// --- State ---
-const searchQuery = ref('')
 const isStudentModalOpen = ref(false)
-
-// --- Computed Properties ---
-const filteredStudents = computed(() => {
-  if (!props.report?.students) return []
-  if (!searchQuery.value) return props.report.students
-
-  return props.report.students.filter(student =>
-    student.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchQuery.value.toLowerCase()),
-  )
-})
 
 const classDetails = computed(() => [
   {
@@ -198,15 +178,10 @@ const classDetails = computed(() => [
   },
 ])
 
-// --- Methods ---
-const goBack = () => {
-  router.go(-1)
-}
-
 const openStudentManagementModal = () => {
-  // Logika untuk membuka modal pengelolaan siswa
-  // isStudentModalOpen.value = true;
-  alert('Membuka modal untuk mengelola siswa...')
+  isStudentModalOpen.value = true
+
+  // alert('Membuka modal untuk mengelola siswa...')
 }
 
 const formatDate = dateStr => {

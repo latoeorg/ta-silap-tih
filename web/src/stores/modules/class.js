@@ -115,6 +115,23 @@ const classGroup = {
       }
     },
     
+    getStudentIds: async (context, classGroupId) => {
+      context.commit("SET_LOADING", { key: "report", value: true })
+      try {
+        const result = await axiosInstance({
+          method: "GET",
+          url: `/class-group/${classGroupId}/students`,
+        })
+
+        return result.data.data
+      } catch (error) {
+        console.error(error)
+        toast.error(error.response?.data?.message || 'Gagal memuat data Rombel')
+      } finally {
+        context.commit("SET_LOADING", { key: "report", value: false })
+      }
+    },
+    
     // Mengambil data yang diperlukan sebelum menampilkan form (misal: daftar guru)
     fetchBeforeForm: async context => {
       context.commit("SET_LOADING", { key: "form", value: true })

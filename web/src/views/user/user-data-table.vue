@@ -34,20 +34,22 @@
           v-model:options="table_options"
           v-model:items-per-page="table_options.page_size"
           v-model:page="table_options.page"
+          v-model="selected"
           :items-length="table_options.total_items"
           :search="table_options.search"
           :headers="headers"
           :items="reports"
           :loading="loading"
           class="text-no-wrap"
+
+          :show-select="showSelect"
+          item-value="id"
           @update:options="refetch"
         >
           <template #item.first_name="{ item }">
             <CardUser :user="item" />
           </template>
 
-
-          <!-- Actions -->
           <template #item.actions="{ item }">
             <div class="d-flex gap-1 justify-end">
               <IconBtn @click="handleUpdate(item.id)">
@@ -63,15 +65,19 @@
     </VCard>
 
     <UserFormDrawer
+      v-if="!hideAddButton || !hideActions"
       :open="drawerForm"
       :role="role"
       @handle-close="handleDrawerForm"
+      @on-submit-success="refetch"
     />
   </div>
 </template>
 
-
 <script setup>
+import axiosInstance from "@/utils/axios"
+import { computed, onMounted, ref } from 'vue' // 👈 Add computed
+import { toast } from "vue-sonner"
 import UserFormDrawer from '../../views/user/user-form-drawer.vue'
 
 const props = defineProps({
@@ -87,7 +93,6 @@ const props = defineProps({
     type: String,
     default: 'Pengurusan Pengguna',
   },
-  
   role: {
     type: String,
     default: 'STUDENT',
@@ -96,17 +101,86 @@ const props = defineProps({
     type: String,
     default: '',
   },
+
+  // 👇 --- NEW PROPS ---
+  showSelect: {
+    type: Boolean,
+    default: false,
+  },
+  modelValue: {
+    type: Array,
+    default: () => [],
+  },
 })
+
+// 👇 --- NEW EMIT DEFINITION ---
+const emit = defineEmits(['update:modelValue'])
+
+// 👇 --- NEW COMPUTED PROPERTY FOR V-MODEL ---
+const selected = computed({
+  get() {
+    return props.modelValue
+  },
+  set(value) {
+    emit('update:modelValue', value)
+  },
+})
+
+const store = useVuex()
+
+// --- Local State Management ---
+const loading = ref(false)
+const reports = ref([])
+
+const table_options = ref({
+  page: 1,
+  page_size: 5,
+  total_pages: 0,
+  total_items: 0,
+  search: "",
+})
+
+const refetch = async () => {
+  loading.value = true
+  try {
+    const params = {
+      ...(props.role ? { role: props.role } : {}),
+      ...(props.classGroupId ? { class_group_id: props.classGroupId } : {}),
+      search: table_options.value.search,
+      page: table_options.value.page,
+      page_size: table_options.value.page_size,
+    }
+
+    const { data: result } = await axiosInstance({
+      url: `/user`,
+      method: "GET",
+      params,
+    })
+
+    reports.value = result.data
+    table_options.value.page = result.pagination.page
+    table_options.value.page_size = result.pagination.page_size
+    table_options.value.total_pages = result.pagination.total_pages
+    table_options.value.total_items = result.pagination.total_items
+  } catch (error) {
+    console.error(error)
+    toast.error(error.response?.data?.message || 'Failed to fetch data')
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => refetch())
 
 const headers = ref(
   [
-    { title: 'Pengguna',  key: 'first_name' },
-    { title: 'E-mel',  key: 'email' },
-    { title: 'Peranan',  key: 'role' },
-    { title: 'Tindakan', align: 'end',  key: 'actions', sortable: false },
+    { title: 'Pengguna', key: 'first_name' },
+    { title: 'E-mel', key: 'email' },
+    { title: 'Peranan', key: 'role' },
+    { title: 'Tindakan', align: 'end', key: 'actions', sortable: false },
   ].filter(h => {
     // eslint-disable-next-line sonarjs/prefer-single-boolean-return
-    if(props.hideActions && (h.key == 'actions' || h.key == 'role')) return false
+    if (props.hideActions && (h.key == 'actions' || h.key == 'role')) return false
     
     return true
   }),
@@ -114,10 +188,8 @@ const headers = ref(
 
 const drawerForm = ref(false)
 
-const store = useVuex()
-
 const handleDrawerForm = value => {
-  if(value) store.dispatch('user/fetchBeforeForm')
+  if (value) store.dispatch('user/fetchBeforeForm')
   drawerForm.value = value
 }
 
@@ -128,23 +200,11 @@ const handleUpdate = async id => {
 
 const handleDelete = async id => {
   const confirm = await SwalDelete()
-  if(confirm) await store.dispatch("user/delete", id).then(res => {
-    if(res) refetch()
-  })
+  if (confirm) {
+    const success = await store.dispatch("user/delete", id)
+    if (success) {
+      refetch()
+    }
+  }
 }
-
-const loading = computed(() => store.state.user.loading.reports)
-const reports = computed(() => store.state.user.reports)
-
-const table_options = computed({
-  get: () => store.state.user.table_options,
-  set: value => store.commit('user/SET_TABLE_OPTIONS', value),
-})
-
-const refetch = () => store.dispatch('user/getReports', {
-  ...(props.role ? { role: props.role } : {}),
-  ...(props.classGroupId ? { class_id: props.classGroupId } : {}),
-})
-
-onMounted(() => refetch())
 </script>

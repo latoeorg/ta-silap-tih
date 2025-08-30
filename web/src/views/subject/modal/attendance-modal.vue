@@ -1,31 +1,44 @@
 # @format
 
 <template>
-  <VDialog v-model="dialogModel" max-width="1000px" persistent>
+  <VDialog
+    v-model="dialogModel"
+    max-width="1000px"
+    persistent
+  >
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
         <span>Absensi: {{ courseName }}</span>
-        <VBtn variant="text" icon="tabler-x" @click="closeDialog" />
+        <VBtn
+          variant="text"
+          icon="tabler-x"
+          @click="closeDialog"
+        />
       </VCardTitle>
 
       <VDivider />
 
       <VCardText>
-        <div v-if="loading" class="d-flex justify-center py-8">
+        <div
+          v-if="loading"
+          class="d-flex justify-center py-8"
+        >
           <VProgressCircular indeterminate />
         </div>
         <div v-else>
           <!-- Header with date picker -->
           <div class="d-flex flex-wrap justify-space-between align-center mb-4 gap-3">
             <div class="d-flex align-center gap-3">
-              <h4 class="text-h6 mb-0">Absensi Siswa</h4>
+              <h4 class="text-h6 mb-0">
+                Absensi Siswa
+              </h4>
 
               <VTextField
                 v-model="selectedDate"
                 type="date"
                 density="comfortable"
                 variant="outlined"
-                style="min-width: 200px"
+                style="min-inline-size: 200px"
                 :max="getCurrentDate()"
                 @update:model-value="handleDateChange"
               />
@@ -53,10 +66,19 @@
 
           <!-- Attendance summary cards -->
           <div class="d-flex flex-wrap gap-4 mb-6">
-            <VCard width="240" color="primary" variant="tonal" class="flex-grow-1">
+            <VCard
+              width="240"
+              color="primary"
+              variant="tonal"
+              class="flex-grow-1"
+            >
               <VCardItem>
                 <template #prepend>
-                  <VAvatar rounded="lg" color="primary" variant="flat">
+                  <VAvatar
+                    rounded="lg"
+                    color="primary"
+                    variant="flat"
+                  >
                     <VIcon icon="tabler-users" />
                   </VAvatar>
                 </template>
@@ -65,10 +87,19 @@
               </VCardItem>
             </VCard>
 
-            <VCard width="240" color="success" variant="tonal" class="flex-grow-1">
+            <VCard
+              width="240"
+              color="success"
+              variant="tonal"
+              class="flex-grow-1"
+            >
               <VCardItem>
                 <template #prepend>
-                  <VAvatar rounded="lg" color="success" variant="flat">
+                  <VAvatar
+                    rounded="lg"
+                    color="success"
+                    variant="flat"
+                  >
                     <VIcon icon="tabler-check" />
                   </VAvatar>
                 </template>
@@ -77,10 +108,19 @@
               </VCardItem>
             </VCard>
 
-            <VCard width="240" color="warning" variant="tonal" class="flex-grow-1">
+            <VCard
+              width="240"
+              color="warning"
+              variant="tonal"
+              class="flex-grow-1"
+            >
               <VCardItem>
                 <template #prepend>
-                  <VAvatar rounded="lg" color="warning" variant="flat">
+                  <VAvatar
+                    rounded="lg"
+                    color="warning"
+                    variant="flat"
+                  >
                     <VIcon icon="tabler-alert-triangle" />
                   </VAvatar>
                 </template>
@@ -91,7 +131,10 @@
           </div>
 
           <!-- Attendance Table -->
-          <VCard v-if="courseStudents.length > 0" border>
+          <VCard
+            v-if="courseStudents.length > 0"
+            border
+          >
             <VCardText class="pa-4">
               <div class="d-flex justify-space-between align-center mb-4">
                 <VTextField
@@ -126,11 +169,21 @@
                 <!-- Student Name -->
                 <template #item.name="{ item }">
                   <div class="d-flex align-center">
-                    <VAvatar size="32" color="primary" variant="tonal" class="me-2">
-                      <VIcon size="16" icon="tabler-user" />
+                    <VAvatar
+                      size="32"
+                      color="primary"
+                      variant="tonal"
+                      class="me-2"
+                    >
+                      <VIcon
+                        size="16"
+                        icon="tabler-user"
+                      />
                     </VAvatar>
                     <div>
-                      <div class="font-weight-medium">{{ item.name }}</div>
+                      <div class="font-weight-medium">
+                        {{ item.name }}
+                      </div>
                       <div class="text-caption text-disabled">
                         {{ item.email }}
                       </div>
@@ -154,7 +207,9 @@
                   <div class="d-flex gap-2 justify-end">
                     <IconBtn @click="editAttendance(item)">
                       <VIcon icon="tabler-pencil" />
-                      <VTooltip activator="parent">Edit Absensi</VTooltip>
+                      <VTooltip activator="parent">
+                        Edit Absensi
+                      </VTooltip>
                     </IconBtn>
                   </div>
                 </template>
@@ -167,11 +222,19 @@
   </VDialog>
 
   <!-- Attendance Form Dialog -->
-  <VDialog v-model="attendanceFormDialog" max-width="700px" persistent>
+  <VDialog
+    v-model="attendanceFormDialog"
+    max-width="700px"
+    persistent
+  >
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
         <span>{{ selectedStudent ? `Absensi: ${selectedStudent.name}` : "Input Absensi Massal" }}</span>
-        <VBtn variant="text" icon="tabler-x" @click="closeAttendanceForm" />
+        <VBtn
+          variant="text"
+          icon="tabler-x"
+          @click="closeAttendanceForm"
+        />
       </VCardTitle>
 
       <VDivider />
@@ -179,7 +242,10 @@
       <VCardText>
         <VForm ref="attendanceFormRef">
           <!-- Student Selection (only for batch attendance) -->
-          <div v-if="!selectedStudent" class="mb-4">
+          <div
+            v-if="!selectedStudent"
+            class="mb-4"
+          >
             <VSelect
               v-model="attendanceForm.selectedStudents"
               :items="courseStudents"
@@ -202,13 +268,23 @@
           </div>
 
           <!-- Show selected student when editing -->
-          <div v-else-if="selectedStudent" class="mb-4">
+          <div
+            v-else-if="selectedStudent"
+            class="mb-4"
+          >
             <div class="d-flex align-center py-2">
-              <VAvatar size="36" color="primary" variant="tonal" class="me-3">
+              <VAvatar
+                size="36"
+                color="primary"
+                variant="tonal"
+                class="me-3"
+              >
                 <VIcon icon="tabler-user" />
               </VAvatar>
               <div>
-                <div class="font-weight-medium">{{ selectedStudent.name }}</div>
+                <div class="font-weight-medium">
+                  {{ selectedStudent.name }}
+                </div>
                 <div class="text-caption text-medium-emphasis">
                   {{ selectedStudent.email }}
                 </div>
@@ -244,10 +320,18 @@
 
       <VCardActions class="pa-4">
         <VSpacer />
-        <VBtn variant="text" color="secondary" @click="closeAttendanceForm">
+        <VBtn
+          variant="text"
+          color="secondary"
+          @click="closeAttendanceForm"
+        >
           Batal
         </VBtn>
-        <VBtn color="primary" :loading="savingAttendance" @click="saveAttendance">
+        <VBtn
+          color="primary"
+          :loading="savingAttendance"
+          @click="saveAttendance"
+        >
           {{ editingAttendance ? "Perbarui" : "Simpan" }}
         </VBtn>
       </VCardActions>
@@ -266,18 +350,24 @@ const props = defineProps({
   courseName: { type: String, default: 'Course' },
   open: { type: Boolean, default: false },
 })
+
 const emit = defineEmits(['update:open', 'refresh'])
 
 // Dialog state
 const dialogModel = computed({
   get: () => props.open,
-  set: (value) => emit('update:open', value),
+  set: value => emit('update:open', value),
 })
+
+
 // Helper functions
 const getCurrentDate = () => {
   const now = new Date()
+  
   return now.toISOString().split('T')[0]
 }
+
+
 // UI state
 const loading = ref(false)
 const exportLoading = ref(false)
@@ -295,6 +385,7 @@ const editingAttendance = ref(false)
 // Data collections
 const courseStudents = ref([])
 const attendances = ref([])
+
 const attendanceStatuses = [
   { title: 'Hadir', value: 'PRESENT' },
   { title: 'Tidak Hadir', value: 'ABSENT' },
@@ -328,8 +419,9 @@ const absentCount = computed(() => {
 const filteredStudents = computed(() => {
   return courseStudents.value.map(student => {
     const attendance = attendances.value.find(
-      a => a.userId === student.id
+      a => a.userId === student.id,
     )
+    
     return {
       ...student,
       attendance: attendance || null,
@@ -339,23 +431,27 @@ const filteredStudents = computed(() => {
 
 
 
-const formatStatus = (status) => {
+const formatStatus = status => {
   const statusMap = {
     'PRESENT': 'Hadir',
     'ABSENT': 'Tidak Hadir',
     'EXCUSED': 'Izin',
     'SICK': 'Sakit',
   }
+
+  
   return statusMap[status] || 'Belum Diisi'
 }
 
-const getStatusColor = (status) => {
+const getStatusColor = status => {
   const colorMap = {
     'PRESENT': 'success',
     'ABSENT': 'error',
     'EXCUSED': 'warning',
     'SICK': 'info',
   }
+
+  
   return colorMap[status] || 'grey'
 }
 
@@ -368,9 +464,11 @@ const apiOperation = async (method, url, data = null, params = null, successMsg 
 
     const result = await axiosInstance(config)
     if (successMsg) toast.success(successMsg)
+    
     return result.data
   } catch (error) {
     const errorMsg = error.response?.data?.message || `Failed to ${method.toLowerCase()} resource`
+
     toast.error(errorMsg)
     throw error
   }
@@ -382,6 +480,7 @@ const loadData = async () => {
   try {
     // Fetch course with its students
     const result = await apiOperation('GET', `/course/${props.courseId}`, null, { include: 'students' })
+
     courseStudents.value = result.data?.students || []
 
     // Load attendances for the selected date
@@ -399,6 +498,7 @@ const loadAttendances = async () => {
       courseId: props.courseId,
       date: selectedDate.value,
     })
+
     attendances.value = result.data || []
   } catch (error) {
     console.error('Error loading attendances:', error)
@@ -429,7 +529,7 @@ const closeAttendanceForm = () => {
   resetAttendanceForm()
 }
 
-const editAttendance = (student) => {
+const editAttendance = student => {
   selectedStudent.value = student
   editingAttendance.value = true
 
@@ -466,7 +566,7 @@ const saveAttendance = async () => {
           status: attendanceForm.value.status,
         },
         null,
-        'Attendance updated successfully'
+        'Attendance updated successfully',
       )
     } else if (selectedStudent.value) {
       // Create new attendance for single student
@@ -480,7 +580,7 @@ const saveAttendance = async () => {
           status: attendanceForm.value.status,
         },
         null,
-        'Attendance created successfully'
+        'Attendance created successfully',
       )
     } else {
       // Batch create/update for multiple students
@@ -496,7 +596,7 @@ const saveAttendance = async () => {
           })),
         },
         null,
-        'Attendances created successfully'
+        'Attendances created successfully',
       )
     }
 
@@ -518,7 +618,7 @@ const exportAttendance = async () => {
       `/export/attendance/${props.courseId}`,
       null,
       { date: selectedDate.value },
-      'Attendance exported successfully'
+      'Attendance exported successfully',
     )
     toast.success('Export completed. Check your downloads folder.')
   } catch (error) {
@@ -539,20 +639,20 @@ const handleDateChange = async () => {
 // Watch for dialog open
 watch(
   () => props.open,
-  (newVal) => {
+  newVal => {
     if (newVal) {
       loadData()
     }
-  }
+  },
 )
 </script>
 
 <style scoped>
 .max-width-120 {
-  max-width: 120px;
+  max-inline-size: 120px;
 }
 
 .max-width-320 {
-  max-width: 320px;
+  max-inline-size: 320px;
 }
 </style>
