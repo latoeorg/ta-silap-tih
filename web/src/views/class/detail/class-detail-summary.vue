@@ -1,5 +1,5 @@
 <template>
-  <div class="class-detail-page">
+  <div class="class-detail-page mt-3">
     <div v-if="loading">
       <VSkeletonLoader type="article" />
       <VRow>
@@ -208,7 +208,6 @@ const getInitials = name => {
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    margin-block-end: 1.5rem;
   }
 
   .header-content {

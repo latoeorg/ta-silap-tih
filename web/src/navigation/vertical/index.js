@@ -9,6 +9,11 @@ export default [
     icon: { icon: 'tabler-smart-home' },
     to: { name: 'root' },
   },
+  {
+    title: 'Penilaian',
+    icon: { icon: 'tabler-clipboard-list' },
+    to: { name: 'course' },
+  },
   { 
     heading: 'Pengaturan',     
   },
