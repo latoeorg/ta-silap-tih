@@ -47,6 +47,8 @@ router.put(
   ClassGroupController.update
 );
 
+router.get("/:id/students", ClassGroupController.getStudentIdsByClassGroupId);
+
 router.put(
   "/:id/students",
   validate(classGroupStudentsSchema),

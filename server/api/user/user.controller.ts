@@ -104,7 +104,7 @@ export class UserController {
       const updatedUser = await UserService.update(id, data);
 
       // Remove password from response
-      const {  ...userWithoutPassword } = updatedUser;
+      const { ...userWithoutPassword } = updatedUser;
 
       ApiResponse.success({
         res,
