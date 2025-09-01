@@ -91,7 +91,10 @@ export class GradeController {
         // Teachers can see grades for courses they teach
         if (courseId) {
           // Verify teacher owns this course
-          const course = await GradeService.verifyCourseAccess(courseId as string, user.userId);
+          const course = await GradeService.verifyCourseAccess(
+            courseId as string,
+            user.userId
+          );
           if (!course) {
             throw new Error("Unauthorized: You do not teach this course");
           }
@@ -158,7 +161,10 @@ export class GradeController {
         }
       } else if (user.role === "TEACHER") {
         // Teachers can only access grades for courses they teach
-        const course = await GradeService.verifyCourseAccess(courseId, user.userId);
+        const course = await GradeService.verifyCourseAccess(
+          courseId,
+          user.userId
+        );
         if (!course) {
           return ApiResponse.error({
             res,

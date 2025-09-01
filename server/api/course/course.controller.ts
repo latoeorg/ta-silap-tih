@@ -102,7 +102,9 @@ export class CourseController {
 
       // Check if student is authorized to view this course
       if (user.role === "STUDENT") {
-        const isEnrolled = course.students?.some(student => student.id === user.userId);
+        const isEnrolled = course.students?.some(
+          (student) => student.id === user.userId
+        );
         if (!isEnrolled) {
           throw new Error("Unauthorized: You are not enrolled in this course");
         }

@@ -70,7 +70,10 @@ export class AttendanceController {
         // Teachers can see attendance for courses they teach
         if (courseId) {
           // Verify teacher owns this course
-          const course = await AttendanceService.verifyCourseAccess(courseId, user.userId);
+          const course = await AttendanceService.verifyCourseAccess(
+            courseId,
+            user.userId
+          );
           if (!course) {
             return ApiResponse.error({
               res,
@@ -135,7 +138,10 @@ export class AttendanceController {
       // Role-based access control
       if (user.role === "TEACHER") {
         // Teachers can only access their own courses
-        const course = await AttendanceService.verifyCourseAccess(courseId, user.userId);
+        const course = await AttendanceService.verifyCourseAccess(
+          courseId,
+          user.userId
+        );
         if (!course) {
           return ApiResponse.error({
             res,
