@@ -74,17 +74,43 @@ export class GradeController {
         limit = "10",
         include,
       } = req.query;
+      const user = req.user;
 
       const includeComponents = include === "components";
+
+      // Role-based filtering
+      let filters: any = {
+        courseId: courseId as string,
+        examType: examType as ExamType,
+      };
+
+      if (user.role === "STUDENT") {
+        // Students can only see their own grades
+        filters.userId = user.userId;
+      } else if (user.role === "TEACHER") {
+        // Teachers can see grades for courses they teach
+        if (courseId) {
+          // Verify teacher owns this course
+          const course = await GradeService.verifyCourseAccess(courseId as string, user.userId);
+          if (!course) {
+            throw new Error("Unauthorized: You do not teach this course");
+          }
+        }
+        // If userId is specified, use it; otherwise get all students
+        if (userId) {
+          filters.userId = userId as string;
+        }
+      } else {
+        // Admins can see all grades with any filter
+        if (userId) {
+          filters.userId = userId as string;
+        }
+      }
 
       const result = await GradeService.findAll(
         parseInt(page as string, 10),
         parseInt(limit as string, 10),
-        {
-          courseId: courseId as string,
-          userId: userId as string,
-          examType: examType as ExamType,
-        },
+        filters,
         includeComponents
       );
 
@@ -116,8 +142,32 @@ export class GradeController {
     try {
       const { userId, courseId, examType } = req.params;
       const { include } = req.query;
+      const user = req.user;
 
       const includeComponents = include === "components";
+
+      // Role-based access control
+      if (user.role === "STUDENT") {
+        // Students can only access their own grades
+        if (userId !== user.userId) {
+          return ApiResponse.error({
+            res,
+            message: "Unauthorized: You can only access your own grades",
+            statusCode: 403,
+          });
+        }
+      } else if (user.role === "TEACHER") {
+        // Teachers can only access grades for courses they teach
+        const course = await GradeService.verifyCourseAccess(courseId, user.userId);
+        if (!course) {
+          return ApiResponse.error({
+            res,
+            message: "Unauthorized: You do not teach this course",
+            statusCode: 403,
+          });
+        }
+      }
+      // Admins can access any grade
 
       const grade = await GradeService.findByKey(
         userId,

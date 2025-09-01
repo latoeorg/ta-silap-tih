@@ -486,4 +486,16 @@ export class AttendanceService {
       attendances,
     };
   }
+
+  /**
+   * Verify if a teacher has access to a course
+   */
+  static async verifyCourseAccess(courseId: string, teacherId: string) {
+    return await prisma.course.findFirst({
+      where: {
+        id: courseId,
+        teacherId: teacherId,
+      },
+    });
+  }
 }

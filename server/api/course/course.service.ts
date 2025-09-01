@@ -151,11 +151,8 @@ export class CourseService {
         },
       },
       subject: true,
-    };
-
-    // Add students if requested
-    if (include?.includes("students")) {
-      includeOptions.students = {
+      // Always include students for access control
+      students: {
         select: {
           id: true,
           name: true,
@@ -163,8 +160,8 @@ export class CourseService {
           role: true,
           studentProfile: true,
         },
-      };
-    }
+      },
+    };
 
     // Add grades if requested
     if (include?.includes("grades")) {
@@ -347,5 +344,129 @@ export class CourseService {
         },
       },
     });
+  }
+
+  /**
+   * Get courses for a specific student
+   */
+  static async findStudentCourses(
+    studentId: string,
+    page = 1,
+    limit = 10,
+    subjectId?: string
+  ): Promise<{
+    courses: Course[];
+    meta: { total: number; page: number; limit: number };
+  }> {
+    const where: any = {
+      students: {
+        some: {
+          id: studentId,
+        },
+      },
+    };
+
+    if (subjectId) {
+      where.subjectId = subjectId;
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [courses, total] = await Promise.all([
+      prisma.course.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { name: "asc" },
+        include: {
+          teacher: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+            },
+          },
+          subject: true,
+          _count: {
+            select: {
+              students: true,
+              grades: true,
+              attendances: true,
+            },
+          },
+        },
+      }),
+      prisma.course.count({ where }),
+    ]);
+
+    return {
+      courses,
+      meta: {
+        total,
+        page,
+        limit,
+      },
+    };
+  }
+
+  /**
+   * Get courses for a specific teacher
+   */
+  static async findTeacherCourses(
+    teacherId: string,
+    page = 1,
+    limit = 10,
+    subjectId?: string
+  ): Promise<{
+    courses: Course[];
+    meta: { total: number; page: number; limit: number };
+  }> {
+    const where: any = {
+      teacherId,
+    };
+
+    if (subjectId) {
+      where.subjectId = subjectId;
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [courses, total] = await Promise.all([
+      prisma.course.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { name: "asc" },
+        include: {
+          teacher: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+            },
+          },
+          subject: true,
+          _count: {
+            select: {
+              students: true,
+              grades: true,
+              attendances: true,
+            },
+          },
+        },
+      }),
+      prisma.course.count({ where }),
+    ]);
+
+    return {
+      courses,
+      meta: {
+        total,
+        page,
+        limit,
+      },
+    };
   }
 }

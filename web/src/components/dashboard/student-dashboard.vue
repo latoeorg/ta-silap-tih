@@ -586,13 +586,34 @@ const fetchUpcomingAssignments = async () => {
 
 const updateProfile = async () => {
   try {
-    // Replace with actual API call
-    console.log("Updating profile:", profileForm.value);
-    editProfile.value = false;
+    const payload = {
+      name: profileForm.value.name,
+      number: profileForm.value.number,
+      phone: profileForm.value.phone,
+      address: profileForm.value.address,
+    }
+    
+    // Call the profile update API
+    const result = await store.dispatch('profile/updateStudentProfile', payload)
+    
+    if (result) {
+      // Update the user data in the store
+      const updatedUser = { ...user.value, ...payload }
+      store.commit('app/SET_USER_APP', updatedUser)
+      localStorage.setItem('App-User', JSON.stringify(updatedUser))
+      
+      editProfile.value = false
+      
+      // Show success message
+      const { toast } = await import('vue-sonner')
+      toast.success('Profil berhasil diperbarui')
+    }
   } catch (error) {
-    console.error("Failed to update profile:", error);
+    console.error('Failed to update profile:', error)
+    const { toast } = await import('vue-sonner')
+    toast.error('Gagal memperbarui profil')
   }
-};
+}
 
 // Initialize profile form
 const initializeProfileForm = () => {

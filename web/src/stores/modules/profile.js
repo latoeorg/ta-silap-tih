@@ -53,7 +53,7 @@ const profile = {
 
       try {
         const result = await axiosInstance({
-          url: `/profile`,
+          url: `/auth/profile`,
           method: "GET",
         })
 
@@ -88,7 +88,7 @@ const profile = {
       try {
         const result = await axiosInstance({
           method: 'PUT',
-          url: `/profile`,
+          url: `/user/profile/update`,
           data: context.state.form_profile,
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -130,6 +130,33 @@ const profile = {
       } catch (error) {
         console.log(error)
         toast.error(error.response.data.message)
+      } finally {
+        context.commit('SET_LOADING', {
+          key: 'form',
+          value: false,
+        })
+      }
+    },
+    
+    async updateStudentProfile(context, payload) {
+      context.commit('SET_LOADING', {
+        key: 'form',
+        value: true,
+      })
+      try {
+        const result = await axiosInstance({
+          method: 'PUT',
+          url: `/user/profile/update`,
+          data: payload,
+        })
+
+        toast.success("Profil berhasil diperbarui")
+        
+        return true
+      } catch (error) {
+        console.log(error)
+        toast.error(error.response?.data?.message || "Gagal memperbarui profil")
+        return false
       } finally {
         context.commit('SET_LOADING', {
           key: 'form',

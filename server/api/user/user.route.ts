@@ -32,7 +32,7 @@ userRouter.put(
 // Update profile
 userRouter.put(
   "/profile/update",
-  UserMiddleware.schema,
+  authorize(["STUDENT", "TEACHER", "ADMIN"]),
   UserController.updateProfile
 );
 
