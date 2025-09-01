@@ -1,5 +1,5 @@
 <template>
-  <div class="class-detail-page">
+  <div class="class-detail-page mt-3">
     <div v-if="loading">
       <VSkeletonLoader type="article" />
       <VRow>
@@ -50,85 +50,12 @@
           cols="12"
           md="8"
         >
-          <VCard class="h-100">
-            <div class="d-flex flex-wrap align-center pa-4 gap-4">
-              <div class="card-title">
-                <VIcon
-                  icon="tabler-users"
-                  class="me-2"
-                />
-                Daftar Siswa ({{ filteredStudents.length }})
-              </div>
-              <VSpacer />
-              <VTextField
-                v-model="searchQuery"
-                placeholder="Cari siswa..."
-                prepend-inner-icon="tabler-search"
-                variant="outlined"
-                density="compact"
-                hide-details
-                clearable
-                style="max-inline-size: 300px;"
-              />
-            </div>
-
-            <VDivider />
-
-            <VCardText>
-              <div
-                v-if="!report?.students?.length"
-                class="empty-state"
-              >
-                <VIcon
-                  icon="tabler-user-off"
-                  size="64"
-                />
-                <h3 class="text-h6 mt-4">
-                  Belum Ada Siswa
-                </h3>
-                <p class="text-body-2 text-medium-emphasis mb-4">
-                  Tambahkan siswa ke rombongan belajar ini.
-                </p>
-                <VBtn
-                  color="primary"
-                  prepend-icon="tabler-users-plus"
-                  @click="openStudentManagementModal"
-                >
-                  Tambahkan Siswa
-                </VBtn>
-              </div>
-
-              <VList
-                v-else
-                lines="two"
-                class="student-list"
-              >
-                <VListItem
-                  v-for="student in filteredStudents"
-                  :key="student.id"
-                  class="student-list-item"
-                >
-                  <template #prepend>
-                    <VAvatar color="primary">
-                      <span class="font-weight-bold">{{ getInitials(student.name) }}</span>
-                    </VAvatar>
-                  </template>
-                  <VListItemTitle class="font-weight-semibold">
-                    {{ student.name }}
-                  </VListItemTitle>
-                  <VListItemSubtitle>
-                    {{ student.email }}
-                  </VListItemSubtitle>
-                </VListItem>
-                <div
-                  v-if="!filteredStudents.length"
-                  class="text-center text-medium-emphasis pa-8"
-                >
-                  Siswa tidak ditemukan.
-                </div>
-              </VList>
-            </VCardText>
-          </VCard>
+          <UserDataTable
+            title="Daftar Siswa"
+            :class-group-id="report.id"
+            hide-add-button
+            hide-actions
+          />
         </VCol>
 
         <VCol
@@ -203,23 +130,19 @@
       </VRow>
     </div>
 
-    <ManageStudentsModal
-      v-model="isStudentModalOpen"
+    <ClassDetailStudentAssignModal
+      v-model:open="isStudentModalOpen"
       :class-group-id="report.id"
-      :current-students="report.students"
-      @refresh="$emit('refresh')"
     />
   </div>
 </template>
 
 <script setup>
+import UserDataTable from '@/views/user/user-data-table.vue'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader'
-
-// --- Placeholder untuk Modal ---
-// Anda perlu membuat komponen modal ini secara terpisah
-// import ManageStudentsModal from './ManageStudentsModal.vue'
+import ClassDetailStudentAssignModal from './class-detail-student-assign-modal.vue'
 
 const props = defineProps({
   report: {
@@ -234,23 +157,8 @@ const props = defineProps({
 
 defineEmits(['edit', 'refresh'])
 
-// --- Composables ---
 const router = useRouter()
-
-// --- State ---
-const searchQuery = ref('')
 const isStudentModalOpen = ref(false)
-
-// --- Computed Properties ---
-const filteredStudents = computed(() => {
-  if (!props.report?.students) return []
-  if (!searchQuery.value) return props.report.students
-
-  return props.report.students.filter(student =>
-    student.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchQuery.value.toLowerCase()),
-  )
-})
 
 const classDetails = computed(() => [
   {
@@ -270,15 +178,10 @@ const classDetails = computed(() => [
   },
 ])
 
-// --- Methods ---
-const goBack = () => {
-  router.go(-1)
-}
-
 const openStudentManagementModal = () => {
-  // Logika untuk membuka modal pengelolaan siswa
-  // isStudentModalOpen.value = true;
-  alert('Membuka modal untuk mengelola siswa...')
+  isStudentModalOpen.value = true
+
+  // alert('Membuka modal untuk mengelola siswa...')
 }
 
 const formatDate = dateStr => {
@@ -305,7 +208,6 @@ const getInitials = name => {
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    margin-block-end: 1.5rem;
   }
 
   .header-content {

@@ -72,6 +72,21 @@ export class ClassGroupController {
     });
   }
 
+  static async getStudentIdsByClassGroupId(
+    req: Request<ClassGroupParams>,
+    res: Response
+  ) {
+    const studentIds = await ClassGroupService.getStudentIdsByClassGroupId({
+      class_group_id: req.params.id,
+    });
+
+    ApiResponse.success({
+      res,
+      data: studentIds,
+      message: "Class group student IDs retrieved successfully",
+    });
+  }
+
   static async updateStudents(
     req: Request<ClassGroupParams, {}, ClassGroupStudentsInput>,
     res: Response

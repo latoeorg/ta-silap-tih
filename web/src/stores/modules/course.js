@@ -1,6 +1,7 @@
 import axiosInstance from "@/utils/axios"
 import { toast } from "vue-sonner"
 
+// Initial state for the course form
 const form = {
   name: "",
   subjectId: "",
@@ -11,8 +12,8 @@ const course = {
   namespaced: true,
   state: {
     loading: {
-      reports: false,
-      report: false,
+      courses: false, // Renamed from reports
+      course: false,  // Renamed from report
       form: false,
     },
     table_options: {
@@ -20,12 +21,13 @@ const course = {
       page_size: 5,
       total_pages: 0,
       total_items: 0,
-
       search: "",
     },
-    reports: [],
-    report: {},
+    courses: [], // Renamed from reports
+    course: {},  // Renamed from report
 
+    // Lists to populate form dropdowns
+    list_subject: [],
     list_teacher: [],
 
     form: { ...form },
@@ -38,13 +40,18 @@ const course = {
     SET_TABLE_OPTIONS(state, payload) {
       Object.assign(state.table_options, payload)
     },
-    SET_REPORTS(state, payload) {
-      state.reports = payload
+    SET_COURSES(state, payload) { // Renamed from SET_REPORTS
+      state.courses = payload
     },
-    SET_REPORT(state, payload) {
-      state.report = payload
+    SET_COURSE(state, payload) { // Renamed from SET_REPORT
+      state.course = payload
     },
-
+    SET_LIST_SUBJECT(state, payload) {
+      state.list_subject = payload
+    },
+    SET_LIST_TEACHER(state, payload) {
+      state.list_teacher = payload
+    },
     SET_FORM(state, payload) {
       state.form[payload.key] = payload.value
     },
@@ -56,15 +63,11 @@ const course = {
     },
   },
   actions: {
-    getReports: async (context, params) => {
-      context.commit("SET_LOADING", {
-        key: "reports",
-        value: true,
-      })
-
+    getCourses: async (context, params) => { // Renamed from getReports
+      context.commit("SET_LOADING", { key: "courses", value: true })
       try {
         const result = await axiosInstance({
-          url: `/course`,
+          url: `/course`, // Changed endpoint
           method: "GET",
           params: {
             ...params,
@@ -74,8 +77,7 @@ const course = {
           },
         })
 
-        context.commit("SET_REPORTS", result.data.data)
-
+        context.commit("SET_COURSES", result.data.data) // Use SET_COURSES
         context.commit("SET_TABLE_OPTIONS", {
           page: result.data.pagination.page,
           page_size: result.data.pagination.page_size,
@@ -84,74 +86,57 @@ const course = {
         })
       } catch (error) {
         console.log(error)
-        toast.error(error.response.data.message)
+        toast.error(error.response?.data?.message || "Failed to fetch courses")
       } finally {
-        context.commit("SET_LOADING", {
-          key: "reports",
-          value: false,
-        })
+        context.commit("SET_LOADING", { key: "courses", value: false })
       }
     },
-    getReport: async (context, course_id) => {
-      context.commit("SET_LOADING", {
-        key: "report",
-        value: true,
-      })
+    getCourse: async (context, course_id) => { // Renamed from getReport
+      context.commit("SET_LOADING", { key: "course", value: true })
       try {
         const result = await axiosInstance({
           method: "GET",
-          url: `/course/${course_id}`,
+          url: `/course/${course_id}`, // Changed endpoint
         })
 
-        context.commit("SET_REPORT", result.data.data)
+        context.commit("SET_COURSE", result.data.data) // Use SET_COURSE
       } catch (error) {
         console.log(error)
       } finally {
-        context.commit("SET_LOADING", {
-          key: "report",
-          value: false,
-        })
+        context.commit("SET_LOADING", { key: "course", value: false })
       }
     },
-    fetchBeforeForm: async context => {
+    fetchPrerequisites: async context => { // Renamed and adapted from fetchBeforeForm
       context.commit("SET_LOADING", { key: "form", value: true })
       try {
-        const result = await axiosInstance({
-          method: "GET",
-          url: `/user`,
-          params: { role: "TEACHER", page_size: 100 },
-        })
+        // Fetch subjects and teachers in parallel
+        const [subjectsRes, teachersRes] = await Promise.all([
+          axiosInstance({ method: "GET", url: `/subject` }), // Assuming a /subject endpoint exists
+          axiosInstance({ method: "GET", url: `/user`, params: { role: 'TEACHER' } }), // Assuming you can filter users by role
+        ])
+        
+        context.commit("SET_LIST_SUBJECT", subjectsRes.data.data)
+        context.commit("SET_LIST_TEACHER", teachersRes.data.data)
 
-        context.state.list_teacher = result.data.data
       } catch (error) {
         console.log(error)
+        toast.error("Failed to load form prerequisites")
       } finally {
         context.commit("SET_LOADING", { key: "form", value: false })
       }
     },
-    create: async (context, payload) => {
-      context.commit("SET_LOADING", {
-        key: "form",
-        value: true,
-      })
+    create: async context => {
+      context.commit("SET_LOADING", { key: "form", value: true })
       try {
-        // Use provided payload or fall back to form state
-        const data = payload || context.state.form
-
-        // Convert from component format to API format if payload is provided
-        const apiData = payload || data
-
         const result = await axiosInstance({
           method: "POST",
-          url: `/course`,
-          data: apiData,
+          url: `/course`, // Changed endpoint
+          data: context.state.form,
         })
 
         toast.success(result.data.message)
-        context.dispatch("getReports", {
-          subjectId: apiData.subjectId,
-        })
-
+        context.dispatch("getCourses")
+        
         return true
       } catch (error) {
         console.log(error)
@@ -159,65 +144,49 @@ const course = {
         
         return false
       } finally {
-        context.commit("SET_LOADING", {
-          key: "form",
-          value: false,
-        })
+        context.commit("SET_LOADING", { key: "form", value: false })
       }
     },
     setFormUpdate: async (context, course_id) => {
-      context.commit("SET_LOADING", {
-        key: "form",
-        value: true,
-      })
+      context.commit("SET_LOADING", { key: "form", value: true })
       try {
         const result = await axiosInstance({
           method: "GET",
-          url: `/course/${course_id}`,
+          url: `/course/${course_id}`, // Changed endpoint
         })
 
         const data = result.data.data
 
         context.commit("SET_IS_UPDATE", course_id)
-
-        // Reset form first
         context.commit("RESET_FORM")
 
-        // Use SET_FORM mutation for each field
-        context.commit("SET_FORM", { key: "name", value: data.name })
-        context.commit("SET_FORM", { key: "subjectId", value: data.subjectId })
-        context.commit("SET_FORM", { key: "teacherId", value: data.teacherId })
+        // Set form fields based on course data
+        context.commit("SET_FORM", { key: "id", value: course_id })
+        context.commit("SET_FORM", { key: "name", value: data.name || "" })
+        context.commit("SET_FORM", { key: "subjectId", value: data.subjectId || "" })
+        context.commit("SET_FORM", { key: "teacherId", value: data.teacherId || "" })
       } catch (error) {
         console.log(error)
-        toast.error("Failed to load course data")
+        toast.error("Failed to load course data for editing")
       } finally {
-        context.commit("SET_LOADING", {
-          key: "form",
-          value: false,
-        })
+        context.commit("SET_LOADING", { key: "form", value: false })
       }
     },
-    update: async (context, payload) => {
-      context.commit("SET_LOADING", {
-        key: "form",
-        value: true,
-      })
+    update: async context => {
+      context.commit("SET_LOADING", { key: "form", value: true })
       try {
-        // Extract ID and data from payload if provided
-        const course_id = payload?.id || context.state.is_update
-        const data = payload?.data || context.state.form
-        
+        const course_id = context.state.is_update
+        const data = { name: context.state.form.name } // Only send updatable fields as per docs
+
         const result = await axiosInstance({
           method: "PUT",
-          url: `/course/${course_id}`,
+          url: `/course/${course_id}`, // Changed endpoint
           data: data,
         })
 
         toast.success(result.data.message)
-        context.dispatch("getReports", {
-          subjectId: data.subjectId,
-        })
-
+        context.dispatch("getCourses")
+        
         return true
       } catch (error) {
         console.log(error)
@@ -225,34 +194,27 @@ const course = {
         
         return false
       } finally {
-        context.commit("SET_LOADING", {
-          key: "form",
-          value: false,
-        })
+        context.commit("SET_LOADING", { key: "form", value: false })
       }
     },
     delete: async (context, course_id) => {
-      context.commit("SET_LOADING", {
-        key: "form",
-        value: true,
-      })
+      context.commit("SET_LOADING", { key: "form", value: true })
       try {
         const result = await axiosInstance({
           method: "DELETE",
-          url: `/course/${course_id}`,
+          url: `/course/${course_id}`, // Changed endpoint
         })
 
         toast.success(result.data.message)
-
+        
         return true
       } catch (error) {
         console.log(error)
         toast.error(error.response.data.message)
+        
+        return false
       } finally {
-        context.commit("SET_LOADING", {
-          key: "form",
-          value: false,
-        })
+        context.commit("SET_LOADING", { key: "form", value: false })
       }
     },
   },

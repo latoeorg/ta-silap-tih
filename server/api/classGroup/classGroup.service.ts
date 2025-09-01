@@ -205,6 +205,21 @@ export class ClassGroupService {
     }) as Promise<ClassGroup>;
   }
 
+  static async getStudentIdsByClassGroupId({
+    class_group_id,
+  }: {
+    class_group_id: string;
+  }) {
+    const students = await prisma.user.findMany({
+      where: {
+        role: "STUDENT",
+        classGroupId: class_group_id,
+      },
+    });
+
+    return students.map((student) => student.id);
+  }
+
   static async updateStudents(
     id: string,
     input: ClassGroupStudentsInput
@@ -218,7 +233,11 @@ export class ClassGroupService {
 
     if (!classGroup) throw new Error("Class group not found");
 
-    // Add new students to class group
+    await prisma.user.updateMany({
+      where: { classGroupId: id },
+      data: { classGroupId: null },
+    });
+
     await Promise.all(
       studentIds.map((studentId) =>
         prisma.user.update({

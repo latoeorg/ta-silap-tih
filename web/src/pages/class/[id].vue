@@ -27,17 +27,11 @@
 
   <!-- <ClassDetailNavigation /> -->
 
-  <VWindow
-    v-model="activeTab"
-    class="mt-5"
-  >
-    <VWindowItem :value="ClassDetailTab.summary">
-      <ClassDetailSummary
-        :report="classGroup"
-        :loading="loading"
-      />
-    </VWindowItem>
-  </VWindow>
+
+  <ClassDetailSummary
+    :report="classGroup"
+    :loading="loading"
+  />
 </template>
 
 <script setup>
