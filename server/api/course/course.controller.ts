@@ -8,12 +8,13 @@ export class CourseController {
    */
   static async createCourse(req: Request, res: Response) {
     try {
-      const { name, teacherId, subjectId } = req.body;
+      const { name, teacherId, subjectId, classGroupId } = req.body;
 
       const course = await CourseService.create({
         name,
         teacherId,
         subjectId,
+        classGroupId,
       });
 
       ApiResponse.success({

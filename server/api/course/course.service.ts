@@ -5,12 +5,14 @@ type CourseCreateInput = {
   name: string;
   teacherId: string;
   subjectId?: string;
+  classGroupId?: string;
 };
 
 type CourseUpdateInput = {
   name?: string;
   teacherId?: string;
   subjectId?: string;
+  classGroupId?: string;
 };
 
 type CourseStudentsInput = {
@@ -22,7 +24,7 @@ export class CourseService {
    * Create a new course
    */
   static async create(data: CourseCreateInput): Promise<Course> {
-    const { name, teacherId, subjectId } = data;
+    const { name, teacherId, subjectId, classGroupId } = data;
 
     // Verify teacher exists
     const teacher = await prisma.user.findUnique({
@@ -44,12 +46,24 @@ export class CourseService {
       }
     }
 
+    // Verify class group exists if provided
+    if (classGroupId) {
+      const classGroup = await prisma.classGroup.findUnique({
+        where: { id: classGroupId },
+      });
+
+      if (!classGroup) {
+        throw new Error("Class group not found");
+      }
+    }
+
     // Create course
     return prisma.course.create({
       data: {
         name,
         teacherId,
         subjectId: subjectId || null,
+        classGroupId: classGroupId || null,
       },
     });
   }
@@ -162,7 +176,7 @@ export class CourseService {
    * Update existing course
    */
   static async update(id: string, data: CourseUpdateInput): Promise<Course> {
-    const { name, teacherId, subjectId } = data;
+    const { name, teacherId, subjectId, classGroupId } = data;
 
     // Check if course exists
     const course = await prisma.course.findUnique({
@@ -195,6 +209,17 @@ export class CourseService {
       }
     }
 
+    // Verify class group exists if provided
+    if (classGroupId) {
+      const classGroup = await prisma.classGroup.findUnique({
+        where: { id: classGroupId },
+      });
+
+      if (!classGroup) {
+        throw new Error("Class group not found");
+      }
+    }
+
     // Update course
     return prisma.course.update({
       where: { id },
@@ -202,6 +227,7 @@ export class CourseService {
         name,
         teacherId,
         subjectId,
+        classGroupId,
       },
       include: {
         teacher: {

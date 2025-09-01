@@ -91,7 +91,8 @@ model ClassGroup {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  students User[] @relation("ClassStudents")
+  students User[]   @relation("ClassStudents")
+  courses  Course[]
 }
 
 model Subject {
@@ -119,12 +120,18 @@ model AssessmentWeight {
 }
 
 model Course {
-  id          String       @id @default(cuid())
-  name        String
-  subjectId   String?
-  subject     Subject?     @relation(fields: [subjectId], references: [id])
-  teacherId   String
-  teacher     User         @relation("TeacherCourses", fields: [teacherId], references: [id])
+  id   String @id @default(cuid())
+  name String
+
+  subjectId String?
+  subject   Subject? @relation(fields: [subjectId], references: [id])
+
+  teacherId String
+  teacher   User   @relation("TeacherCourses", fields: [teacherId], references: [id])
+
+  classGroupId String?
+  classGroup   ClassGroup? @relation(fields: [classGroupId], references: [id])
+
   students    User[]       @relation("StudentCourses")
   grades      Grade[]
   attendances Attendance[]
