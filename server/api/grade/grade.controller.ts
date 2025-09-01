@@ -10,12 +10,12 @@ export class GradeController {
    */
   static async createGrade(req: Request, res: Response) {
     try {
-      const { userId, courseId, examType, totalScore, components } = req.body;
+      const { userId, course_id, exam_type, totalScore, components } = req.body;
 
       const grade = await GradeService.create({
         userId,
-        courseId,
-        examType,
+        courseId: course_id,
+        examType: exam_type,
         totalScore,
         components,
       });
@@ -218,6 +218,52 @@ export class GradeController {
       ApiResponse.error({
         res,
         message: JSON.stringify(error) || "Failed to retrieve grade components",
+        error,
+      });
+    }
+  }
+
+  /**
+   * Update a grade component score
+   */
+  static async updateGradeComponent(req: Request, res: Response) {
+    try {
+      const { userId, courseId, examType, componentIndex, score } = req.body;
+
+      if (
+        !userId ||
+        !courseId ||
+        !examType ||
+        componentIndex === undefined ||
+        score === undefined
+      ) {
+        ApiResponse.error({
+          res,
+          message:
+            "userId, courseId, examType, componentIndex, and score are required",
+          statusCode: 400,
+        });
+        return;
+      }
+
+      const result = await GradeService.updateGradeComponent(
+        userId,
+        courseId,
+        examType as ExamType,
+        componentIndex,
+        score
+      );
+
+      ApiResponse.success({
+        res,
+        data: result,
+        message: "Grade component updated successfully",
+      });
+    } catch (error) {
+      console.error("Update grade component error:", error);
+      ApiResponse.error({
+        res,
+        message: JSON.stringify(error) || "Failed to update grade component",
         error,
       });
     }

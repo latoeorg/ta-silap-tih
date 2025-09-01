@@ -24,6 +24,8 @@ type AttendanceQuery = {
   courseId?: string;
   userId?: string;
   date?: string | Date;
+  startDate?: string | Date;
+  endDate?: string | Date;
   status?: AttendanceStatus;
 };
 
@@ -156,13 +158,28 @@ export class AttendanceService {
    * Find attendance records with optional filtering
    */
   static async findAll(page = 1, limit = 10, filters: AttendanceQuery = {}) {
-    const { courseId, userId, date, status } = filters;
+    const { courseId, userId, date, startDate, endDate, status } = filters;
     const where: any = {};
 
     if (courseId) where.courseId = courseId;
     if (userId) where.userId = userId;
-    if (date) where.date = new Date(date);
     if (status) where.status = status;
+
+    // Handle date filtering
+    if (date) {
+      where.date = new Date(date);
+    } else if (startDate || endDate) {
+      where.date = {};
+      if (startDate) {
+        where.date.gte = new Date(startDate);
+      }
+      if (endDate) {
+        // Add one day to include the end date
+        const end = new Date(endDate);
+        end.setDate(end.getDate() + 1);
+        where.date.lt = end;
+      }
+    }
 
     const skip = (page - 1) * limit;
 

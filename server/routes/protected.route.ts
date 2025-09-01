@@ -19,7 +19,7 @@ router.use("/course", courseRouter); // Assuming course is an alias for subject
 router.use("/dashboard", dashboardRouter);
 router.use("/grade", gradeRouter);
 router.use("/grade-components", gradeComponentRoute);
-router.use("/attendance", attandanceRoute);
+router.use("/attandance", attandanceRoute);
 
 // Export the router
 export const ProtectedRoutes = router;

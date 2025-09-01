@@ -108,6 +108,7 @@ export class UserService {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
     classGroupId?: string;
+    courseId?: string;
   }) {
     const {
       role,
@@ -118,12 +119,13 @@ export class UserService {
       sortBy = "createdAt",
       sortOrder = "desc",
       classGroupId,
+      courseId,
     } = params;
 
     // Prepare filters
     const where: any = {};
 
-    // // Role filter
+    // Role filter
     if (role) {
       where.role = role;
     }
@@ -132,12 +134,21 @@ export class UserService {
       where.classGroupId = classGroupId;
     }
 
-    // // Role exclusion filter
+    // Filter by enrolled course
+    if (courseId) {
+      where.enrolledCourses = {
+        some: {
+          id: courseId,
+        },
+      };
+    }
+
+    // Role exclusion filter
     // if (roleExclude) {
     //   where.role = { not: roleExclude };
     // }
 
-    // // Search filter
+    // Search filter
     if (search) {
       where.OR = [
         { name: { contains: search, mode: "insensitive" } },
@@ -187,7 +198,7 @@ export class UserService {
       delete profileData.titleSuffix;
       delete profileData.religion;
       delete profileData.unit;
-      
+
       await prisma.studentProfile.upsert({
         where: { email: result.email },
         create: {

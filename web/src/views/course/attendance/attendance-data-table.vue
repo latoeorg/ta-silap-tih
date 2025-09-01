@@ -6,7 +6,7 @@
       <VCardText>
         <div class="d-flex align-end justify-between flex-wrap gap-4">
           <div class="d-flex align-center gap-4">
-            <div style="inline-size: 20rem;">
+            <div style="inline-size: 20rem">
               <AppTextField
                 v-model="table_options.search"
                 density="compact"
@@ -15,7 +15,7 @@
                 append-inner-icon="tabler-search"
               />
             </div>
-            
+
             <VSelect
               v-if="!courseId"
               v-model="selectedCourse"
@@ -24,15 +24,15 @@
               item-value="id"
               label="Pilih Kursus"
               density="compact"
-              style="inline-size: 15rem;"
+              style="inline-size: 15rem"
               clearable
             />
-            
+
             <AppDateTimePicker
               v-model="selectedDate"
               label="Tanggal"
               density="compact"
-              style="inline-size: 10rem;"
+              style="inline-size: 10rem"
             />
           </div>
 
@@ -42,21 +42,12 @@
               variant="outlined"
               @click="handleBatchForm"
             >
-              <VIcon
-                start
-                icon="tabler-users-plus"
-              />
+              <VIcon start icon="tabler-users-plus" />
               Absensi Massal
             </VBtn>
-            
-            <VBtn
-              v-if="!hideAddButton"
-              @click="handleDrawerForm(true)"
-            >
-              <VIcon
-                start
-                icon="tabler-plus"
-              />
+
+            <VBtn v-if="!hideAddButton" @click="handleDrawerForm(true)">
+              <VIcon start icon="tabler-plus" />
               Tambah Absensi
             </VBtn>
           </div>
@@ -157,10 +148,10 @@
 </template>
 
 <script setup>
-import { SwalDelete } from '@/utils/sweetalert'
-import { computed, onMounted, ref, watch } from 'vue'
-import AttendanceBatchModal from './attendance-batch-modal.vue'
-import AttendanceFormDrawer from './attendance-form-drawer.vue'
+import { SwalDelete } from "@/utils/sweetalert";
+import { computed, onMounted, ref, watch } from "vue";
+import AttendanceBatchModal from "./attendance-batch-modal.vue";
+import AttendanceFormDrawer from "./attendance-form-drawer.vue";
 
 const props = defineProps({
   hideAddButton: {
@@ -169,41 +160,43 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: 'Pengurusan Absensi',
+    default: "Pengurusan Absensi",
   },
   courseId: {
     type: String,
-    default: '',
+    default: "",
   },
-})
+});
 
-const store = useVuex()
+const store = useVuex();
 
 // Local state
-const drawerForm = ref(false)
-const batchModal = ref(false)
-const selectedCourse = ref('')
-const selectedDate = ref('')
+const drawerForm = ref(false);
+const batchModal = ref(false);
+const selectedCourse = ref("");
+const selectedDate = ref("");
 
 // Computed properties
-const loading = computed(() => store.state.attendance.loading.attendances)
-const attendances = computed(() => store.state.attendance.attendances)
-const courses = computed(() => store.state.attendance.list_courses)
-const searchQuery = ref('')
+const loading = computed(() => store.state.attendance.loading.attendances);
+const attendances = computed(() => store.state.attendance.attendances);
+const courses = computed(() => store.state.attendance.list_courses);
+const searchQuery = ref("");
 
 const table_options = computed({
   get: () => store.state.attendance.table_options,
-  set: val => store.commit('attendance/SET_TABLE_OPTIONS', val),
-})
+  set: (val) => store.commit("attendance/SET_TABLE_OPTIONS", val),
+});
 
 // Table headers
-const headers = ref([
-  { title: 'Siswa', key: 'user', sortable: false },
-  { title: 'Kursus', key: 'course', sortable: false },
-  { title: 'Tanggal', key: 'date' },
-  { title: 'Status', key: 'status' },
-  { title: 'Tindakan', key: 'actions', align: 'end', sortable: false },
-].filter(h => !(props.courseId && h.key === 'course')))
+const headers = ref(
+  [
+    { title: "Siswa", key: "user", sortable: false },
+    { title: "Kursus", key: "course", sortable: false },
+    { title: "Tanggal", key: "date" },
+    { title: "Status", key: "status" },
+    { title: "Tindakan", key: "actions", align: "end", sortable: false },
+  ].filter((h) => !(props.courseId && h.key === "course"))
+);
 
 // Methods
 const refetch = async () => {
@@ -211,84 +204,98 @@ const refetch = async () => {
     ...(props.courseId ? { course_id: props.courseId } : {}),
     ...(selectedCourse.value ? { course_id: selectedCourse.value } : {}),
     ...(selectedDate.value ? { date: selectedDate.value } : {}),
-  }
-  
-  await store.dispatch('attendance/getAttendances', params)
-}
+  };
 
-const handleDrawerForm = value => {
+  await store.dispatch("attendance/getAttendances", params);
+};
+
+const handleDrawerForm = (value) => {
   if (value) {
-    store.dispatch('attendance/fetchPrerequisites')
+    store.dispatch("attendance/fetchPrerequisites");
   }
-  drawerForm.value = value
-}
+  drawerForm.value = value;
+};
 
 const handleBatchForm = () => {
-  batchModal.value = !batchModal.value
-}
+  batchModal.value = !batchModal.value;
+};
 
-const handleUpdate = async item => {
-  await store.dispatch('attendance/setFormUpdate', {
+const handleUpdate = async (item) => {
+  await store.dispatch("attendance/setFormUpdate", {
     userId: item.userId,
     courseId: item.courseId,
     attendance: item,
-  })
-  handleDrawerForm(true)
-}
+  });
+  handleDrawerForm(true);
+};
 
-const handleDelete = async item => {
-  const confirm = await SwalDelete()
+const handleDelete = async (item) => {
+  const confirm = await SwalDelete();
   if (confirm) {
     const success = await store.dispatch("attendance/delete", {
       userId: item.userId,
       courseId: item.courseId,
-    })
+    });
 
     if (success) {
-      refetch()
+      refetch();
     }
   }
-}
+};
 
 // Utility functions
-const formatDate = date => {
-  if (!date) return ''
+const formatDate = (date) => {
+  if (!date) return "";
 
-  return new Date(date).toLocaleDateString('id-ID', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-}
+  return new Date(date).toLocaleDateString("id-ID", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
 
-const getStatusColor = status => {
+const getStatusColor = (status) => {
   switch (status) {
-  case 'PRESENT': return 'success'
-  case 'ABSENT': return 'error'
-  case 'EXCUSED': return 'warning'
-  case 'SICK': return 'info'
-  default: return 'default'
+    case "PRESENT":
+      return "success";
+    case "ABSENT":
+      return "error";
+    case "EXCUSED":
+      return "warning";
+    case "SICK":
+      return "info";
+    default:
+      return "default";
   }
-}
+};
 
-const getStatusText = status => {
+const getStatusText = (status) => {
   switch (status) {
-  case 'PRESENT': return 'Hadir'
-  case 'ABSENT': return 'Tidak Hadir'
-  case 'EXCUSED': return 'Izin'
-  case 'SICK': return 'Sakit'
-  default: return status
+    case "PRESENT":
+      return "Hadir";
+    case "ABSENT":
+      return "Tidak Hadir";
+    case "EXCUSED":
+      return "Izin";
+    case "SICK":
+      return "Sakit";
+    default:
+      return status;
   }
-}
+};
 
 // Watchers
-watch([selectedCourse, selectedDate], () => {
-  refetch()
-}, { deep: true })
+watch(
+  [selectedCourse, selectedDate],
+  () => {
+    refetch();
+  },
+  { deep: true }
+);
 
 // Lifecycle
 onMounted(() => {
-  refetch()
-  store.dispatch('attendance/fetchPrerequisites')
-})
+  refetch();
+  store.dispatch("attendance/fetchPrerequisites");
+});
 </script>

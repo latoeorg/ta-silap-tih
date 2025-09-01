@@ -57,13 +57,29 @@ export class CourseService {
       }
     }
 
-    // Create course
+    // Get students in class group if classGroupId is provided
+    let studentsToEnroll: { id: string }[] = [];
+    if (classGroupId) {
+      const classGroup = await prisma.classGroup.findUnique({
+        where: { id: classGroupId },
+        include: { students: true },
+      });
+      if (!classGroup) throw new Error("Class group not found");
+      studentsToEnroll = classGroup.students.map((student) => ({
+        id: student.id,
+      }));
+    }
+
+    // Create course and enroll students
     return prisma.course.create({
       data: {
         name,
         teacherId,
         subjectId: subjectId || null,
         classGroupId: classGroupId || null,
+        students: {
+          connect: studentsToEnroll,
+        },
       },
     });
   }
@@ -220,7 +236,20 @@ export class CourseService {
       }
     }
 
-    // Update course
+    // Get students in class group if classGroupId is provided
+    let studentsToEnroll: { id: string }[] = [];
+    if (classGroupId) {
+      const classGroup = await prisma.classGroup.findUnique({
+        where: { id: classGroupId },
+        include: { students: true },
+      });
+      if (!classGroup) throw new Error("Class group not found");
+      studentsToEnroll = classGroup.students.map((student) => ({
+        id: student.id,
+      }));
+    }
+
+    // Update course and enroll students (replace all existing connections if classGroupId is provided)
     return prisma.course.update({
       where: { id },
       data: {
@@ -228,6 +257,11 @@ export class CourseService {
         teacherId,
         subjectId,
         classGroupId,
+        ...(classGroupId && {
+          students: {
+            set: studentsToEnroll,
+          },
+        }),
       },
       include: {
         teacher: {
