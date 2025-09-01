@@ -70,7 +70,12 @@ export class CourseController {
       ApiResponse.success({
         res,
         data: result.courses,
-        pagination: result.meta,
+        pagination: {
+          total_items: result.meta.total,
+          page: result.meta.page,
+          page_size: result.meta.limit,
+          total_pages: Math.ceil(result.meta.total / result.meta.limit),
+        },
         message: "Courses retrieved successfully",
       });
     } catch (error) {
@@ -103,7 +108,7 @@ export class CourseController {
       // Check if student is authorized to view this course
       if (user.role === "STUDENT") {
         const isEnrolled = course.students?.some(
-          (student) => student.id === user.userId
+          (student: any) => student.id === user.userId
         );
         if (!isEnrolled) {
           throw new Error("Unauthorized: You are not enrolled in this course");

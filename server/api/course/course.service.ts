@@ -139,7 +139,7 @@ export class CourseService {
   /**
    * Find course by ID with optional includes
    */
-  static async findById(id: string, include?: string[]): Promise<Course> {
+  static async findById(id: string, include?: string[]): Promise<any> {
     // Build include object based on requested includes
     const includeOptions: Prisma.CourseInclude = {
       teacher: {

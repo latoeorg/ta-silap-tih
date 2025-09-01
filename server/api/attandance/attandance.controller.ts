@@ -7,7 +7,7 @@ export class AttendanceController {
   /**
    * Create a new attendance record
    */
-  static async create(req: Request, res: Response) {
+  static async create(req: Request, res: Response): Promise<void> {
     try {
       const attendance = await AttendanceService.create(req.body);
 
@@ -50,7 +50,7 @@ export class AttendanceController {
   /**
    * Find all attendance records with optional filtering
    */
-  static async findAll(req: Request, res: Response) {
+  static async findAll(req: Request, res: Response): Promise<void> {
     try {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
@@ -75,11 +75,12 @@ export class AttendanceController {
             user.userId
           );
           if (!course) {
-            return ApiResponse.error({
+            ApiResponse.error({
               res,
               message: "Unauthorized: You do not teach this course",
               statusCode: 403,
             });
+            return;
           }
         }
         // If userId is specified, use it; otherwise get all students
@@ -120,7 +121,7 @@ export class AttendanceController {
   /**
    * Find attendance records for a specific course and date
    */
-  static async findByCourseAndDate(req: Request, res: Response) {
+  static async findByCourseAndDate(req: Request, res: Response): Promise<void> {
     try {
       const courseId = req.params.courseId;
       const date = req.query.date as string;
@@ -143,11 +144,12 @@ export class AttendanceController {
           user.userId
         );
         if (!course) {
-          return ApiResponse.error({
+          ApiResponse.error({
             res,
             message: "Unauthorized: You do not teach this course",
             statusCode: 403,
           });
+          return;
         }
       }
       // Students shouldn't access this endpoint (they use findAll with their userId)

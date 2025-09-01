@@ -8,7 +8,7 @@ export class GradeController {
   /**
    * Create a new grade
    */
-  static async createGrade(req: Request, res: Response) {
+  static async createGrade(req: Request, res: Response): Promise<void> {
     try {
       const { userId, course_id, exam_type, totalScore, components } = req.body;
 
@@ -38,7 +38,7 @@ export class GradeController {
   /**
    * Create multiple grades in batch
    */
-  static async createBatchGrades(req: Request, res: Response) {
+  static async createBatchGrades(req: Request, res: Response): Promise<void> {
     try {
       const { grades } = req.body;
 
@@ -64,7 +64,7 @@ export class GradeController {
   /**
    * Get grades with optional filtering
    */
-  static async getGrades(req: Request, res: Response) {
+  static async getGrades(req: Request, res: Response): Promise<void> {
     try {
       const {
         courseId,
@@ -141,7 +141,7 @@ export class GradeController {
   /**
    * Get a specific grade by student, course and exam type
    */
-  static async getGradeByKey(req: Request, res: Response) {
+  static async getGradeByKey(req: Request, res: Response): Promise<void> {
     try {
       const { userId, courseId, examType } = req.params;
       const { include } = req.query;
@@ -153,11 +153,12 @@ export class GradeController {
       if (user.role === "STUDENT") {
         // Students can only access their own grades
         if (userId !== user.userId) {
-          return ApiResponse.error({
+          ApiResponse.error({
             res,
             message: "Unauthorized: You can only access your own grades",
             statusCode: 403,
           });
+          return;
         }
       } else if (user.role === "TEACHER") {
         // Teachers can only access grades for courses they teach
@@ -166,11 +167,12 @@ export class GradeController {
           user.userId
         );
         if (!course) {
-          return ApiResponse.error({
+          ApiResponse.error({
             res,
             message: "Unauthorized: You do not teach this course",
             statusCode: 403,
           });
+          return;
         }
       }
       // Admins can access any grade
