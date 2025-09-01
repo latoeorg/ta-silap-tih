@@ -264,7 +264,8 @@ import { toast } from 'vue-sonner'
 import { useStore } from 'vuex'
 
 const props = defineProps({
-  subjectId: { type: String, required: true },
+  subjectId: { type: String, default: null },
+  courseId: { type: String, default: null },
   modelValue: { type: Boolean, default: false },
 })
 
@@ -307,9 +308,15 @@ const closeDialog = () => {
 }
 
 const refetch = () => {
-  store.dispatch('assessmentWeight/getReports', {
-    subjectId: props.subjectId,
-  })
+  const params = {}
+  if (props.subjectId) {
+    params.subjectId = props.subjectId
+  }
+  if (props.courseId) {
+    params.courseId = props.courseId
+  }
+  
+  store.dispatch('assessmentWeight/getReports', params)
 }
 
 const addWeight = async () => {
@@ -334,10 +341,16 @@ const addWeight = async () => {
   }
 
   const payload = {
-    subjectId: props.subjectId,
     examType: formattedExamType,
     weight: Number(newAssessment.weight),
     quota: Number(newAssessment.quota),
+  }
+  
+  if (props.subjectId) {
+    payload.subjectId = props.subjectId
+  }
+  if (props.courseId) {
+    payload.courseId = props.courseId
   }
 
   const success = await store.dispatch('assessmentWeight/create', payload)

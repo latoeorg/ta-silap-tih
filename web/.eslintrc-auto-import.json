@@ -373,6 +373,7 @@
     "useId": true,
     "useModel": true,
     "useTemplateRef": true,
-    "hasRole": true
+    "hasRole": true,
+    "formatRelativeTime": true
   }
 }

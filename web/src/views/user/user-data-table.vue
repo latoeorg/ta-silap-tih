@@ -101,6 +101,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  courseId: {
+    type: String,
+    default: '',
+  },
 
   // 👇 --- NEW PROPS ---
   showSelect: {
@@ -146,6 +150,7 @@ const refetch = async () => {
     const params = {
       ...(props.role ? { role: props.role } : {}),
       ...(props.classGroupId ? { class_group_id: props.classGroupId } : {}),
+      ...(props.courseId ? { course_id: props.courseId } : {}),
       search: table_options.value.search,
       page: table_options.value.page,
       page_size: table_options.value.page_size,

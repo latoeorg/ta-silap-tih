@@ -35,6 +35,8 @@
 </template>
 
 <script setup>
+import { avatarText } from '@/@core/utils/formatters'
+
 const props = defineProps({
   user: {
     type: Object,

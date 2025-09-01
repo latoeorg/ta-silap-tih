@@ -228,6 +228,29 @@ const course = {
         context.commit("SET_LOADING", { key: "form", value: false })
       }
     },
+    
+    updateStudents: async (context, { courseId, studentIds }) => {
+      context.commit("SET_LOADING", { key: "form", value: true })
+      try {
+        const result = await axiosInstance({
+          method: "PUT",
+          url: `/course/${courseId}/students`,
+          data: { studentIds },
+        })
+
+        toast.success(result.data.message)
+        context.dispatch("getCourse", courseId)
+        
+        return true
+      } catch (error) {
+        console.log(error)
+        toast.error(error.response?.data?.message || "Failed to update course students")
+        
+        return false
+      } finally {
+        context.commit("SET_LOADING", { key: "form", value: false })
+      }
+    },
   },
 }
 

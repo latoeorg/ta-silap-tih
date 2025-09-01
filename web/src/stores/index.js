@@ -5,7 +5,9 @@ import app from './modules/app'
 import dashboard from './modules/dashboard'
 
 import assessmentWeight from './modules/assessment-weight'
+import attendance from './modules/attendance'
 import course from './modules/course'
+import grade from './modules/grade'
 import subject from './modules/subject'
 
 import classGroup from './modules/class'
@@ -23,6 +25,8 @@ const store = new Store({
     course,
     subject,
     assessmentWeight,
+    attendance,
+    grade,
     
     classGroup,
     class: classGroup,

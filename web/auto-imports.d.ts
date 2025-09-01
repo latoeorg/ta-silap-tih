@@ -61,6 +61,7 @@ declare global {
   const formatDate: typeof import('./src/utils/utils.js')['formatDate']
   const formatDateToMonthShort: typeof import('./src/@core/utils/formatters.js')['formatDateToMonthShort']
   const formatFileSize: typeof import('./src/utils/utils.js')['formatFileSize']
+  const formatRelativeTime: typeof import('./src/utils/utils.js')['formatRelativeTime']
   const formatRupiah: typeof import('./src/utils/utils.js')['formatRupiah']
   const getActivePinia: typeof import('pinia')['getActivePinia']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
@@ -432,6 +433,7 @@ declare module 'vue' {
     readonly formatDate: UnwrapRef<typeof import('./src/utils/utils.js')['formatDate']>
     readonly formatDateToMonthShort: UnwrapRef<typeof import('./src/@core/utils/formatters.js')['formatDateToMonthShort']>
     readonly formatFileSize: UnwrapRef<typeof import('./src/utils/utils.js')['formatFileSize']>
+    readonly formatRelativeTime: UnwrapRef<typeof import('./src/utils/utils.js')['formatRelativeTime']>
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
