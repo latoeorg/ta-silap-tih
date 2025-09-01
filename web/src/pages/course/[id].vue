@@ -39,7 +39,7 @@
         :course-id="courseId"
       />
     </div>
-    <div v-else-if="activeTab == CourseDetailTab.students">
+    <div v-else-if="activeTab == CourseDetailTab.students && canViewStudents">
       <UserDataTable
         title="Daftar Siswa"
         :course-id="courseId"
@@ -56,8 +56,29 @@
     <div v-else-if="activeTab == CourseDetailTab.grades">
       <GradeEnhancedTable title="Tabel Nilai Siswa" :course-id="courseId" />
     </div>
-    <div v-else-if="activeTab == CourseDetailTab.assessmentWeight">
+    <div
+      v-else-if="
+        activeTab == CourseDetailTab.assessmentWeight && canViewAssessmentWeight
+      "
+    >
       <AssessmentWeightDataTable :course-id="courseId" />
+    </div>
+    <!-- Unauthorized access message -->
+    <div
+      v-else-if="
+        activeTab == CourseDetailTab.students ||
+        activeTab == CourseDetailTab.assessmentWeight
+      "
+    >
+      <VCard>
+        <VCardText class="text-center py-8">
+          <VIcon size="48" color="warning" class="mb-4">tabler-shield-x</VIcon>
+          <h4 class="text-h4 mb-2">Akses Terbatas</h4>
+          <p class="text-body-1 text-medium-emphasis">
+            Anda tidak memiliki izin untuk mengakses bagian ini.
+          </p>
+        </VCardText>
+      </VCard>
     </div>
   </div>
 </template>
@@ -80,6 +101,16 @@ const activeTab = computed(() => route.query.tab || CourseDetailTab.summary);
 
 const loading = computed(() => store.state.course.loading.report);
 const report = computed(() => store.state.course.course);
+const user = computed(() => store.state.auth.user);
+
+// Role-based access control
+const canViewStudents = computed(() => {
+  return user.value?.role === "TEACHER" || user.value?.role === "ADMIN";
+});
+
+const canViewAssessmentWeight = computed(() => {
+  return user.value?.role === "TEACHER" || user.value?.role === "ADMIN";
+});
 
 const refetch = () => store.dispatch("course/getCourse", courseId.value);
 
