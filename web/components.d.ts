@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AdminDashboard: typeof import('./src/components/dashboard/admin-dashboard.vue')['default']
     AppAutocomplete: typeof import('./src/@core/components/app-form-elements/AppAutocomplete.vue')['default']
     AppAutocompleteCountry: typeof import('./src/components/form/AppAutocompleteCountry.vue')['default']
     AppBarSearch: typeof import('./src/@core/components/AppBarSearch.vue')['default']
@@ -54,8 +55,10 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     ScrollToTop: typeof import('./src/@core/components/ScrollToTop.vue')['default']
     Shortcuts: typeof import('./src/@core/components/Shortcuts.vue')['default']
+    StudentDashboard: typeof import('./src/components/dashboard/student-dashboard.vue')['default']
     TableIcon: typeof import('./src/components/molecules/TableIcon.vue')['default']
     TableSelectFacility: typeof import('./src/components/form/TableSelectFacility.vue')['default']
+    TeacherDashboard: typeof import('./src/components/dashboard/teacher-dashboard.vue')['default']
     TheCustomizer: typeof import('./src/@core/components/TheCustomizer.vue')['default']
     ThemeSwitcher: typeof import('./src/@core/components/ThemeSwitcher.vue')['default']
     TiptapEditor: typeof import('./src/@core/components/TiptapEditor.vue')['default']

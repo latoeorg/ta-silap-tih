@@ -374,6 +374,14 @@
     "useModel": true,
     "useTemplateRef": true,
     "hasRole": true,
-    "formatRelativeTime": true
+    "formatRelativeTime": true,
+    "getCurrentUserRole": true,
+    "isAdmin": true,
+    "isStudent": true,
+    "isTeacher": true,
+    "formatGrade": true,
+    "formatNumber": true,
+    "formatPhoneNumber": true,
+    "truncateText": true
   }
 }
