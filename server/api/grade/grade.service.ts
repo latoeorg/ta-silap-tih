@@ -380,4 +380,146 @@ export class GradeService {
       },
     });
   }
+
+  /**
+   * Update a specific grade component score
+   */
+  static async updateGradeComponent(
+    userId: string,
+    courseId: string,
+    examType: ExamType,
+    componentIndex: number,
+    score: number
+  ) {
+    // First, find the grade
+    const grade = await prisma.grade.findFirst({
+      where: {
+        userId,
+        courseId,
+        examType,
+      },
+      include: {
+        components: true,
+      },
+    });
+
+    if (!grade) {
+      // Create the grade if it doesn't exist
+      const newGrade = await prisma.grade.create({
+        data: {
+          userId,
+          courseId,
+          examType,
+          totalScore: 0,
+        },
+      });
+
+      // Create the component
+      await prisma.gradeComponent.create({
+        data: {
+          gradeId: newGrade.id,
+          score,
+          index: componentIndex,
+        },
+      });
+
+      return prisma.grade.findUnique({
+        where: { id: newGrade.id },
+        include: {
+          components: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          course: {
+            select: {
+              id: true,
+              name: true,
+              subject: true,
+            },
+          },
+        },
+      });
+    }
+
+    // Update or create the component
+    return await prisma.$transaction(async (tx) => {
+      // Find existing component
+      const existingComponent = await tx.gradeComponent.findFirst({
+        where: {
+          gradeId: grade.id,
+          index: componentIndex,
+        },
+      });
+
+      if (existingComponent) {
+        // Update existing component
+        await tx.gradeComponent.update({
+          where: { id: existingComponent.id },
+          data: { score },
+        });
+      } else {
+        // Create new component
+        await tx.gradeComponent.create({
+          data: {
+            gradeId: grade.id,
+            score,
+            index: componentIndex,
+          },
+        });
+      }
+
+      // Recalculate total score based on all components
+      const allComponents = await tx.gradeComponent.findMany({
+        where: { gradeId: grade.id },
+      });
+
+      const totalScore =
+        allComponents.reduce((sum, comp) => sum + comp.score, 0) /
+        allComponents.length;
+
+      // Update the grade's total score
+      await tx.grade.update({
+        where: { id: grade.id },
+        data: { totalScore },
+      });
+
+      // Return the updated grade with components
+      return tx.grade.findUnique({
+        where: { id: grade.id },
+        include: {
+          components: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          course: {
+            select: {
+              id: true,
+              name: true,
+              subject: true,
+            },
+          },
+        },
+      });
+    });
+  }
+
+  /**
+   * Verify if a teacher has access to a course
+   */
+  static async verifyCourseAccess(courseId: string, teacherId: string) {
+    return await prisma.course.findFirst({
+      where: {
+        id: courseId,
+        teacherId: teacherId,
+      },
+    });
+  }
 }

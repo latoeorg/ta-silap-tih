@@ -46,6 +46,7 @@ declare module 'vue-router/auto/routes' {
     'class-id': RouteRecordInfo<'class-id', '/class/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     'content-file': RouteRecordInfo<'content-file', '/content/file', Record<never, never>, Record<never, never>>,
     'course': RouteRecordInfo<'course', '/course', Record<never, never>, Record<never, never>>,
+    'course-id': RouteRecordInfo<'course-id', '/course/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     'login': RouteRecordInfo<'login', '/login', Record<never, never>, Record<never, never>>,
     'not-authorized': RouteRecordInfo<'not-authorized', '/not-authorized', Record<never, never>, Record<never, never>>,
     'settings': RouteRecordInfo<'settings', '/settings', Record<never, never>, Record<never, never>>,

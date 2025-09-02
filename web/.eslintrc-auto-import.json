@@ -373,6 +373,15 @@
     "useId": true,
     "useModel": true,
     "useTemplateRef": true,
-    "hasRole": true
+    "hasRole": true,
+    "formatRelativeTime": true,
+    "getCurrentUserRole": true,
+    "isAdmin": true,
+    "isStudent": true,
+    "isTeacher": true,
+    "formatGrade": true,
+    "formatNumber": true,
+    "formatPhoneNumber": true,
+    "truncateText": true
   }
 }

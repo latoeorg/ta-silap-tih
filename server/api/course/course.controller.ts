@@ -8,12 +8,13 @@ export class CourseController {
    */
   static async createCourse(req: Request, res: Response) {
     try {
-      const { name, teacherId, subjectId } = req.body;
+      const { name, teacherId, subjectId, classGroupId } = req.body;
 
       const course = await CourseService.create({
         name,
         teacherId,
         subjectId,
+        classGroupId,
       });
 
       ApiResponse.success({
@@ -37,12 +38,34 @@ export class CourseController {
   static async getAllCourses(req: Request, res: Response) {
     try {
       const { subjectId, page = "1", limit = "10" } = req.query;
+      const user = req.user;
 
-      const result = await CourseService.findAll(
-        parseInt(page as string, 10),
-        parseInt(limit as string, 10),
-        subjectId as string
-      );
+      let result;
+
+      if (user.role === "STUDENT") {
+        // Students can only see courses they are enrolled in
+        result = await CourseService.findStudentCourses(
+          user.userId,
+          parseInt(page as string, 10),
+          parseInt(limit as string, 10),
+          subjectId as string
+        );
+      } else if (user.role === "TEACHER") {
+        // Teachers can see courses they teach
+        result = await CourseService.findTeacherCourses(
+          user.userId,
+          parseInt(page as string, 10),
+          parseInt(limit as string, 10),
+          subjectId as string
+        );
+      } else {
+        // Admins can see all courses
+        result = await CourseService.findAll(
+          parseInt(page as string, 10),
+          parseInt(limit as string, 10),
+          subjectId as string
+        );
+      }
 
       ApiResponse.success({
         res,
@@ -72,6 +95,7 @@ export class CourseController {
     try {
       const { id } = req.params;
       const include = req.query.include as string;
+      const user = req.user;
 
       // Parse include parameter (comma-separated list)
       let includeArray: string[] | undefined;
@@ -80,6 +104,21 @@ export class CourseController {
       }
 
       const course = await CourseService.findById(id, includeArray);
+
+      // Check if student is authorized to view this course
+      if (user.role === "STUDENT") {
+        const isEnrolled = course.students?.some(
+          (student: any) => student.id === user.userId
+        );
+        if (!isEnrolled) {
+          throw new Error("Unauthorized: You are not enrolled in this course");
+        }
+      }
+
+      // Check if teacher is authorized to view this course
+      if (user.role === "TEACHER" && course.teacherId !== user.userId) {
+        throw new Error("Unauthorized: You are not the teacher of this course");
+      }
 
       ApiResponse.success({
         res,

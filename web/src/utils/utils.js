@@ -26,6 +26,10 @@ export const formatCalendar = date => {
   return date ? moment(date).calendar() : '-'
 }
 
+export const formatRelativeTime = date => {
+  return date ? moment(date).fromNow() : '-'
+}
+
 // ========================================================================================= STRING FORMAT
 
 export const formatCurrency = (number, prefix = 'Rp') => {

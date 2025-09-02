@@ -6,6 +6,7 @@ const form = {
   name: "",
   subjectId: "",
   teacherId: "",
+  classGroupId: "",
 }
 
 const course = {
@@ -29,6 +30,7 @@ const course = {
     // Lists to populate form dropdowns
     list_subject: [],
     list_teacher: [],
+    list_class_group: [],
 
     form: { ...form },
     is_update: false,
@@ -46,12 +48,17 @@ const course = {
     SET_COURSE(state, payload) { // Renamed from SET_REPORT
       state.course = payload
     },
+    
     SET_LIST_SUBJECT(state, payload) {
       state.list_subject = payload
     },
     SET_LIST_TEACHER(state, payload) {
       state.list_teacher = payload
     },
+    SET_LIST_CLASS_GROUP(state, payload) {
+      state.list_class_group = payload
+    },
+    
     SET_FORM(state, payload) {
       state.form[payload.key] = payload.value
     },
@@ -110,13 +117,16 @@ const course = {
       context.commit("SET_LOADING", { key: "form", value: true })
       try {
         // Fetch subjects and teachers in parallel
-        const [subjectsRes, teachersRes] = await Promise.all([
-          axiosInstance({ method: "GET", url: `/subject` }), // Assuming a /subject endpoint exists
-          axiosInstance({ method: "GET", url: `/user`, params: { role: 'TEACHER' } }), // Assuming you can filter users by role
+        const [subjectsRes, teachersRes, classGroupRes] = await Promise.all([
+          axiosInstance({ method: "GET", url: `/subject`, params: { page_size: 100 } }),
+          axiosInstance({ method: "GET", url: `/user`, params: { page_size: 100, role: 'TEACHER' } }),
+          axiosInstance({ method: "GET", url: `/class-group`, params: { page_size: 100 } }),
+
         ])
         
         context.commit("SET_LIST_SUBJECT", subjectsRes.data.data)
         context.commit("SET_LIST_TEACHER", teachersRes.data.data)
+        context.commit("SET_LIST_CLASS_GROUP", classGroupRes.data.data)
 
       } catch (error) {
         console.log(error)
@@ -165,6 +175,7 @@ const course = {
         context.commit("SET_FORM", { key: "name", value: data.name || "" })
         context.commit("SET_FORM", { key: "subjectId", value: data.subjectId || "" })
         context.commit("SET_FORM", { key: "teacherId", value: data.teacherId || "" })
+        context.commit("SET_FORM", { key: "classGroupId", value: data.classGroupId || "" })
       } catch (error) {
         console.log(error)
         toast.error("Failed to load course data for editing")
@@ -211,6 +222,29 @@ const course = {
       } catch (error) {
         console.log(error)
         toast.error(error.response.data.message)
+        
+        return false
+      } finally {
+        context.commit("SET_LOADING", { key: "form", value: false })
+      }
+    },
+    
+    updateStudents: async (context, { courseId, studentIds }) => {
+      context.commit("SET_LOADING", { key: "form", value: true })
+      try {
+        const result = await axiosInstance({
+          method: "PUT",
+          url: `/course/${courseId}/students`,
+          data: { studentIds },
+        })
+
+        toast.success(result.data.message)
+        context.dispatch("getCourse", courseId)
+        
+        return true
+      } catch (error) {
+        console.log(error)
+        toast.error(error.response?.data?.message || "Failed to update course students")
         
         return false
       } finally {

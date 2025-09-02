@@ -7,7 +7,7 @@ export class AttendanceController {
   /**
    * Create a new attendance record
    */
-  static async create(req: Request, res: Response) {
+  static async create(req: Request, res: Response): Promise<void> {
     try {
       const attendance = await AttendanceService.create(req.body);
 
@@ -50,19 +50,49 @@ export class AttendanceController {
   /**
    * Find all attendance records with optional filtering
    */
-  static async findAll(req: Request, res: Response) {
+  static async findAll(req: Request, res: Response): Promise<void> {
     try {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
-      const courseId = req.query.courseId as string;
-      const userId = req.query.userId as string;
+      const courseId = req.query.course_id as string;
+      let userId = req.query.userId as string;
       const date = req.query.date as string;
+      const startDate = req.query.start_date as string;
+      const endDate = req.query.end_date as string;
       const status = req.query.status as any;
+      const user = req.user;
+
+      // Role-based filtering
+      if (user.role === "STUDENT") {
+        // Students can only see their own attendance
+        userId = user.userId;
+      } else if (user.role === "TEACHER") {
+        // Teachers can see attendance for courses they teach
+        if (courseId) {
+          // Verify teacher owns this course
+          const course = await AttendanceService.verifyCourseAccess(
+            courseId,
+            user.userId
+          );
+          if (!course) {
+            ApiResponse.error({
+              res,
+              message: "Unauthorized: You do not teach this course",
+              statusCode: 403,
+            });
+            return;
+          }
+        }
+        // If userId is specified, use it; otherwise get all students
+      }
+      // Admins can see all attendance with any filter
 
       const result = await AttendanceService.findAll(page, limit, {
         courseId,
         userId,
         date,
+        startDate,
+        endDate,
         status,
       });
 
@@ -91,10 +121,11 @@ export class AttendanceController {
   /**
    * Find attendance records for a specific course and date
    */
-  static async findByCourseAndDate(req: Request, res: Response) {
+  static async findByCourseAndDate(req: Request, res: Response): Promise<void> {
     try {
       const courseId = req.params.courseId;
       const date = req.query.date as string;
+      const user = req.user;
 
       if (!courseId || !date) {
         ApiResponse.error({
@@ -104,6 +135,25 @@ export class AttendanceController {
         });
         return;
       }
+
+      // Role-based access control
+      if (user.role === "TEACHER") {
+        // Teachers can only access their own courses
+        const course = await AttendanceService.verifyCourseAccess(
+          courseId,
+          user.userId
+        );
+        if (!course) {
+          ApiResponse.error({
+            res,
+            message: "Unauthorized: You do not teach this course",
+            statusCode: 403,
+          });
+          return;
+        }
+      }
+      // Students shouldn't access this endpoint (they use findAll with their userId)
+      // Admins can access any course
 
       const result = await AttendanceService.findByCourseAndDate(
         courseId,

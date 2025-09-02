@@ -8,14 +8,14 @@ export class GradeController {
   /**
    * Create a new grade
    */
-  static async createGrade(req: Request, res: Response) {
+  static async createGrade(req: Request, res: Response): Promise<void> {
     try {
-      const { userId, courseId, examType, totalScore, components } = req.body;
+      const { userId, course_id, exam_type, totalScore, components } = req.body;
 
       const grade = await GradeService.create({
         userId,
-        courseId,
-        examType,
+        courseId: course_id,
+        examType: exam_type,
         totalScore,
         components,
       });
@@ -38,7 +38,7 @@ export class GradeController {
   /**
    * Create multiple grades in batch
    */
-  static async createBatchGrades(req: Request, res: Response) {
+  static async createBatchGrades(req: Request, res: Response): Promise<void> {
     try {
       const { grades } = req.body;
 
@@ -64,7 +64,7 @@ export class GradeController {
   /**
    * Get grades with optional filtering
    */
-  static async getGrades(req: Request, res: Response) {
+  static async getGrades(req: Request, res: Response): Promise<void> {
     try {
       const {
         courseId,
@@ -74,17 +74,46 @@ export class GradeController {
         limit = "10",
         include,
       } = req.query;
+      const user = req.user;
 
       const includeComponents = include === "components";
+
+      // Role-based filtering
+      let filters: any = {
+        courseId: courseId as string,
+        examType: examType as ExamType,
+      };
+
+      if (user.role === "STUDENT") {
+        // Students can only see their own grades
+        filters.userId = user.userId;
+      } else if (user.role === "TEACHER") {
+        // Teachers can see grades for courses they teach
+        if (courseId) {
+          // Verify teacher owns this course
+          const course = await GradeService.verifyCourseAccess(
+            courseId as string,
+            user.userId
+          );
+          if (!course) {
+            throw new Error("Unauthorized: You do not teach this course");
+          }
+        }
+        // If userId is specified, use it; otherwise get all students
+        if (userId) {
+          filters.userId = userId as string;
+        }
+      } else {
+        // Admins can see all grades with any filter
+        if (userId) {
+          filters.userId = userId as string;
+        }
+      }
 
       const result = await GradeService.findAll(
         parseInt(page as string, 10),
         parseInt(limit as string, 10),
-        {
-          courseId: courseId as string,
-          userId: userId as string,
-          examType: examType as ExamType,
-        },
+        filters,
         includeComponents
       );
 
@@ -112,12 +141,41 @@ export class GradeController {
   /**
    * Get a specific grade by student, course and exam type
    */
-  static async getGradeByKey(req: Request, res: Response) {
+  static async getGradeByKey(req: Request, res: Response): Promise<void> {
     try {
       const { userId, courseId, examType } = req.params;
       const { include } = req.query;
+      const user = req.user;
 
       const includeComponents = include === "components";
+
+      // Role-based access control
+      if (user.role === "STUDENT") {
+        // Students can only access their own grades
+        if (userId !== user.userId) {
+          ApiResponse.error({
+            res,
+            message: "Unauthorized: You can only access your own grades",
+            statusCode: 403,
+          });
+          return;
+        }
+      } else if (user.role === "TEACHER") {
+        // Teachers can only access grades for courses they teach
+        const course = await GradeService.verifyCourseAccess(
+          courseId,
+          user.userId
+        );
+        if (!course) {
+          ApiResponse.error({
+            res,
+            message: "Unauthorized: You do not teach this course",
+            statusCode: 403,
+          });
+          return;
+        }
+      }
+      // Admins can access any grade
 
       const grade = await GradeService.findByKey(
         userId,
@@ -218,6 +276,52 @@ export class GradeController {
       ApiResponse.error({
         res,
         message: JSON.stringify(error) || "Failed to retrieve grade components",
+        error,
+      });
+    }
+  }
+
+  /**
+   * Update a grade component score
+   */
+  static async updateGradeComponent(req: Request, res: Response) {
+    try {
+      const { userId, courseId, examType, componentIndex, score } = req.body;
+
+      if (
+        !userId ||
+        !courseId ||
+        !examType ||
+        componentIndex === undefined ||
+        score === undefined
+      ) {
+        ApiResponse.error({
+          res,
+          message:
+            "userId, courseId, examType, componentIndex, and score are required",
+          statusCode: 400,
+        });
+        return;
+      }
+
+      const result = await GradeService.updateGradeComponent(
+        userId,
+        courseId,
+        examType as ExamType,
+        componentIndex,
+        score
+      );
+
+      ApiResponse.success({
+        res,
+        data: result,
+        message: "Grade component updated successfully",
+      });
+    } catch (error) {
+      console.error("Update grade component error:", error);
+      ApiResponse.error({
+        res,
+        message: JSON.stringify(error) || "Failed to update grade component",
         error,
       });
     }

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { UserController } from "./user.controller";
 import { authorize } from "../auth/auth.middleware";
+import { authenticate } from "../auth/auth.middleware";
 import { validate } from "../../lib/validate";
 import { updateUserSchema } from "./user.schema";
 import { UserMiddleware } from "./user.middleware";
@@ -8,7 +9,7 @@ import { UserMiddleware } from "./user.middleware";
 export const userRouter = Router();
 
 // Get all users
-userRouter.get("/", UserController.getAllUsers);
+userRouter.get("/", authenticate, UserController.getAllUsers);
 
 //Create user
 
@@ -32,7 +33,7 @@ userRouter.put(
 // Update profile
 userRouter.put(
   "/profile/update",
-  UserMiddleware.schema,
+  authorize(["STUDENT", "TEACHER", "ADMIN"]),
   UserController.updateProfile
 );
 

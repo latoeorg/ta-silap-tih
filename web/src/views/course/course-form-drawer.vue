@@ -61,37 +61,6 @@
             <VCard
               variant="outlined"
               class="info-card"
-              :class="{ 'card-filled': name }"
-            >
-              <VCardTitle class="card-title">
-                <VIcon
-                  icon="tabler-info-circle"
-                  class="title-icon"
-                />
-                Detail Kursus
-              </VCardTitle>
-              <VCardText class="card-content">
-                <VTextField
-                  v-model="name"
-                  label="Nama Kursus"
-                  placeholder="Contoh: Matematika XII IPA 1"
-                  :rules="rules.name"
-                  clearable
-                >
-                  <template #prepend-inner>
-                    <VIcon
-                      icon="tabler-bookmark"
-                      size="20"
-                      :color="name ? 'primary' : 'disabled'"
-                    />
-                  </template>
-                </VTextField>
-              </VCardText>
-            </VCard>
-
-            <VCard
-              variant="outlined"
-              class="info-card"
               :class="{ 'card-filled': subjectId }"
             >
               <VCardTitle class="card-title">
@@ -120,6 +89,100 @@
                     />
                   </template>
                 </VSelect>
+              </VCardText>
+            </VCard>
+
+            <VCard
+              variant="outlined"
+              class="info-card"
+              :class="{ 'card-filled': classGroupId }"
+            >
+              <VCardTitle class="card-title">
+                <VIcon
+                  icon="tabler-users"
+                  class="title-icon"
+                />
+                Kelas
+              </VCardTitle>
+              <VCardText class="card-content">
+                <VSelect
+                  v-model="classGroupId"
+                  :items="list_class_group"
+                  item-title="name"
+                  item-value="id"
+                  label="Pilih Kelas"
+                  placeholder="Pilih kelas untuk kursus ini"
+                  :rules="rules.classGroupId"
+                  clearable
+                >
+                  <template #prepend-inner>
+                    <VIcon
+                      icon="tabler-users"
+                      size="20"
+                      :color="classGroupId ? 'primary' : 'disabled'"
+                    />
+                  </template>
+                </VSelect>
+              </VCardText>
+            </VCard>
+
+            <VCard
+              variant="outlined"
+              class="info-card"
+              :class="{ 'card-filled': name }"
+            >
+              <VCardTitle class="card-title">
+                <VIcon
+                  icon="tabler-info-circle"
+                  class="title-icon"
+                />
+                Detail Kursus
+              </VCardTitle>
+              <VCardText class="card-content">
+                <VTextField
+                  v-model="name"
+                  label="Nama Kursus"
+                  :placeholder="dynamicCourseName || 'Contoh: Matematika XII IPA 1'"
+                  :rules="rules.name"
+                  clearable
+                >
+                  <template #prepend-inner>
+                    <VIcon
+                      icon="tabler-bookmark"
+                      size="20"
+                      :color="name ? 'primary' : 'disabled'"
+                    />
+                  </template>
+                  <template #append-inner>
+                    <VBtn
+                      v-if="dynamicCourseName && !isNameManuallySet"
+                      variant="text"
+                      size="x-small"
+                      color="primary"
+                      @click="applyDynamicName"
+                    >
+                      <VIcon
+                        icon="tabler-wand"
+                        size="16"
+                      />
+                    </VBtn>
+                  </template>
+                </VTextField>
+                
+                <div
+                  v-if="dynamicCourseName && dynamicCourseName !== name"
+                  class="dynamic-name-suggestion"
+                >
+                  <VChip
+                    variant="tonal"
+                    color="primary"
+                    size="small"
+                    prepend-icon="tabler-lightbulb"
+                    @click="applyDynamicName"
+                  >
+                    Saran: {{ dynamicCourseName }}
+                  </VChip>
+                </div>
               </VCardText>
             </VCard>
 
@@ -242,16 +305,25 @@ const emit = defineEmits(['handleClose'])
 const store = useVuex()
 const formRef = ref(null)
 const formValid = ref(false)
+const isNameManuallySet = ref(false)
 
 // Computed properties to sync with Vuex store
 const isUpdate = computed(() => store.state.course.is_update)
 const loading = computed(() => store.state.course.loading.form)
 const list_subject = computed(() => store.state.course.list_subject)
 const list_teacher = computed(() => store.state.course.list_teacher)
+const list_class_group = computed(() => store.state.course.list_class_group)
 
 const name = computed({
   get: () => store.state.course.form.name || '',
-  set: val => store.commit('course/SET_FORM', { key: 'name', value: val }),
+  set: val => {
+    store.commit('course/SET_FORM', { key: 'name', value: val })
+
+    // Track if user is manually setting the name
+    if (val !== dynamicCourseName.value) {
+      isNameManuallySet.value = true
+    }
+  },
 })
 
 const subjectId = computed({
@@ -264,28 +336,58 @@ const teacherId = computed({
   set: val => store.commit('course/SET_FORM', { key: 'teacherId', value: val }),
 })
 
+const classGroupId = computed({
+  get: () => store.state.course.form.classGroupId || '',
+  set: val => store.commit('course/SET_FORM', { key: 'classGroupId', value: val }),
+})
+
+// --- Dynamic Course Name Logic ---
+const selectedSubject = computed(() => {
+  return list_subject.value.find(subject => subject.id === subjectId.value)
+})
+
+const selectedClassGroup = computed(() => {
+  return list_class_group.value.find(classGroup => classGroup.id === classGroupId.value)
+})
+
+const dynamicCourseName = computed(() => {
+  if (!selectedSubject.value || !selectedClassGroup.value) return ''
+  
+  return `${selectedSubject.value.name} ${selectedClassGroup.value.name}`
+})
+
+const applyDynamicName = () => {
+  if (dynamicCourseName.value) {
+    store.commit('course/SET_FORM', { key: 'name', value: dynamicCourseName.value })
+    isNameManuallySet.value = false
+  }
+}
+
+// Watch for changes in subject or class group to auto-update name
+watch([subjectId, classGroupId], () => {
+  if (!isNameManuallySet.value && dynamicCourseName.value && !isUpdate.value) {
+    store.commit('course/SET_FORM', { key: 'name', value: dynamicCourseName.value })
+  }
+})
+
 // --- Validation ---
 const rules = {
   name: [v => !!v || 'Nama kursus wajib diisi', v => (v && v.length) >= 3 || 'Minimal 3 karakter'],
   subjectId: [v => !!v || 'Subjek wajib dipilih'],
   teacherId: [v => !!v || 'Pengajar wajib dipilih'],
+  classGroupId: [v => !!v || 'Kelas wajib dipilih'],
 }
 
 // --- UI Logic ---
 const formProgress = computed(() => {
   let progress = 0
-  if (name.value) progress += 33.3
-  if (subjectId.value) progress += 33.3
-  if (teacherId.value) progress += 33.4
+  if (subjectId.value) progress += 25
+  if (classGroupId.value) progress += 25
+  if (name.value) progress += 25
+  if (teacherId.value) progress += 25
   
   return progress
 })
-
-const validationSummary = computed(() => [
-  { key: 'name', label: 'Nama Kursus', valid: !!name.value },
-  { key: 'subjectId', label: 'Subjek Dipilih', valid: !!subjectId.value },
-  { key: 'teacherId', label: 'Pengajar Ditugaskan', valid: !!teacherId.value },
-])
 
 const canSubmit = computed(() => formValid.value && !loading.value)
 
@@ -324,6 +426,7 @@ watch(() => props.open, isOpen => {
       store.commit('course/RESET_FORM')
       store.commit('course/SET_IS_UPDATE', false)
       formRef.value?.resetValidation()
+      isNameManuallySet.value = false
     }, 300)
   }
 })
@@ -421,6 +524,20 @@ watch(() => props.open, isOpen => {
 .card-content {
   padding-block: 0 16px;
   padding-inline: 16px;
+}
+
+/* Dynamic name suggestion */
+.dynamic-name-suggestion {
+  margin-block-start: 8px;
+}
+
+.dynamic-name-suggestion .v-chip {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dynamic-name-suggestion .v-chip:hover {
+  transform: scale(1.02);
 }
 
 /* Footer */

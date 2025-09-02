@@ -22,7 +22,7 @@ export class UserController {
     }
   }
 
-  static async getAllUsers(req: Request, res: Response) {
+  static async getAllUsers(req: Request, res: Response): Promise<void> {
     const {
       role,
       role_exclude,
@@ -32,10 +32,42 @@ export class UserController {
       sort_by = "createdAt",
       sort_order = "desc",
       class_group_id,
+      course_id,
     } = req.query;
     const pageNumber = parseInt(page as string, 10);
     const pageSize = parseInt(page_size as string, 10);
+    const user = req.user;
+
     try {
+      // Role-based access control
+      if (user.role === "STUDENT") {
+        // Students cannot list other users
+        ApiResponse.error({
+          res,
+          message: "Unauthorized: Students cannot view user lists",
+          statusCode: 403,
+        });
+        return;
+      }
+
+      // For teachers, restrict to their courses only
+      let courseIdFilter = course_id as string;
+      if (user.role === "TEACHER" && course_id) {
+        // Verify teacher owns this course
+        const course = await UserService.verifyCourseAccess(
+          course_id as string,
+          user.userId
+        );
+        if (!course) {
+          ApiResponse.error({
+            res,
+            message: "Unauthorized: You do not teach this course",
+            statusCode: 403,
+          });
+          return;
+        }
+      }
+
       const result = await UserService.getAll({
         role: role as string,
         roleExclude: role_exclude as string,
@@ -46,6 +78,7 @@ export class UserController {
         sortOrder:
           (sort_order as string)?.toLowerCase() === "asc" ? "asc" : "desc",
         classGroupId: class_group_id as string,
+        courseId: courseIdFilter,
       });
 
       ApiResponse.success({

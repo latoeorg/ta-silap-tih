@@ -61,16 +61,22 @@ declare global {
   const formatDate: typeof import('./src/utils/utils.js')['formatDate']
   const formatDateToMonthShort: typeof import('./src/@core/utils/formatters.js')['formatDateToMonthShort']
   const formatFileSize: typeof import('./src/utils/utils.js')['formatFileSize']
+  const formatGrade: typeof import('./src/utils/formatters.js')['formatGrade']
+  const formatNumber: typeof import('./src/utils/formatters.js')['formatNumber']
+  const formatPhoneNumber: typeof import('./src/utils/formatters.js')['formatPhoneNumber']
+  const formatRelativeTime: typeof import('./src/utils/utils.js')['formatRelativeTime']
   const formatRupiah: typeof import('./src/utils/utils.js')['formatRupiah']
   const getActivePinia: typeof import('pinia')['getActivePinia']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
+  const getCurrentUserRole: typeof import('./src/utils/permission.js')['getCurrentUserRole']
   const h: typeof import('vue')['h']
   const hasRole: typeof import('./src/utils/permission.js')['hasRole']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
   const inject: typeof import('vue')['inject']
   const injectLocal: typeof import('@vueuse/core')['injectLocal']
   const integerValidator: typeof import('./src/@core/utils/validators.js')['integerValidator']
+  const isAdmin: typeof import('./src/utils/permission.js')['isAdmin']
   const isDefined: typeof import('@vueuse/core')['isDefined']
   const isEmpty: typeof import('./src/@core/utils/helpers.js')['isEmpty']
   const isEmptyArray: typeof import('./src/@core/utils/helpers.js')['isEmptyArray']
@@ -81,6 +87,8 @@ declare global {
   const isReactive: typeof import('vue')['isReactive']
   const isReadonly: typeof import('vue')['isReadonly']
   const isRef: typeof import('vue')['isRef']
+  const isStudent: typeof import('./src/utils/permission.js')['isStudent']
+  const isTeacher: typeof import('./src/utils/permission.js')['isTeacher']
   const isToday: typeof import('./src/@core/utils/helpers.js')['isToday']
   const kFormatter: typeof import('./src/@core/utils/formatters.js')['kFormatter']
   const lengthValidator: typeof import('./src/@core/utils/validators.js')['lengthValidator']
@@ -158,6 +166,7 @@ declare global {
   const toRefs: typeof import('vue')['toRefs']
   const toValue: typeof import('vue')['toValue']
   const triggerRef: typeof import('vue')['triggerRef']
+  const truncateText: typeof import('./src/utils/formatters.js')['truncateText']
   const tryOnBeforeMount: typeof import('@vueuse/core')['tryOnBeforeMount']
   const tryOnBeforeUnmount: typeof import('@vueuse/core')['tryOnBeforeUnmount']
   const tryOnMounted: typeof import('@vueuse/core')['tryOnMounted']
@@ -380,7 +389,6 @@ declare module 'vue' {
     readonly COOKIE_MAX_AGE_1_YEAR: UnwrapRef<typeof import('./src/utils/constants.js')['COOKIE_MAX_AGE_1_YEAR']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly IsCan: UnwrapRef<typeof import('./src/utils/permission.js')['IsCan']>
-    readonly LEAD: UnwrapRef<typeof import('./src/utils/constants.js')['LEAD']>
     readonly SwalDelete: UnwrapRef<typeof import('./src/utils/sweetalert.js')['SwalDelete']>
     readonly SwalUpdateStatus: UnwrapRef<typeof import('./src/utils/sweetalert.js')['SwalUpdateStatus']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
@@ -427,20 +435,29 @@ declare module 'vue' {
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
     readonly formatCalendar: UnwrapRef<typeof import('./src/utils/utils.js')['formatCalendar']>
     readonly formatCapitalize: UnwrapRef<typeof import('./src/utils/utils.js')['formatCapitalize']>
+    readonly formatCurrency: UnwrapRef<typeof import('./src/utils/formatters.js')['formatCurrency']>
     readonly formatCurrency: UnwrapRef<typeof import('./src/utils/utils.js')['formatCurrency']>
     readonly formatDate: UnwrapRef<typeof import('./src/@core/utils/formatters.js')['formatDate']>
+    readonly formatDate: UnwrapRef<typeof import('./src/utils/formatters.js')['formatDate']>
     readonly formatDate: UnwrapRef<typeof import('./src/utils/utils.js')['formatDate']>
     readonly formatDateToMonthShort: UnwrapRef<typeof import('./src/@core/utils/formatters.js')['formatDateToMonthShort']>
+    readonly formatFileSize: UnwrapRef<typeof import('./src/utils/formatters.js')['formatFileSize']>
     readonly formatFileSize: UnwrapRef<typeof import('./src/utils/utils.js')['formatFileSize']>
+    readonly formatGrade: UnwrapRef<typeof import('./src/utils/formatters.js')['formatGrade']>
+    readonly formatNumber: UnwrapRef<typeof import('./src/utils/formatters.js')['formatNumber']>
+    readonly formatPhoneNumber: UnwrapRef<typeof import('./src/utils/formatters.js')['formatPhoneNumber']>
+    readonly formatRelativeTime: UnwrapRef<typeof import('./src/utils/utils.js')['formatRelativeTime']>
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
+    readonly getCurrentUserRole: UnwrapRef<typeof import('./src/utils/permission.js')['getCurrentUserRole']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly hasRole: UnwrapRef<typeof import('./src/utils/permission.js')['hasRole']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly injectLocal: UnwrapRef<typeof import('@vueuse/core')['injectLocal']>
     readonly integerValidator: UnwrapRef<typeof import('./src/@core/utils/validators.js')['integerValidator']>
+    readonly isAdmin: UnwrapRef<typeof import('./src/utils/permission.js')['isAdmin']>
     readonly isDefined: UnwrapRef<typeof import('@vueuse/core')['isDefined']>
     readonly isEmpty: UnwrapRef<typeof import('./src/@core/utils/helpers.js')['isEmpty']>
     readonly isEmptyArray: UnwrapRef<typeof import('./src/@core/utils/helpers.js')['isEmptyArray']>
@@ -451,6 +468,8 @@ declare module 'vue' {
     readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
+    readonly isStudent: UnwrapRef<typeof import('./src/utils/permission.js')['isStudent']>
+    readonly isTeacher: UnwrapRef<typeof import('./src/utils/permission.js')['isTeacher']>
     readonly isToday: UnwrapRef<typeof import('./src/@core/utils/helpers.js')['isToday']>
     readonly lengthValidator: UnwrapRef<typeof import('./src/@core/utils/validators.js')['lengthValidator']>
     readonly logicAnd: UnwrapRef<typeof import('@vueuse/math')['logicAnd']>
@@ -527,6 +546,7 @@ declare module 'vue' {
     readonly toRefs: UnwrapRef<typeof import('vue')['toRefs']>
     readonly toValue: UnwrapRef<typeof import('vue')['toValue']>
     readonly triggerRef: UnwrapRef<typeof import('vue')['triggerRef']>
+    readonly truncateText: UnwrapRef<typeof import('./src/utils/formatters.js')['truncateText']>
     readonly tryOnBeforeMount: UnwrapRef<typeof import('@vueuse/core')['tryOnBeforeMount']>
     readonly tryOnBeforeUnmount: UnwrapRef<typeof import('@vueuse/core')['tryOnBeforeUnmount']>
     readonly tryOnMounted: UnwrapRef<typeof import('@vueuse/core')['tryOnMounted']>
