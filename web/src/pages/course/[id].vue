@@ -101,7 +101,7 @@ const activeTab = computed(() => route.query.tab || CourseDetailTab.summary);
 
 const loading = computed(() => store.state.course.loading.report);
 const report = computed(() => store.state.course.course);
-const user = computed(() => store.state.auth.user);
+const user = computed(() => store.state.app.user);
 
 // Role-based access control
 const canViewStudents = computed(() => {

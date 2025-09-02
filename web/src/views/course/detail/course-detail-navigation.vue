@@ -23,7 +23,7 @@ const router = useRouter();
 const route = useRoute();
 const store = useVuex();
 
-const user = computed(() => store.state.auth.user);
+const user = computed(() => store.state.app.user);
 
 const filteredTabs = computed(() => {
   if (user.value?.role === "STUDENT") {
