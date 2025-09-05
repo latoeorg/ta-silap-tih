@@ -1,8 +1,45 @@
 import { prisma } from "../../lib/prisma";
 import { User, Role } from "@prisma/client";
 import { hashPassword } from "../../utils/bcrypt";
+import { generateToken } from "../../utils/jwt";
+import { UrlUtils } from "../../utils/url";
 
 export class UserService {
+  /**
+   * Transform profile data to include full URLs for profile pictures
+   */
+  private static transformProfileData(profile: any): any {
+    if (!profile) return profile;
+
+    return {
+      ...profile,
+      profilePicture: UrlUtils.toFullUrl(profile.profilePicture),
+    };
+  }
+
+  /**
+   * Transform user data to include full URLs for profile pictures
+   */
+  private static transformUserData(user: any): any {
+    if (!user) return user;
+
+    const transformedUser = { ...user };
+
+    if (user.studentProfile) {
+      transformedUser.studentProfile = this.transformProfileData(
+        user.studentProfile
+      );
+    }
+
+    if (user.teacherProfile) {
+      transformedUser.teacherProfile = this.transformProfileData(
+        user.teacherProfile
+      );
+    }
+
+    return transformedUser;
+  }
+
   static async create(data: User & { profileData?: any }) {
     // If password is provided, hash it
     if (data.password) {
@@ -80,23 +117,27 @@ export class UserService {
   }
 
   static async findByEmail(email: string) {
-    return await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email },
       include: {
         studentProfile: true,
         teacherProfile: true,
       },
     });
+
+    return this.transformUserData(user);
   }
 
   static async findById(id: string) {
-    return await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id },
       include: {
         studentProfile: true,
         teacherProfile: true,
       },
     });
+
+    return this.transformUserData(user);
   }
 
   static async getAll(params: {
@@ -173,7 +214,10 @@ export class UserService {
       },
     });
 
-    return { users, total };
+    // Transform user data to include full URLs
+    const transformedUsers = users.map((user) => this.transformUserData(user));
+
+    return { users: transformedUsers, total };
   }
 
   static async update(id: string, data: any) {
@@ -247,7 +291,7 @@ export class UserService {
       });
     }
 
-    return result;
+    return this.transformUserData(result);
   }
 
   static async delete(id: string) {
@@ -257,17 +301,41 @@ export class UserService {
   }
 
   static async updateStudentProfile(email: string, data: any) {
-    return prisma.studentProfile.update({
+    const profile = await prisma.studentProfile.update({
       where: { email },
       data,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
     });
+
+    return this.transformProfileData(profile);
   }
 
   static async updateTeacherProfile(email: string, data: any) {
-    return prisma.teacherProfile.update({
+    const profile = await prisma.teacherProfile.update({
       where: { email },
       data,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
     });
+
+    return this.transformProfileData(profile);
   }
 
   /**

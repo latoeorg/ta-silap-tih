@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { UserService } from "./user.service";
 import { ApiResponse } from "../../utils/api-response";
+import { Role } from "@prisma/client";
+import fs from "fs";
+import path from "path";
 
 export class UserController {
   static async createUser(req: Request, res: Response) {
@@ -154,14 +157,39 @@ export class UserController {
     try {
       const userId = req.user.userId;
       const data = req.body;
+      const file = req.file;
+
       const user = await UserService.findById(userId);
 
       if (!user) throw new Error("User not found");
 
+      // If a profile picture is uploaded, add the file path to data
+      if (file) {
+        data.profilePicture = `/uploads/profile-pictures/${file.filename}`;
+
+        // Delete old profile picture if it exists
+        let oldProfilePicture: string | null = null;
+        if (user.role === Role.STUDENT && user.studentProfile?.profilePicture) {
+          oldProfilePicture = user.studentProfile.profilePicture;
+        } else if (
+          user.role === Role.TEACHER &&
+          user.teacherProfile?.profilePicture
+        ) {
+          oldProfilePicture = user.teacherProfile.profilePicture;
+        }
+
+        if (oldProfilePicture) {
+          const oldFilePath = path.join(process.cwd(), oldProfilePicture);
+          if (fs.existsSync(oldFilePath)) {
+            fs.unlinkSync(oldFilePath);
+          }
+        }
+      }
+
       let profile;
-      if (user.role === "STUDENT") {
+      if (user.role === Role.STUDENT) {
         profile = await UserService.updateStudentProfile(user.email, data);
-      } else {
+      } else if (user.role === Role.TEACHER) {
         profile = await UserService.updateTeacherProfile(user.email, data);
       }
 
@@ -172,6 +200,19 @@ export class UserController {
       });
     } catch (error) {
       console.error("Update profile error:", error);
+
+      // If there was an error and a file was uploaded, clean it up
+      if (req.file) {
+        const filePath = path.join(
+          process.cwd(),
+          "uploads/profile-pictures",
+          req.file.filename
+        );
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+
       ApiResponse.error({ res, message: "Failed to update profile", error });
     }
   }

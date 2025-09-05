@@ -14,6 +14,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string(),
   JWT_SECRET: z.string().default("your-secret-key"),
   JWT_EXPIRES_IN: z.string().default("7d"),
+  API_URL: z.string().default("http://localhost:3000"),
 });
 
 export const env = envSchema.parse(process.env);

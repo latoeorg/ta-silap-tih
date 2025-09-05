@@ -335,9 +335,9 @@ export class AttendanceService {
   }
 
   /**
-   * Update an attendance record
+   * Create or update an attendance record (upsert)
    */
-  static async update(
+  static async createOrUpdate(
     userId: string,
     courseId: string,
     date: string | Date,
@@ -353,6 +353,7 @@ export class AttendanceService {
     });
 
     if (!attendance) {
+      // Create new attendance record if not found
       return prisma.attendance.create({
         data: {
           userId,
@@ -386,7 +387,7 @@ export class AttendanceService {
       });
     }
 
-    // Update the attendance record
+    // Update the existing attendance record
     return prisma.attendance.update({
       where: { id: attendance.id },
       data: {
@@ -417,6 +418,19 @@ export class AttendanceService {
         },
       },
     });
+  }
+
+  /**
+   * Update an attendance record (deprecated: use createOrUpdate instead)
+   * @deprecated Use createOrUpdate for upsert functionality
+   */
+  static async update(
+    userId: string,
+    courseId: string,
+    date: string | Date,
+    data: AttendanceUpdateInput
+  ) {
+    return this.createOrUpdate(userId, courseId, date, data);
   }
 
   /**

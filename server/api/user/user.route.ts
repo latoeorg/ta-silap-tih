@@ -5,6 +5,7 @@ import { authenticate } from "../auth/auth.middleware";
 import { validate } from "../../lib/validate";
 import { updateUserSchema } from "./user.schema";
 import { UserMiddleware } from "./user.middleware";
+import { profilePictureUpload } from "../../middleware/upload";
 
 export const userRouter = Router();
 
@@ -33,7 +34,9 @@ userRouter.put(
 // Update profile
 userRouter.put(
   "/profile/update",
+  authenticate,
   authorize(["STUDENT", "TEACHER", "ADMIN"]),
+  profilePictureUpload,
   UserController.updateProfile
 );
 

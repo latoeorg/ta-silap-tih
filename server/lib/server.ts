@@ -10,6 +10,7 @@ import { rateLimit } from "express-rate-limit";
 import { authRouter } from "../api/auth/auth.route";
 import { authenticate } from "../api/auth/auth.middleware";
 import { ProtectedRoutes } from "../routes/protected.route";
+import path from "path";
 
 export default class App {
   public express: Application;
@@ -29,6 +30,12 @@ export default class App {
     this.express.use(express.urlencoded({ extended: true }));
     this.express.use(cors());
     this.express.use(helmet());
+
+    // Serve static files for uploads
+    this.express.use(
+      "/uploads",
+      express.static(path.join(process.cwd(), "uploads"))
+    );
 
     // // Rate limiting
     // const limiter = rateLimit({
