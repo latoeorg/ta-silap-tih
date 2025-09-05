@@ -1,646 +1,386 @@
 <template>
   <div class="student-dashboard">
-    <div class="dashboard-header">
-      <div class="header-content">
-        <VIcon
-          icon="tabler-school"
-          size="48"
-          color="info"
-          class="header-icon"
-        />
-        <div>
-          <h1 class="text-h4 font-weight-bold text-info">Dashboard Siswa</h1>
-          <p class="text-body-1 text-medium-emphasis">
-            Kelola profil Anda dan pantau pembelajaran
-          </p>
-        </div>
-      </div>
-      <div class="header-actions">
-        <VChip color="info" variant="tonal" prepend-icon="tabler-school">
-          Siswa
-        </VChip>
-      </div>
-    </div>
-
-    <VRow>
-      <!-- Profile Information -->
-      <VCol cols="12" md="4">
-        <VCard class="profile-card">
-          <VCardText class="text-center">
-            <VAvatar size="120" class="mb-4" color="info" variant="tonal">
-              <VImg v-if="user.photo" :src="user.photo" cover />
-              <span v-else class="text-h4">
-                {{ getInitials(user.name) }}
-              </span>
-            </VAvatar>
-
-            <h3 class="text-h5 mb-2">{{ user.name }}</h3>
-            <p class="text-body-2 text-medium-emphasis mb-1">
-              {{ user.email }}
+    <!-- Welcome Header -->
+    <VCard class="welcome-header" color="primary" variant="elevated">
+      <VCardText>
+        <div class="d-flex align-center gap-4">
+          <VIcon
+            icon="tabler-school"
+            size="48"
+            color="white"
+          />
+          <div>
+            <h1 class="text-h4 font-weight-bold text-white mb-1">
+              Selamat Datang Di Sistem Informasi dan Layanan Siswa Polibatam
+            </h1>
+            <p class="text-white opacity-80">
+              Anda dapat menikmati layanan secara online 📱
             </p>
-            <VChip size="small" color="info" variant="tonal" class="mb-4">
-              {{ studentProfile.number || "Siswa" }}
-            </VChip>
+          </div>
+        </div>
+      </VCardText>
+    </VCard>
 
-            <VBtn
-              color="info"
-              variant="outlined"
-              prepend-icon="tabler-user-edit"
-              @click="editProfile = true"
-            >
-              Edit Profil
-            </VBtn>
-          </VCardText>
-        </VCard>
+    <!-- Profile Update Notice -->
+    <VAlert
+      type="info"
+      variant="tonal"
+      class="mt-4"
+      closable
+    >
+      <template #prepend>
+        <VIcon icon="tabler-info-circle" />
+      </template>
+      <div>
+        Lengkapi profil Anda untuk mengakses semua fitur sistem. Klik 
+        <VBtn
+          variant="text"
+          color="primary"
+          size="small"
+          to="/profile"
+          class="mx-1"
+        >
+          PROFILE
+        </VBtn>
+        untuk melengkapi data diri.
+      </div>
+    </VAlert>
 
-        <!-- Academic Summary -->
-        <VCard class="mt-4">
-          <VCardTitle class="d-flex align-center">
-            <VIcon icon="tabler-chart-line" class="me-2" color="info" />
-            Ringkasan Akademik
-          </VCardTitle>
-
-          <VDivider />
-
-          <VCardText>
-            <div class="academic-stats">
-              <div class="stat-item">
-                <div class="stat-icon">
-                  <VIcon icon="tabler-book" color="primary" />
-                </div>
-                <div class="stat-details">
-                  <h4 class="stat-number">
-                    {{ statistics.totalSubjects || 0 }}
-                  </h4>
-                  <p class="stat-label">Mata Pelajaran</p>
-                </div>
-              </div>
-
-              <div class="stat-item">
-                <div class="stat-icon">
-                  <VIcon icon="tabler-percentage" color="success" />
-                </div>
-                <div class="stat-details">
-                  <h4 class="stat-number">
-                    {{ statistics.averageGrade || 0 }}%
-                  </h4>
-                  <p class="stat-label">Rata-rata Nilai</p>
-                </div>
-              </div>
-
-              <div class="stat-item">
-                <div class="stat-icon">
-                  <VIcon icon="tabler-calendar-check" color="warning" />
-                </div>
-                <div class="stat-details">
-                  <h4 class="stat-number">
-                    {{ statistics.attendanceRate || 0 }}%
-                  </h4>
-                  <p class="stat-label">Kehadiran</p>
-                </div>
-              </div>
-            </div>
-          </VCardText>
-        </VCard>
+    <!-- Student Profile Card -->
+    <VRow class="mt-6">
+      <VCol cols="12" md="4">
+        <div class="profile-illustration text-center">
+          <VAvatar
+            v-if="user.studentProfile?.profilePicture"
+            :image="user.studentProfile.profilePicture"
+            size="200"
+            class="profile-avatar"
+          />
+          <VIcon
+            v-else
+            icon="tabler-user-circle"
+            size="200"
+            color="primary"
+            class="illustration-image opacity-60"
+          />
+        </div>
       </VCol>
 
-      <!-- Main Content -->
       <VCol cols="12" md="8">
-        <!-- My Courses -->
-        <VCard class="courses-card">
-          <VCardTitle class="d-flex align-center justify-space-between">
+        <VCard class="profile-data-card">
+          <VCardTitle class="d-flex align-center justify-between bg-primary">
             <div class="d-flex align-center">
-              <VIcon icon="tabler-book-2" class="me-2" color="primary" />
-              Mata Pelajaran Saya
+              <VIcon icon="tabler-user" class="me-2" color="white" />
+              <span class="text-white">DATA DIRI Siswa</span>
             </div>
-            <VBtn
-              color="primary"
-              variant="outlined"
+            <VChip
+              :color="getStatusColor(user.studentProfile?.status)"
               size="small"
-              prepend-icon="tabler-eye"
-              to="/course"
+              variant="elevated"
             >
-              Lihat Semua
-            </VBtn>
+              {{ getStatusText(user.studentProfile?.status) }}
+            </VChip>
           </VCardTitle>
 
-          <VDivider />
+          <VCardText class="pa-6">
+            <VRow>
+              <!-- Basic Information -->
+              <VCol cols="12" sm="6">
+                <div class="profile-field">
+                  <strong>Nama</strong>
+                  <p class="profile-value">{{ user.name || '-' }}</p>
+                </div>
+              </VCol>
 
-          <VCardText>
-            <div v-if="loading" class="text-center py-8">
-              <VProgressCircular indeterminate size="32" color="primary" />
-              <p class="text-body-2 mt-2">Memuat mata pelajaran...</p>
-            </div>
+              <VCol cols="12" sm="6">
+                <div class="profile-field">
+                  <strong>Email</strong>
+                  <p class="profile-value">{{ user.email || '-' }}</p>
+                </div>
+              </VCol>
 
-            <div v-else-if="myCourses.length === 0" class="text-center py-8">
-              <VIcon
-                icon="tabler-book-off"
-                size="48"
-                color="disabled"
-                class="mb-2"
-              />
-              <p class="text-body-2 text-disabled">
-                Belum terdaftar dalam mata pelajaran
-              </p>
-            </div>
+              <VCol cols="12" sm="6">
+                <div class="profile-field">
+                  <strong>Jenis Kelamin</strong>
+                  <p class="profile-value">{{ getGenderText(user.studentProfile?.gender) }}</p>
+                </div>
+              </VCol>
 
-            <VRow v-else>
-              <VCol
-                v-for="course in myCourses"
-                :key="course.id"
-                cols="12"
-                sm="6"
-              >
-                <VCard class="course-item-card" :to="`/course/${course.id}`">
-                  <VCardText>
-                    <div class="d-flex align-center mb-3">
-                      <VAvatar
-                        size="40"
-                        color="primary"
-                        variant="tonal"
-                        class="me-3"
-                      >
-                        <VIcon icon="tabler-book" />
-                      </VAvatar>
-                      <div>
-                        <h6 class="text-subtitle-1 font-weight-medium">
-                          {{ course.subject?.name }}
-                        </h6>
-                        <p class="text-body-2 text-medium-emphasis">
-                          {{ course.teacher?.name }}
-                        </p>
-                      </div>
-                    </div>
+              <VCol cols="12" sm="6">
+                <div class="profile-field">
+                  <strong>Status</strong>
+                  <p class="profile-value">{{ getStatusText(user.studentProfile?.status) }}</p>
+                </div>
+              </VCol>
 
-                    <div class="course-stats">
-                      <VChip
-                        size="small"
-                        :color="getGradeColor(course.currentGrade)"
-                        variant="tonal"
-                        class="me-2"
-                      >
-                        <VIcon icon="tabler-chart-line" size="14" start />
-                        {{ course.currentGrade || 0 }}%
-                      </VChip>
+              <!-- Incomplete Fields Section -->
+              <VCol cols="12">
+                <VDivider class="my-4" />
+                <h4 class="text-h6 mb-3 text-warning">Data yang Perlu Dilengkapi</h4>
+              </VCol>
 
-                      <VChip
-                        size="small"
-                        :color="getAttendanceColor(course.attendanceRate)"
-                        variant="tonal"
-                      >
-                        <VIcon icon="tabler-calendar-check" size="14" start />
-                        {{ course.attendanceRate || 0 }}%
-                      </VChip>
-                    </div>
-                  </VCardText>
-                </VCard>
+              <VCol cols="12" sm="6" md="4">
+                <div class="profile-field incomplete">
+                  <strong>NIM</strong>
+                  <p class="profile-value-empty">Belum diisi</p>
+                </div>
+              </VCol>
+
+              <VCol cols="12" sm="6" md="4">
+                <div class="profile-field incomplete">
+                  <strong>No Telp/HP</strong>
+                  <p class="profile-value-empty">Belum diisi</p>
+                </div>
+              </VCol>
+
+              <VCol cols="12" sm="6" md="4">
+                <div class="profile-field incomplete">
+                  <strong>Tempat Lahir</strong>
+                  <p class="profile-value-empty">Belum diisi</p>
+                </div>
+              </VCol>
+
+              <VCol cols="12" sm="6" md="4">
+                <div class="profile-field incomplete">
+                  <strong>Tanggal Lahir</strong>
+                  <p class="profile-value-empty">Belum diisi</p>
+                </div>
+              </VCol>
+
+              <VCol cols="12" sm="6" md="4">
+                <div class="profile-field incomplete">
+                  <strong>Nama Ayah</strong>
+                  <p class="profile-value-empty">Belum diisi</p>
+                </div>
+              </VCol>
+
+              <VCol cols="12" sm="6" md="4">
+                <div class="profile-field incomplete">
+                  <strong>Nama Ibu</strong>
+                  <p class="profile-value-empty">Belum diisi</p>
+                </div>
+              </VCol>
+
+              <VCol cols="12">
+                <div class="profile-field incomplete">
+                  <strong>Alamat</strong>
+                  <p class="profile-value-empty">Belum diisi</p>
+                </div>
               </VCol>
             </VRow>
+
+            <VDivider class="my-4" />
+
+            <div class="text-center">
+              <VBtn
+                color="primary"
+                size="large"
+                prepend-icon="tabler-edit"
+                to="/profile"
+                class="me-2"
+              >
+                Lengkapi Profil
+              </VBtn>
+              <VBtn
+                color="secondary"
+                size="large"
+                prepend-icon="tabler-refresh"
+                @click="refreshProfile"
+                variant="outlined"
+              >
+                Refresh Data
+              </VBtn>
+            </div>
           </VCardText>
         </VCard>
-
-        <!-- Recent Activities & Assignments -->
-        <VRow class="mt-4">
-          <VCol cols="12" md="6">
-            <VCard>
-              <VCardTitle class="d-flex align-center">
-                <VIcon icon="tabler-clock" class="me-2" color="warning" />
-                Aktivitas Terbaru
-              </VCardTitle>
-
-              <VDivider />
-
-              <VCardText>
-                <div v-if="loading" class="text-center py-8">
-                  <VProgressCircular indeterminate size="32" color="primary" />
-                  <p class="text-body-2 mt-2">Memuat aktivitas...</p>
-                </div>
-
-                <div
-                  v-else-if="recentActivities.length === 0"
-                  class="text-center py-8"
-                >
-                  <VIcon
-                    icon="tabler-inbox"
-                    size="48"
-                    color="disabled"
-                    class="mb-2"
-                  />
-                  <p class="text-body-2 text-disabled">Belum ada aktivitas</p>
-                </div>
-
-                <VList v-else density="compact">
-                  <VListItem
-                    v-for="activity in recentActivities"
-                    :key="activity.id"
-                    class="activity-item"
-                  >
-                    <template #prepend>
-                      <VAvatar
-                        size="32"
-                        :color="activity.color"
-                        variant="tonal"
-                      >
-                        <VIcon :icon="activity.icon" size="16" />
-                      </VAvatar>
-                    </template>
-
-                    <VListItemTitle class="activity-title">
-                      {{ activity.title }}
-                    </VListItemTitle>
-                    <VListItemSubtitle class="activity-description">
-                      {{ activity.description }}
-                    </VListItemSubtitle>
-                  </VListItem>
-                </VList>
-              </VCardText>
-            </VCard>
-          </VCol>
-
-          <VCol cols="12" md="6">
-            <VCard>
-              <VCardTitle class="d-flex align-center">
-                <VIcon
-                  icon="tabler-clipboard-list"
-                  class="me-2"
-                  color="error"
-                />
-                Tugas Mendatang
-              </VCardTitle>
-
-              <VDivider />
-
-              <VCardText>
-                <div v-if="loading" class="text-center py-8">
-                  <VProgressCircular indeterminate size="32" color="primary" />
-                  <p class="text-body-2 mt-2">Memuat tugas...</p>
-                </div>
-
-                <div
-                  v-else-if="upcomingAssignments.length === 0"
-                  class="text-center py-8"
-                >
-                  <VIcon
-                    icon="tabler-clipboard-check"
-                    size="48"
-                    color="disabled"
-                    class="mb-2"
-                  />
-                  <p class="text-body-2 text-disabled">
-                    Tidak ada tugas mendatang
-                  </p>
-                </div>
-
-                <VList v-else density="compact">
-                  <VListItem
-                    v-for="assignment in upcomingAssignments"
-                    :key="assignment.id"
-                    class="assignment-item"
-                  >
-                    <template #prepend>
-                      <VAvatar
-                        size="32"
-                        :color="getAssignmentPriorityColor(assignment.priority)"
-                        variant="tonal"
-                      >
-                        <VIcon icon="tabler-clipboard" size="16" />
-                      </VAvatar>
-                    </template>
-
-                    <VListItemTitle class="assignment-title">
-                      {{ assignment.title }}
-                    </VListItemTitle>
-                    <VListItemSubtitle class="assignment-subject">
-                      {{ assignment.subject }} •
-                      {{ formatDate(assignment.dueDate) }}
-                    </VListItemSubtitle>
-                  </VListItem>
-                </VList>
-              </VCardText>
-            </VCard>
-          </VCol>
-        </VRow>
       </VCol>
     </VRow>
 
-    <!-- Edit Profile Dialog -->
-    <VDialog v-model="editProfile" max-width="600">
-      <VCard>
-        <VCardTitle class="d-flex align-center">
-          <VIcon icon="tabler-user-edit" class="me-2" />
-          Edit Profil
-        </VCardTitle>
+    <!-- Statistics Cards -->
+    <VRow class="mt-6">
+      <VCol cols="12" sm="6" md="3">
+        <VCard class="stat-card">
+          <VCardText class="text-center pa-4">
+            <VIcon icon="tabler-user-check" size="40" color="success" class="mb-2" />
+            <div class="text-h6 font-weight-bold">{{ getStatusText(user.studentProfile?.status) }}</div>
+            <div class="text-caption text-medium-emphasis">Status Siswa</div>
+          </VCardText>
+        </VCard>
+      </VCol>
 
-        <VDivider />
+      <VCol cols="12" sm="6" md="3">
+        <VCard class="stat-card">
+          <VCardText class="text-center pa-4">
+            <VIcon icon="tabler-calendar" size="40" color="info" class="mb-2" />
+            <div class="text-h6 font-weight-bold">{{ formatDate(user.createdAt) }}</div>
+            <div class="text-caption text-medium-emphasis">Tanggal Bergabung</div>
+          </VCardText>
+        </VCard>
+      </VCol>
 
-        <VCardText>
-          <VForm @submit.prevent="updateProfile">
-            <VRow>
-              <VCol cols="12">
-                <VTextField
-                  v-model="profileForm.name"
-                  label="Nama Lengkap"
-                  prepend-inner-icon="tabler-user"
-                  variant="outlined"
-                />
-              </VCol>
+      <VCol cols="12" sm="6" md="3">
+        <VCard class="stat-card">
+          <VCardText class="text-center pa-4">
+            <VIcon icon="tabler-clock" size="40" color="warning" class="mb-2" />
+            <div class="text-h6 font-weight-bold">{{ formatDate(user.updatedAt) }}</div>
+            <div class="text-caption text-medium-emphasis">Update Terakhir</div>
+          </VCardText>
+        </VCard>
+      </VCol>
 
-              <VCol cols="12">
-                <VTextField
-                  v-model="profileForm.email"
-                  label="Email"
-                  type="email"
-                  prepend-inner-icon="tabler-mail"
-                  variant="outlined"
-                  readonly
-                />
-              </VCol>
+      <VCol cols="12" sm="6" md="3">
+        <VCard class="stat-card">
+          <VCardText class="text-center pa-4">
+            <VIcon icon="tabler-percentage" size="40" color="error" class="mb-2" />
+            <div class="text-h6 font-weight-bold">{{ getProfileCompletionPercentage() }}%</div>
+            <div class="text-caption text-medium-emphasis">Kelengkapan Profil</div>
+          </VCardText>
+        </VCard>
+      </VCol>
+    </VRow>
 
-              <VCol cols="12" sm="6">
-                <VTextField
-                  v-model="profileForm.number"
-                  label="Nomor Induk Siswa"
-                  prepend-inner-icon="tabler-id"
-                  variant="outlined"
-                />
-              </VCol>
+    <!-- Guide Section -->
+    <VCard class="mt-6">
+      <VCardTitle class="bg-info">
+        <VIcon icon="tabler-book" class="me-2" color="white" />
+        <span class="text-white">Panduan Sistem Informasi dan Layanan Siswa</span>
+      </VCardTitle>
 
-              <VCol cols="12" sm="6">
-                <VTextField
-                  v-model="profileForm.phone"
-                  label="Nomor Telepon"
-                  prepend-inner-icon="tabler-phone"
-                  variant="outlined"
-                />
-              </VCol>
+      <VCardText class="pa-6">
+        <div class="guide-content">
+          <p class="text-body-1 mb-4">
+            Sistem ini dirancang untuk memudahkan Siswa dalam mengakses berbagai layanan akademik dan administratif. 
+            Berikut adalah panduan penggunaan sistem:
+          </p>
 
-              <VCol cols="12">
-                <VTextarea
-                  v-model="profileForm.address"
-                  label="Alamat"
-                  prepend-inner-icon="tabler-home"
-                  variant="outlined"
-                  rows="3"
-                />
-              </VCol>
-            </VRow>
-          </VForm>
-        </VCardText>
+          <VRow>
+            <VCol cols="12" md="6">
+              <div class="guide-item">
+                <VIcon icon="tabler-user-edit" color="primary" class="me-2" />
+                <strong>Lengkapi Profil:</strong> Pastikan data diri Anda lengkap dan terkini
+              </div>
 
-        <VCardActions>
-          <VSpacer />
-          <VBtn variant="outlined" @click="editProfile = false"> Batal </VBtn>
-          <VBtn color="primary" @click="updateProfile"> Simpan </VBtn>
-        </VCardActions>
-      </VCard>
-    </VDialog>
+              <div class="guide-item">
+                <VIcon icon="tabler-book-2" color="primary" class="me-2" />
+                <strong>Akses Materi:</strong> Unduh materi pembelajaran dari dosen
+              </div>
+
+              <div class="guide-item">
+                <VIcon icon="tabler-calendar" color="primary" class="me-2" />
+                <strong>Jadwal Kuliah:</strong> Lihat jadwal kuliah dan ujian Anda
+              </div>
+            </VCol>
+
+            <VCol cols="12" md="6">
+              <div class="guide-item">
+                <VIcon icon="tabler-chart-line" color="primary" class="me-2" />
+                <strong>Nilai:</strong> Pantau nilai dan IPK Anda secara real-time
+              </div>
+
+              <div class="guide-item">
+                <VIcon icon="tabler-file-text" color="primary" class="me-2" />
+                <strong>Dokumen:</strong> Ajukan dan unduh berbagai dokumen akademik
+              </div>
+
+              <div class="guide-item">
+                <VIcon icon="tabler-help-circle" color="primary" class="me-2" />
+                <strong>Bantuan:</strong> Hubungi admin untuk bantuan teknis
+              </div>
+            </VCol>
+          </VRow>
+        </div>
+      </VCardText>
+    </VCard>
   </div>
 </template>
 
 <script setup>
-import { formatRelativeTime } from "@/utils/formatters";
-
 const store = useVuex();
-
-// State
-const loading = ref(true);
-const editProfile = ref(false);
-const statistics = ref({
-  totalSubjects: 0,
-  averageGrade: 0,
-  attendanceRate: 0,
-});
-const myCourses = ref([]);
-const recentActivities = ref([]);
-const upcomingAssignments = ref([]);
-const studentProfile = ref({});
-const profileForm = ref({
-  name: "",
-  email: "",
-  number: "",
-  phone: "",
-  address: "",
-});
 
 // Computed
 const user = computed(() => store.state.app.user);
 
 // Methods
-const getInitials = (name) => {
-  return (
-    name
-      ?.split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase() || "U"
-  );
-};
-
-const getGradeColor = (grade) => {
-  if (grade >= 85) return "success";
-  if (grade >= 75) return "info";
-  if (grade >= 65) return "warning";
-  return "error";
-};
-
-const getAttendanceColor = (rate) => {
-  if (rate >= 90) return "success";
-  if (rate >= 80) return "info";
-  if (rate >= 70) return "warning";
-  return "error";
-};
-
-const getAssignmentPriorityColor = (priority) => {
-  switch (priority) {
-    case "high":
-      return "error";
-    case "medium":
-      return "warning";
-    case "low":
-      return "info";
-    default:
-      return "primary";
-  }
-};
-
 const formatDate = (date) => {
+  if (!date) return '-';
   return new Date(date).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "short",
+    year: "numeric"
   });
 };
 
-const fetchDashboardData = async () => {
-  loading.value = true;
-
-  try {
-    await Promise.all([
-      fetchStatistics(),
-      fetchMyCourses(),
-      fetchRecentActivities(),
-      fetchUpcomingAssignments(),
-    ]);
-  } catch (error) {
-    console.error("Failed to fetch student dashboard data:", error);
-  } finally {
-    loading.value = false;
+const getGenderText = (gender) => {
+  switch (gender) {
+    case 'MALE':
+      return 'Laki-laki';
+    case 'FEMALE':
+      return 'Perempuan';
+    default:
+      return '-';
   }
 };
 
-const fetchStatistics = async () => {
-  // Replace with actual API call
-  statistics.value = {
-    totalSubjects: 6,
-    averageGrade: 78,
-    attendanceRate: 92,
-  };
-};
-
-const fetchMyCourses = async () => {
-  // Replace with actual API call
-  myCourses.value = [
-    {
-      id: 1,
-      subject: { name: "Matematika" },
-      teacher: { name: "Bu Sarah" },
-      currentGrade: 85,
-      attendanceRate: 95,
-    },
-    {
-      id: 2,
-      subject: { name: "Bahasa Indonesia" },
-      teacher: { name: "Pak Ahmad" },
-      currentGrade: 78,
-      attendanceRate: 88,
-    },
-    {
-      id: 3,
-      subject: { name: "Fisika" },
-      teacher: { name: "Bu Rina" },
-      currentGrade: 72,
-      attendanceRate: 92,
-    },
-    {
-      id: 4,
-      subject: { name: "Kimia" },
-      teacher: { name: "Pak Budi" },
-      currentGrade: 80,
-      attendanceRate: 90,
-    },
-  ];
-};
-
-const fetchRecentActivities = async () => {
-  // Replace with actual API call
-  recentActivities.value = [
-    {
-      id: 1,
-      title: "Nilai tugas diterima",
-      description: "Matematika - Tugas Aljabar",
-      icon: "tabler-check",
-      color: "success",
-    },
-    {
-      id: 2,
-      title: "Kehadiran dicatat",
-      description: "Fisika - Hari ini",
-      icon: "tabler-calendar-check",
-      color: "info",
-    },
-    {
-      id: 3,
-      title: "Tugas baru tersedia",
-      description: "Kimia - Praktikum Lab",
-      icon: "tabler-clipboard-plus",
-      color: "warning",
-    },
-  ];
-};
-
-const fetchUpcomingAssignments = async () => {
-  // Replace with actual API call
-  upcomingAssignments.value = [
-    {
-      id: 1,
-      title: "Essay Sejarah Indonesia",
-      subject: "Sejarah",
-      dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-      priority: "high",
-    },
-    {
-      id: 2,
-      title: "Praktikum Kimia Organik",
-      subject: "Kimia",
-      dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-      priority: "medium",
-    },
-    {
-      id: 3,
-      title: "Soal Matematika Bab 3",
-      subject: "Matematika",
-      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      priority: "low",
-    },
-  ];
-};
-
-const updateProfile = async () => {
-  try {
-    const payload = {
-      name: profileForm.value.name,
-      number: profileForm.value.number,
-      phone: profileForm.value.phone,
-      address: profileForm.value.address,
-    };
-
-    // Call the profile update API
-    const result = await store.dispatch(
-      "profile/updateStudentProfile",
-      payload
-    );
-
-    if (result) {
-      // Update the user data in the store
-      const updatedUser = { ...user.value, ...payload };
-      store.commit("app/SET_USER_APP", updatedUser);
-      localStorage.setItem("App-User", JSON.stringify(updatedUser));
-
-      editProfile.value = false;
-
-      // Show success message
-      const { toast } = await import("vue-sonner");
-      toast.success("Profil berhasil diperbarui");
-    }
-  } catch (error) {
-    console.error("Failed to update profile:", error);
-    const { toast } = await import("vue-sonner");
-    toast.error("Gagal memperbarui profil");
+const getStatusText = (status) => {
+  switch (status) {
+    case 'ACTIVE':
+      return 'Aktif';
+    case 'INACTIVE':
+      return 'Tidak Aktif';
+    case 'SUSPENDED':
+      return 'Ditangguhkan';
+    default:
+      return '-';
   }
 };
 
-// Initialize profile form
-const initializeProfileForm = () => {
-  profileForm.value = {
-    name: user.value.name || "",
-    email: user.value.email || "",
-    number: studentProfile.value.number || "",
-    phone: user.value.phone || "",
-    address: user.value.address || "",
-  };
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'ACTIVE':
+      return 'success';
+    case 'INACTIVE':
+      return 'error';
+    case 'SUSPENDED':
+      return 'warning';
+    default:
+      return 'grey';
+  }
 };
 
-// Watch for changes in user data
-watch(
-  () => user.value,
-  () => {
-    initializeProfileForm();
-  },
-  { immediate: true }
-);
+const getProfileCompletionPercentage = () => {
+  if (!user.value) return 0;
+  
+  const fields = [
+    user.value.number,
+    user.value.name,
+    user.value.birthPlace,
+    user.value.birthDate,
+    user.value.fatherName,
+    user.value.motherName,
+    user.value.address,
+    user.value.phone,
+    user.value.email
+  ];
+  
+  const completedFields = fields.filter(field => field && field.trim() !== '').length;
+  return Math.round((completedFields / fields.length) * 100);
+};
+
+const getFullImageUrl = (imagePath) => {
+  if (!imagePath) return '';
+  // Assuming your API base URL - adjust as needed
+  const baseUrl = 'http://localhost:3001'; // or your actual API URL
+  return imagePath.startsWith('http') ? imagePath : `${baseUrl}${imagePath}`;
+};
+
+const refreshProfile = () => {
+  // Add your profile refresh logic here
+  console.log('Refreshing profile...');
+};
 
 // Mount
 onMounted(() => {
-  fetchDashboardData();
+  // Any initialization logic can go here
 });
 </script>
 
@@ -649,120 +389,98 @@ onMounted(() => {
   padding: 24px;
 }
 
-.dashboard-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 32px;
-  padding: 24px;
-  background: linear-gradient(
-    135deg,
-    rgba(var(--v-theme-info), 0.1) 0%,
-    rgba(var(--v-theme-info), 0.05) 100%
-  );
+.welcome-header {
   border-radius: 16px;
-  border: 1px solid rgba(var(--v-theme-info), 0.12);
+  background: linear-gradient(135deg, rgb(var(--v-theme-primary)) 0%, rgba(var(--v-theme-primary), 0.8) 100%);
+  box-shadow: 0 8px 32px rgba(var(--v-theme-primary), 0.3);
 }
 
-.header-content {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.header-icon {
-  padding: 16px;
-  background: rgba(var(--v-theme-info), 0.1);
-  border-radius: 12px;
-}
-
-.profile-card {
-  position: sticky;
-  top: 24px;
-}
-
-.academic-stats {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.stat-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: rgba(var(--v-theme-surface), 0.5);
-  border-radius: 8px;
-}
-
-.stat-icon {
+.profile-illustration {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: rgba(var(--v-theme-primary), 0.1);
+  padding: 24px;
 }
 
-.stat-details {
-  flex: 1;
+.profile-avatar {
+  border: 4px solid rgba(var(--v-theme-primary), 0.2);
+  box-shadow: 0 4px 20px rgba(var(--v-theme-primary), 0.3);
 }
 
-.stat-number {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 2px;
-  color: rgb(var(--v-theme-on-surface));
+.illustration-image {
+  block-size: auto;
+  inline-size: 100%;
+  max-inline-size: 250px;
 }
 
-.stat-label {
-  color: rgb(var(--v-theme-on-surface-variant));
-  font-size: 0.75rem;
-  margin: 0;
+.profile-data-card {
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 10%);
 }
 
-.courses-card {
-  height: fit-content;
-}
-
-.course-item-card {
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+.profile-field {
+  margin-block-end: 16px;
+  
+  &.incomplete {
+    opacity: 0.7;
   }
 }
 
-.course-stats {
-  margin-top: 12px;
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.activity-item,
-.assignment-item {
-  border-radius: 8px;
-  margin-bottom: 4px;
-
-  &:hover {
-    background: rgba(var(--v-theme-surface), 0.5);
-  }
-}
-
-.activity-title,
-.assignment-title {
+.profile-field strong {
+  display: block;
+  font-size: 0.875rem;
   font-weight: 600;
-  color: rgb(var(--v-theme-on-surface));
+  margin-block-end: 4px;
 }
 
-.activity-description,
-.assignment-subject {
-  color: rgb(var(--v-theme-on-surface-variant));
+.profile-value {
+  border: 1px solid rgba(var(--v-theme-outline), 0.12);
+  border-radius: 8px;
+  margin: 0;
+  background: rgba(var(--v-theme-surface), 0.5);
+  font-size: 0.875rem;
+  padding-block: 8px;
+  padding-inline: 12px;
+}
+
+.profile-value-empty {
+  border: 1px dashed rgba(var(--v-theme-warning), 0.5);
+  border-radius: 8px;
+  margin: 0;
+  background: rgba(var(--v-theme-warning), 0.05);
+  font-size: 0.875rem;
+  font-style: italic;
+  padding-block: 8px;
+  padding-inline: 12px;
+}
+
+.stat-card {
+  border-radius: 12px;
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 12%);
+    transform: translateY(-2px);
+  }
+}
+
+.guide-content {
+  line-height: 1.6;
+}
+
+.guide-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(var(--v-theme-primary), 0.05);
+  margin-block-end: 12px;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background: rgba(var(--v-theme-primary), 0.1);
+  }
 }
 
 @media (max-width: 768px) {
@@ -770,14 +488,13 @@ onMounted(() => {
     padding: 16px;
   }
 
-  .dashboard-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+  .profile-illustration {
+    padding: 16px;
   }
-
-  .profile-card {
-    position: static;
+  
+  .profile-avatar {
+    block-size: 150px !important;
+    inline-size: 150px !important;
   }
 }
 </style>

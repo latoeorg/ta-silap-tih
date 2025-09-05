@@ -143,13 +143,26 @@ const profile = {
         value: true,
       });
       try {
+        // Check if payload is FormData (for file uploads)
+        const headers = {};
+        if (payload instanceof FormData) {
+          headers['Content-Type'] = 'multipart/form-data';
+        }
+
         const result = await axiosInstance({
           method: "PUT",
           url: `/user/profile/update`,
           data: payload,
+          headers,
         });
 
-        toast.success("Profil berhasil diperbarui");
+        // Update user data in global store if available
+        if (result.data.data) {
+          context.commit("SET_USER_APP", result.data.data, { root: true });
+          localStorage.setItem("App-User", JSON.stringify(result.data.data));
+        }
+
+        toast.success(result.data.message || "Profil berhasil diperbarui");
 
         return true;
       } catch (error) {
