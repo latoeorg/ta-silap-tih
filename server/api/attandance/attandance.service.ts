@@ -353,7 +353,37 @@ export class AttendanceService {
     });
 
     if (!attendance) {
-      throw new Error("Attendance record not found");
+      return prisma.attendance.create({
+        data: {
+          userId,
+          courseId,
+          date: new Date(date),
+          status: data.status || AttendanceStatus.ABSENT,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+              studentProfile: true,
+            },
+          },
+          course: {
+            select: {
+              id: true,
+              name: true,
+              subject: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
     }
 
     // Update the attendance record
