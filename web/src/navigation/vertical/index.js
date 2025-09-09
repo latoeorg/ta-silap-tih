@@ -1,4 +1,4 @@
-import { IsCan, hasRole } from "@/utils/permission"
+import { IsCan, hasRole, isStudent } from "@/utils/permission"
 
 export default [
   {
@@ -10,10 +10,16 @@ export default [
     to: { name: "root" },
   },
   {
+    title: "Nilai",
+    icon: { icon: "tabler-clipboard-list" },
+    to: { name: "nilai" },
+    hidden: !isStudent(),
+  },
+  {
     title: "Penilaian",
     icon: { icon: "tabler-clipboard-list" },
     to: { name: "course" },
-    hidden: !IsCan("GET_COURSE"),
+    hidden: isStudent(),
   },
   {
     heading: "Setup",
