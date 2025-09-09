@@ -1,7 +1,11 @@
 <template>
   <div class="student-dashboard">
     <!-- Welcome Header -->
-    <VCard class="welcome-header" color="primary" variant="elevated">
+    <VCard
+      class="welcome-header"
+      color="primary"
+      variant="elevated"
+    >
       <VCardText>
         <div class="d-flex align-center gap-4">
           <VIcon
@@ -48,7 +52,10 @@
 
     <!-- Student Profile Card -->
     <VRow class="mt-6">
-      <VCol cols="12" md="4">
+      <VCol
+        cols="12"
+        md="4"
+      >
         <div class="profile-illustration text-center">
           <VAvatar
             v-if="user.studentProfile?.profilePicture"
@@ -66,11 +73,18 @@
         </div>
       </VCol>
 
-      <VCol cols="12" md="8">
+      <VCol
+        cols="12"
+        md="8"
+      >
         <VCard class="profile-data-card">
-          <VCardTitle class="d-flex align-center justify-between bg-primary">
+          <VCardTitle class="d-flex align-center justify-space-between bg-primary py-4">
             <div class="d-flex align-center">
-              <VIcon icon="tabler-user" class="me-2" color="white" />
+              <VIcon
+                icon="tabler-user"
+                class="me-2"
+                color="white"
+              />
               <span class="text-white">DATA DIRI Siswa</span>
             </div>
             <VChip
@@ -85,86 +99,138 @@
           <VCardText class="pa-6">
             <VRow>
               <!-- Basic Information -->
-              <VCol cols="12" sm="6">
+              <VCol
+                cols="12"
+                sm="6"
+              >
                 <div class="profile-field">
                   <strong>Nama</strong>
-                  <p class="profile-value">{{ user.name || '-' }}</p>
+                  <p class="profile-value">
+                    {{ user.name || '-' }}
+                  </p>
                 </div>
               </VCol>
 
-              <VCol cols="12" sm="6">
+              <VCol
+                cols="12"
+                sm="6"
+              >
                 <div class="profile-field">
                   <strong>Email</strong>
-                  <p class="profile-value">{{ user.email || '-' }}</p>
+                  <p class="profile-value">
+                    {{ user.email || '-' }}
+                  </p>
                 </div>
               </VCol>
 
-              <VCol cols="12" sm="6">
+              <VCol
+                cols="12"
+                sm="6"
+              >
                 <div class="profile-field">
                   <strong>Jenis Kelamin</strong>
-                  <p class="profile-value">{{ getGenderText(user.studentProfile?.gender) }}</p>
+                  <p class="profile-value">
+                    {{ getGenderText(user.studentProfile?.gender) }}
+                  </p>
                 </div>
               </VCol>
 
-              <VCol cols="12" sm="6">
+              <VCol
+                cols="12"
+                sm="6"
+              >
                 <div class="profile-field">
                   <strong>Status</strong>
-                  <p class="profile-value">{{ getStatusText(user.studentProfile?.status) }}</p>
+                  <p class="profile-value">
+                    {{ getStatusText(user.studentProfile?.status) }}
+                  </p>
                 </div>
               </VCol>
 
-              <!-- Incomplete Fields Section -->
-              <VCol cols="12">
-                <VDivider class="my-4" />
-                <h4 class="text-h6 mb-3 text-warning">Data yang Perlu Dilengkapi</h4>
-              </VCol>
-
-              <VCol cols="12" sm="6" md="4">
+              <VCol
+                cols="12"
+                sm="6"
+                md="4"
+              >
                 <div class="profile-field incomplete">
                   <strong>NIM</strong>
-                  <p class="profile-value-empty">Belum diisi</p>
+                  <p class="profile-value-empty">
+                    {{ user?.studentProfile?.number || 'Belum diisi' }}
+                  </p>
                 </div>
               </VCol>
 
-              <VCol cols="12" sm="6" md="4">
+              <VCol
+                cols="12"
+                sm="6"
+                md="4"
+              >
                 <div class="profile-field incomplete">
                   <strong>No Telp/HP</strong>
-                  <p class="profile-value-empty">Belum diisi</p>
+                  <p class="profile-value-empty">
+                    {{ user?.studentProfile?.phone || 'Belum diisi' }}
+                  </p>
                 </div>
               </VCol>
 
-              <VCol cols="12" sm="6" md="4">
+              <VCol
+                cols="12"
+                sm="6"
+                md="4"
+              >
                 <div class="profile-field incomplete">
                   <strong>Tempat Lahir</strong>
-                  <p class="profile-value-empty">Belum diisi</p>
+                  <p class="profile-value-empty">
+                    {{ user?.studentProfile?.birthPlace || 'Belum diisi' }}
+                  </p>
                 </div>
               </VCol>
 
-              <VCol cols="12" sm="6" md="4">
+              <VCol
+                cols="12"
+                sm="6"
+                md="4"
+              >
                 <div class="profile-field incomplete">
                   <strong>Tanggal Lahir</strong>
-                  <p class="profile-value-empty">Belum diisi</p>
+                  <p class="profile-value-empty">
+                    {{ user?.studentProfile?.birthDate ? formatDate(user.studentProfile.birthDate) : 'Belum diisi' }}
+                  </p>
                 </div>
               </VCol>
 
-              <VCol cols="12" sm="6" md="4">
+              <VCol
+                cols="12"
+                sm="6"
+                md="4"
+              >
                 <div class="profile-field incomplete">
                   <strong>Nama Ayah</strong>
-                  <p class="profile-value-empty">Belum diisi</p>
+                  <p class="profile-value-empty">
+                    {{ user?.studentProfile?.fatherName || 'Belum diisi' }}
+                  </p>
                 </div>
               </VCol>
 
-              <VCol cols="12" sm="6" md="4">
+              <VCol
+                cols="12"
+                sm="6"
+                md="4"
+              >
                 <div class="profile-field incomplete">
                   <strong>Nama Ibu</strong>
-                  <p class="profile-value-empty">Belum diisi</p>
+                  <p class="profile-value-empty">
+                    {{ user?.studentProfile?.motherName || 'Belum diisi' }}
+                  </p>
                 </div>
               </VCol>
 
               <VCol cols="12">
                 <div class="profile-field incomplete">
                   <strong>Alamat</strong>
-                  <p class="profile-value-empty">Belum diisi</p>
+                  <p class="profile-value-empty">
+                    {{ user?.studentProfile?.address || 'Belum diisi' }}
+                  </p>
                 </div>
               </VCol>
             </VRow>
@@ -185,8 +251,8 @@
                 color="secondary"
                 size="large"
                 prepend-icon="tabler-refresh"
-                @click="refreshProfile"
                 variant="outlined"
+                @click="refreshProfile"
               >
                 Refresh Data
               </VBtn>
@@ -198,42 +264,94 @@
 
     <!-- Statistics Cards -->
     <VRow class="mt-6">
-      <VCol cols="12" sm="6" md="3">
+      <VCol
+        cols="12"
+        sm="6"
+        md="3"
+      >
         <VCard class="stat-card">
           <VCardText class="text-center pa-4">
-            <VIcon icon="tabler-user-check" size="40" color="success" class="mb-2" />
-            <div class="text-h6 font-weight-bold">{{ getStatusText(user.studentProfile?.status) }}</div>
-            <div class="text-caption text-medium-emphasis">Status Siswa</div>
+            <VIcon
+              icon="tabler-user-check"
+              size="40"
+              color="success"
+              class="mb-2"
+            />
+            <div class="text-h6 font-weight-bold">
+              {{ getStatusText(user.studentProfile?.status) }}
+            </div>
+            <div class="text-caption text-medium-emphasis">
+              Status Siswa
+            </div>
           </VCardText>
         </VCard>
       </VCol>
 
-      <VCol cols="12" sm="6" md="3">
+      <VCol
+        cols="12"
+        sm="6"
+        md="3"
+      >
         <VCard class="stat-card">
           <VCardText class="text-center pa-4">
-            <VIcon icon="tabler-calendar" size="40" color="info" class="mb-2" />
-            <div class="text-h6 font-weight-bold">{{ formatDate(user.createdAt) }}</div>
-            <div class="text-caption text-medium-emphasis">Tanggal Bergabung</div>
+            <VIcon
+              icon="tabler-calendar"
+              size="40"
+              color="info"
+              class="mb-2"
+            />
+            <div class="text-h6 font-weight-bold">
+              {{ formatDate(user.createdAt) }}
+            </div>
+            <div class="text-caption text-medium-emphasis">
+              Tanggal Bergabung
+            </div>
           </VCardText>
         </VCard>
       </VCol>
 
-      <VCol cols="12" sm="6" md="3">
+      <VCol
+        cols="12"
+        sm="6"
+        md="3"
+      >
         <VCard class="stat-card">
           <VCardText class="text-center pa-4">
-            <VIcon icon="tabler-clock" size="40" color="warning" class="mb-2" />
-            <div class="text-h6 font-weight-bold">{{ formatDate(user.updatedAt) }}</div>
-            <div class="text-caption text-medium-emphasis">Update Terakhir</div>
+            <VIcon
+              icon="tabler-clock"
+              size="40"
+              color="warning"
+              class="mb-2"
+            />
+            <div class="text-h6 font-weight-bold">
+              {{ formatDate(user.updatedAt) }}
+            </div>
+            <div class="text-caption text-medium-emphasis">
+              Update Terakhir
+            </div>
           </VCardText>
         </VCard>
       </VCol>
 
-      <VCol cols="12" sm="6" md="3">
+      <VCol
+        cols="12"
+        sm="6"
+        md="3"
+      >
         <VCard class="stat-card">
           <VCardText class="text-center pa-4">
-            <VIcon icon="tabler-percentage" size="40" color="error" class="mb-2" />
-            <div class="text-h6 font-weight-bold">{{ getProfileCompletionPercentage() }}%</div>
-            <div class="text-caption text-medium-emphasis">Kelengkapan Profil</div>
+            <VIcon
+              icon="tabler-percentage"
+              size="40"
+              color="error"
+              class="mb-2"
+            />
+            <div class="text-h6 font-weight-bold">
+              {{ getProfileCompletionPercentage() }}%
+            </div>
+            <div class="text-caption text-medium-emphasis">
+              Kelengkapan Profil
+            </div>
           </VCardText>
         </VCard>
       </VCol>
@@ -242,7 +360,11 @@
     <!-- Guide Section -->
     <VCard class="mt-6">
       <VCardTitle class="bg-info">
-        <VIcon icon="tabler-book" class="me-2" color="white" />
+        <VIcon
+          icon="tabler-book"
+          class="me-2"
+          color="white"
+        />
         <span class="text-white">Panduan Sistem Informasi dan Layanan Siswa</span>
       </VCardTitle>
 
@@ -254,36 +376,66 @@
           </p>
 
           <VRow>
-            <VCol cols="12" md="6">
+            <VCol
+              cols="12"
+              md="6"
+            >
               <div class="guide-item">
-                <VIcon icon="tabler-user-edit" color="primary" class="me-2" />
+                <VIcon
+                  icon="tabler-user-edit"
+                  color="primary"
+                  class="me-2"
+                />
                 <strong>Lengkapi Profil:</strong> Pastikan data diri Anda lengkap dan terkini
               </div>
 
               <div class="guide-item">
-                <VIcon icon="tabler-book-2" color="primary" class="me-2" />
+                <VIcon
+                  icon="tabler-book-2"
+                  color="primary"
+                  class="me-2"
+                />
                 <strong>Akses Materi:</strong> Unduh materi pembelajaran dari dosen
               </div>
 
               <div class="guide-item">
-                <VIcon icon="tabler-calendar" color="primary" class="me-2" />
+                <VIcon
+                  icon="tabler-calendar"
+                  color="primary"
+                  class="me-2"
+                />
                 <strong>Jadwal Kuliah:</strong> Lihat jadwal kuliah dan ujian Anda
               </div>
             </VCol>
 
-            <VCol cols="12" md="6">
+            <VCol
+              cols="12"
+              md="6"
+            >
               <div class="guide-item">
-                <VIcon icon="tabler-chart-line" color="primary" class="me-2" />
+                <VIcon
+                  icon="tabler-chart-line"
+                  color="primary"
+                  class="me-2"
+                />
                 <strong>Nilai:</strong> Pantau nilai dan IPK Anda secara real-time
               </div>
 
               <div class="guide-item">
-                <VIcon icon="tabler-file-text" color="primary" class="me-2" />
+                <VIcon
+                  icon="tabler-file-text"
+                  color="primary"
+                  class="me-2"
+                />
                 <strong>Dokumen:</strong> Ajukan dan unduh berbagai dokumen akademik
               </div>
 
               <div class="guide-item">
-                <VIcon icon="tabler-help-circle" color="primary" class="me-2" />
+                <VIcon
+                  icon="tabler-help-circle"
+                  color="primary"
+                  class="me-2"
+                />
                 <strong>Bantuan:</strong> Hubungi admin untuk bantuan teknis
               </div>
             </VCol>
@@ -295,60 +447,61 @@
 </template>
 
 <script setup>
-const store = useVuex();
+const store = useVuex()
 
 // Computed
-const user = computed(() => store.state.app.user);
+const user = computed(() => store.state.app.user)
 
 // Methods
-const formatDate = (date) => {
-  if (!date) return '-';
+const formatDate = date => {
+  if (!date) return '-'
+  
   return new Date(date).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "short",
-    year: "numeric"
-  });
-};
+    year: "numeric",
+  })
+}
 
-const getGenderText = (gender) => {
+const getGenderText = gender => {
   switch (gender) {
-    case 'MALE':
-      return 'Laki-laki';
-    case 'FEMALE':
-      return 'Perempuan';
-    default:
-      return '-';
+  case 'MALE':
+    return 'Laki-laki'
+  case 'FEMALE':
+    return 'Perempuan'
+  default:
+    return '-'
   }
-};
+}
 
-const getStatusText = (status) => {
+const getStatusText = status => {
   switch (status) {
-    case 'ACTIVE':
-      return 'Aktif';
-    case 'INACTIVE':
-      return 'Tidak Aktif';
-    case 'SUSPENDED':
-      return 'Ditangguhkan';
-    default:
-      return '-';
+  case 'ACTIVE':
+    return 'Aktif'
+  case 'INACTIVE':
+    return 'Tidak Aktif'
+  case 'SUSPENDED':
+    return 'Ditangguhkan'
+  default:
+    return '-'
   }
-};
+}
 
-const getStatusColor = (status) => {
+const getStatusColor = status => {
   switch (status) {
-    case 'ACTIVE':
-      return 'success';
-    case 'INACTIVE':
-      return 'error';
-    case 'SUSPENDED':
-      return 'warning';
-    default:
-      return 'grey';
+  case 'ACTIVE':
+    return 'success'
+  case 'INACTIVE':
+    return 'error'
+  case 'SUSPENDED':
+    return 'warning'
+  default:
+    return 'grey'
   }
-};
+}
 
 const getProfileCompletionPercentage = () => {
-  if (!user.value) return 0;
+  if (!user.value) return 0
   
   const fields = [
     user.value.number,
@@ -359,29 +512,32 @@ const getProfileCompletionPercentage = () => {
     user.value.motherName,
     user.value.address,
     user.value.phone,
-    user.value.email
-  ];
+    user.value.email,
+  ]
   
-  const completedFields = fields.filter(field => field && field.trim() !== '').length;
-  return Math.round((completedFields / fields.length) * 100);
-};
+  const completedFields = fields.filter(field => field && field.trim() !== '').length
+  
+  return Math.round((completedFields / fields.length) * 100)
+}
 
-const getFullImageUrl = (imagePath) => {
-  if (!imagePath) return '';
+const getFullImageUrl = imagePath => {
+  if (!imagePath) return ''
+
   // Assuming your API base URL - adjust as needed
-  const baseUrl = 'http://localhost:3001'; // or your actual API URL
-  return imagePath.startsWith('http') ? imagePath : `${baseUrl}${imagePath}`;
-};
+  const baseUrl = 'http://localhost:3001' // or your actual API URL
+  
+  return imagePath.startsWith('http') ? imagePath : `${baseUrl}${imagePath}`
+}
 
 const refreshProfile = () => {
   // Add your profile refresh logic here
-  console.log('Refreshing profile...');
-};
+  console.log('Refreshing profile...')
+}
 
 // Mount
 onMounted(() => {
   // Any initialization logic can go here
-});
+})
 </script>
 
 <style lang="scss" scoped>
@@ -404,7 +560,6 @@ onMounted(() => {
 
 .profile-avatar {
   border: 4px solid rgba(var(--v-theme-primary), 0.2);
-  box-shadow: 0 4px 20px rgba(var(--v-theme-primary), 0.3);
 }
 
 .illustration-image {

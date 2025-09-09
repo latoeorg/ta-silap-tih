@@ -28,6 +28,7 @@ onMounted(() => {
     store.commit("SET_TOKEN_APP", token)
     store.commit("SET_USER_APP", JSON.parse(user))
     
+    store.dispatch('GetProfile')
     store.dispatch('FetchPermissions')
     store.commit("SET_PERMISSIONS_APP", JSON.parse(localStorage.getItem('App-Permissions')))
   }
@@ -49,8 +50,9 @@ onMounted(() => {
 
 <style lang="scss">
 .container {
-  max-width: 1400px;
-  margin: 0 auto !important;
+  margin-block: 0 !important;
+  margin-inline: auto !important;
+  max-inline-size: 1400px;
 }
 
 .align-items-center {
@@ -78,7 +80,7 @@ onMounted(() => {
 }
 
 .w-fit {
-  width: fit-content;
+  inline-size: fit-content;
 }
 
 .fw-500 {
@@ -90,51 +92,52 @@ onMounted(() => {
 }
 
 .status-stepper-container {
-  display: flex;  
-  overflow-y: hidden;
-  overflow-x: auto;
+  display: flex;
+  overflow: auto hidden;
 
   .active {
     background: var(--stepper-color) !important;
 
     &::after{
-        border-left-color: var(--stepper-color) !important;
+      border-inline-start-color: var(--stepper-color) !important;
     }
   }
   
   .stepper-item {
     position: relative;
-    text-align: center;
-    padding: 0.5rem 2rem;
-    color: white;
-    text-wrap: nowrap;
     background: #EBDBCF;
-
+    color: white;
     cursor: pointer;
+    padding-block: 0.5rem;
+    padding-inline: 2rem;
+    text-align: center;
+    text-wrap: nowrap;
   }
-  .stepper-item:after {
-      border-bottom: 25px solid transparent;
-      border-left: 15px solid #EBDBCF;
-      border-top: 25px solid transparent;
-      content: '';
-      height: 0;
-      position: absolute;
-      right: -15px;
-      top: 0;
-      width: 0;
-      z-index: 10;
+
+  .stepper-item::after {
+    position: absolute;
+    z-index: 10;
+    block-size: 0;
+    border-block-end: 25px solid transparent;
+    border-block-start: 25px solid transparent;
+    border-inline-start: 15px solid #EBDBCF;
+    content: '';
+    inline-size: 0;
+    inset-block-start: 0;
+    inset-inline-end: -15px;
   }
-  .stepper-item:before {
-      border-bottom: 25px solid transparent;
-      border-left: 15px solid #EBDBCF;
-      border-top: 25px solid transparent;
-      content: '';
-      height: 0;
-      position: absolute;
-      right: -16px;
-      top: 0;
-      width: 0;
-      z-index: 10;
+
+  .stepper-item::before {
+    position: absolute;
+    z-index: 10;
+    block-size: 0;
+    border-block-end: 25px solid transparent;
+    border-block-start: 25px solid transparent;
+    border-inline-start: 15px solid #EBDBCF;
+    content: '';
+    inline-size: 0;
+    inset-block-start: 0;
+    inset-inline-end: -16px;
   }
 }
 </style>

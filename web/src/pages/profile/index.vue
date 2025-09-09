@@ -1,7 +1,11 @@
 <template>
   <div class="profile-page">
     <!-- Page Header -->
-    <VCard class="profile-header" color="primary" variant="elevated">
+    <VCard
+      class="profile-header"
+      color="primary"
+      variant="elevated"
+    >
       <VCardText>
         <div class="d-flex align-center gap-4">
           <VIcon
@@ -23,10 +27,16 @@
 
     <VRow class="mt-6">
       <!-- Profile Picture Section -->
-      <VCol cols="12" md="4">
+      <VCol
+        cols="12"
+        md="4"
+      >
         <VCard class="profile-picture-card">
           <VCardTitle class="text-center">
-            <VIcon icon="tabler-camera" class="me-2" />
+            <VIcon
+              icon="tabler-camera"
+              class="me-2"
+            />
             Foto Profil
           </VCardTitle>
 
@@ -34,7 +44,12 @@
 
           <VCardText class="text-center pa-6">
             <div class="profile-picture-container">
-              <VAvatar size="150" class="mb-4" color="primary" variant="tonal">
+              <VAvatar
+                size="150"
+                class="mb-4"
+                color="primary"
+                variant="tonal"
+              >
                 <VProgressCircular
                   v-if="uploadingPicture"
                   indeterminate
@@ -46,7 +61,10 @@
                   :src="profileForm.profilePicture" 
                   cover 
                 />
-                <span v-else class="text-h2">
+                <span
+                  v-else
+                  class="text-h2"
+                >
                   {{ getInitials(profileForm.name) }}
                 </span>
               </VAvatar>
@@ -93,7 +111,10 @@
         <!-- Quick Info -->
         <VCard class="mt-4">
           <VCardTitle>
-            <VIcon icon="tabler-info-circle" class="me-2" />
+            <VIcon
+              icon="tabler-info-circle"
+              class="me-2"
+            />
             Informasi Akun
           </VCardTitle>
 
@@ -101,15 +122,25 @@
 
           <VCardText>
             <div class="info-item">
-              <VIcon icon="tabler-shield-check" color="success" size="20" />
+              <VIcon
+                icon="tabler-shield-check"
+                color="success"
+                size="20"
+              />
               <div class="info-details">
                 <strong>Status Akun</strong>
-                <p class="text-success">Aktif</p>
+                <p class="text-success">
+                  Aktif
+                </p>
               </div>
             </div>
 
             <div class="info-item">
-              <VIcon icon="tabler-user-check" color="info" size="20" />
+              <VIcon
+                icon="tabler-user-check"
+                color="info"
+                size="20"
+              />
               <div class="info-details">
                 <strong>Peran</strong>
                 <p>{{ getRoleText(user.role) }}</p>
@@ -117,7 +148,11 @@
             </div>
 
             <div class="info-item">
-              <VIcon icon="tabler-calendar" color="info" size="20" />
+              <VIcon
+                icon="tabler-calendar"
+                color="info"
+                size="20"
+              />
               <div class="info-details">
                 <strong>Bergabung Sejak</strong>
                 <p>{{ formatDate(user.createdAt) }}</p>
@@ -125,7 +160,11 @@
             </div>
 
             <div class="info-item">
-              <VIcon icon="tabler-clock" color="warning" size="20" />
+              <VIcon
+                icon="tabler-clock"
+                color="warning"
+                size="20"
+              />
               <div class="info-details">
                 <strong>Terakhir Update</strong>
                 <p>{{ formatDate(user.updatedAt) }}</p>
@@ -136,27 +175,42 @@
       </VCol>
 
       <!-- Profile Form -->
-      <VCol cols="12" md="8">
+      <VCol
+        cols="12"
+        md="8"
+      >
         <VCard class="profile-form-card">
           <VCardTitle>
-            <VIcon icon="tabler-forms" class="me-2" />
+            <VIcon
+              icon="tabler-forms"
+              class="me-2"
+            />
             Informasi Pribadi
           </VCardTitle>
 
           <VDivider />
 
           <VCardText class="pa-6">
-            <VForm ref="profileFormRef" @submit.prevent="updateProfile">
+            <VForm
+              ref="profileFormRef"
+              @submit.prevent="updateProfile"
+            >
               <VRow>
                 <!-- Basic Information -->
                 <VCol cols="12">
                   <h6 class="text-h6 mb-4 text-primary">
-                    <VIcon icon="tabler-user" class="me-2" />
+                    <VIcon
+                      icon="tabler-user"
+                      class="me-2"
+                    />
                     Informasi Dasar
                   </h6>
                 </VCol>
 
-                <VCol cols="12" md="6">
+                <VCol
+                  cols="12"
+                  md="6"
+                >
                   <VTextField
                     v-model="profileForm.name"
                     label="Nama Lengkap *"
@@ -167,7 +221,10 @@
                   />
                 </VCol>
 
-                <VCol cols="12" md="6">
+                <VCol
+                  cols="12"
+                  md="6"
+                >
                   <VTextField
                     v-model="profileForm.number"
                     :label="isStudent ? 'NIM' : 'NIP'"
@@ -176,7 +233,10 @@
                   />
                 </VCol>
 
-                <VCol cols="12" md="6">
+                <VCol
+                  cols="12"
+                  md="6"
+                >
                   <VTextField
                     v-model="profileForm.email"
                     label="Email *"
@@ -188,7 +248,10 @@
                   />
                 </VCol>
 
-                <VCol cols="12" md="6">
+                <VCol
+                  cols="12"
+                  md="6"
+                >
                   <VTextField
                     v-model="profileForm.phone"
                     label="Nomor Telepon"
@@ -198,7 +261,10 @@
                   />
                 </VCol>
 
-                <VCol cols="12" md="6">
+                <VCol
+                  cols="12"
+                  md="6"
+                >
                   <VSelect
                     v-model="profileForm.gender"
                     label="Jenis Kelamin"
@@ -210,7 +276,10 @@
                   />
                 </VCol>
 
-                <VCol cols="12" md="6">
+                <VCol
+                  cols="12"
+                  md="6"
+                >
                   <VSelect
                     v-model="profileForm.status"
                     :label="isStudent ? 'Status Siswa' : 'Status Dosen'"
@@ -225,12 +294,18 @@
                 <!-- Birth Information -->
                 <VCol cols="12">
                   <h6 class="text-h6 mb-4 mt-4 text-primary">
-                    <VIcon icon="tabler-calendar-heart" class="me-2" />
+                    <VIcon
+                      icon="tabler-calendar-heart"
+                      class="me-2"
+                    />
                     Informasi Kelahiran
                   </h6>
                 </VCol>
 
-                <VCol cols="12" md="6">
+                <VCol
+                  cols="12"
+                  md="6"
+                >
                   <VTextField
                     v-model="profileForm.birthPlace"
                     label="Tempat Lahir"
@@ -239,7 +314,10 @@
                   />
                 </VCol>
 
-                <VCol cols="12" md="6">
+                <VCol
+                  cols="12"
+                  md="6"
+                >
                   <VTextField
                     v-model="profileForm.birthDate"
                     label="Tanggal Lahir"
@@ -253,12 +331,18 @@
                 <template v-if="!isStudent">
                   <VCol cols="12">
                     <h6 class="text-h6 mb-4 mt-4 text-primary">
-                      <VIcon icon="tabler-school" class="me-2" />
+                      <VIcon
+                        icon="tabler-school"
+                        class="me-2"
+                      />
                       Informasi Akademik
                     </h6>
                   </VCol>
 
-                  <VCol cols="12" md="6">
+                  <VCol
+                    cols="12"
+                    md="6"
+                  >
                     <VTextField
                       v-model="profileForm.titlePrefix"
                       label="Gelar Depan"
@@ -268,7 +352,10 @@
                     />
                   </VCol>
 
-                  <VCol cols="12" md="6">
+                  <VCol
+                    cols="12"
+                    md="6"
+                  >
                     <VTextField
                       v-model="profileForm.titleSuffix"
                       label="Gelar Belakang"
@@ -278,7 +365,10 @@
                     />
                   </VCol>
 
-                  <VCol cols="12" md="6">
+                  <VCol
+                    cols="12"
+                    md="6"
+                  >
                     <VSelect
                       v-model="profileForm.religion"
                       label="Agama"
@@ -290,7 +380,10 @@
                     />
                   </VCol>
 
-                  <VCol cols="12" md="6">
+                  <VCol
+                    cols="12"
+                    md="6"
+                  >
                     <VTextField
                       v-model="profileForm.unit"
                       label="Unit/Departemen"
@@ -304,12 +397,18 @@
                 <template v-if="isStudent">
                   <VCol cols="12">
                     <h6 class="text-h6 mb-4 mt-4 text-primary">
-                      <VIcon icon="tabler-users" class="me-2" />
+                      <VIcon
+                        icon="tabler-users"
+                        class="me-2"
+                      />
                       Informasi Keluarga
                     </h6>
                   </VCol>
 
-                  <VCol cols="12" md="6">
+                  <VCol
+                    cols="12"
+                    md="6"
+                  >
                     <VTextField
                       v-model="profileForm.fatherName"
                       label="Nama Ayah"
@@ -318,7 +417,10 @@
                     />
                   </VCol>
 
-                  <VCol cols="12" md="6">
+                  <VCol
+                    cols="12"
+                    md="6"
+                  >
                     <VTextField
                       v-model="profileForm.motherName"
                       label="Nama Ibu"
@@ -331,7 +433,10 @@
                 <!-- Address Information -->
                 <VCol cols="12">
                   <h6 class="text-h6 mb-4 mt-4 text-primary">
-                    <VIcon icon="tabler-home" class="me-2" />
+                    <VIcon
+                      icon="tabler-home"
+                      class="me-2"
+                    />
                     Informasi Alamat
                   </h6>
                 </VCol>
@@ -387,16 +492,14 @@
 </template>
 
 <script setup>
-
-
-const store = useVuex();
-const router = useRouter();
+const store = useVuex()
+const router = useRouter()
 
 // Refs
-const profileFormRef = ref();
-const fileInput = ref();
-const loading = ref(false);
-const uploadingPicture = ref(false);
+const profileFormRef = ref()
+const fileInput = ref()
+const loading = ref(false)
+const uploadingPicture = ref(false)
 
 // Form data
 const profileForm = ref({
@@ -411,25 +514,27 @@ const profileForm = ref({
   address: '',
   phone: '',
   status: '',
+
   // Student-specific fields
   fatherName: '',
   motherName: '',
+
   // Teacher-specific fields
   titlePrefix: '',
   titleSuffix: '',
   religion: '',
-  unit: ''
-});
+  unit: '',
+})
 
 // Computed
-const user = computed(() => store.state.app.user);
-const isStudent = computed(() => user.value.role === 'STUDENT');
+const user = computed(() => store.state.app.user)
+const isStudent = computed(() => user.value.role === 'STUDENT')
 
 // Options
 const genderOptions = [
   { text: 'Laki-laki', value: 'MALE' },
-  { text: 'Perempuan', value: 'FEMALE' }
-];
+  { text: 'Perempuan', value: 'FEMALE' },
+]
 
 const statusOptions = computed(() => {
   if (isStudent.value) {
@@ -438,17 +543,17 @@ const statusOptions = computed(() => {
       { text: 'Cuti', value: 'LEAVE' },
       { text: 'Non-Aktif', value: 'INACTIVE' },
       { text: 'Lulus', value: 'GRADUATED' },
-      { text: 'Drop Out', value: 'DROPOUT' }
-    ];
+      { text: 'Drop Out', value: 'DROPOUT' },
+    ]
   } else {
     return [
       { text: 'Aktif', value: 'ACTIVE' },
       { text: 'Cuti', value: 'LEAVE' },
       { text: 'Non-Aktif', value: 'INACTIVE' },
-      { text: 'Pensiun', value: 'RETIRED' }
-    ];
+      { text: 'Pensiun', value: 'RETIRED' },
+    ]
   }
-});
+})
 
 const religionOptions = [
   { text: 'Islam', value: 'ISLAM' },
@@ -457,187 +562,204 @@ const religionOptions = [
   { text: 'Hindu', value: 'HINDU' },
   { text: 'Buddha', value: 'BUDDHIST' },
   { text: 'Konghucu', value: 'CONFUCIAN' },
-  { text: 'Lainnya', value: 'OTHER' }
-];
+  { text: 'Lainnya', value: 'OTHER' },
+]
 
 // Validation rules
 const rules = {
   required: value => !!value || 'Field ini wajib diisi',
   email: value => {
-    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return pattern.test(value) || 'Format email tidak valid';
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    
+    return pattern.test(value) || 'Format email tidak valid'
   },
   phone: value => {
-    if (!value) return true; // Optional field
-    const pattern = /^[0-9+\-\s()]+$/;
-    return pattern.test(value) || 'Format nomor telepon tidak valid';
-  }
-};
+    if (!value) return true // Optional field
+    const pattern = /^[0-9+\-\s()]+$/
+    
+    return pattern.test(value) || 'Format nomor telepon tidak valid'
+  },
+}
 
 // Methods
-const getInitials = (name) => {
+const getInitials = name => {
   return name
     ?.split(" ")
-    .map((n) => n[0])
+    .map(n => n[0])
     .join("")
-    .toUpperCase() || "U";
-};
+    .toUpperCase() || "U"
+}
 
-const getRoleText = (role) => {
+const getRoleText = role => {
   const roleMap = {
     'STUDENT': 'Siswa',
     'TEACHER': 'Dosen',
-    'ADMIN': 'Administrator'
-  };
-  return roleMap[role] || role;
-};
+    'ADMIN': 'Administrator',
+  }
 
-const formatDate = (date) => {
-  if (!date) return '-';
+  
+  return roleMap[role] || role
+}
+
+const formatDate = date => {
+  if (!date) return '-'
+  
   return new Date(date).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "long",
-    year: "numeric"
-  });
-};
+    year: "numeric",
+  })
+}
 
 const uploadProfilePicture = () => {
-  fileInput.value.click();
-};
+  fileInput.value.click()
+}
 
-const handleFileUpload = async (event) => {
-  const file = event.target.files[0];
+const handleFileUpload = async event => {
+  const file = event.target.files[0]
   if (file) {
-    uploadingPicture.value = true;
+    uploadingPicture.value = true
     
     try {
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        const { toast } = await import('vue-sonner');
-        toast.error('File harus berupa gambar');
-        return;
+        const { toast } = await import('vue-sonner')
+
+        toast.error('File harus berupa gambar')
+        
+        return
       }
 
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        const { toast } = await import('vue-sonner');
-        toast.error('Ukuran file maksimal 5MB');
-        return;
+        const { toast } = await import('vue-sonner')
+
+        toast.error('Ukuran file maksimal 5MB')
+        
+        return
       }
 
       // Store the file for upload
-      profileForm.value.profilePictureFile = file;
+      profileForm.value.profilePictureFile = file
 
       // Create preview URL
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        profileForm.value.profilePicture = e.target.result;
-        uploadingPicture.value = false;
-      };
-      reader.readAsDataURL(file);
+      const reader = new FileReader()
+
+      reader.onload = e => {
+        profileForm.value.profilePicture = e.target.result
+        uploadingPicture.value = false
+      }
+      reader.readAsDataURL(file)
     } catch (error) {
-      uploadingPicture.value = false;
-      const { toast } = await import('vue-sonner');
-      toast.error('Gagal memuat gambar');
+      uploadingPicture.value = false
+
+      const { toast } = await import('vue-sonner')
+
+      toast.error('Gagal memuat gambar')
     }
   }
-};
+}
 
 const removeProfilePicture = () => {
-  profileForm.value.profilePicture = '';
-  profileForm.value.profilePictureFile = null;
+  profileForm.value.profilePicture = ''
+  profileForm.value.profilePictureFile = null
+
   // Reset file input
   if (fileInput.value) {
-    fileInput.value.value = '';
+    fileInput.value.value = ''
   }
-};
+}
 
 const updateProfile = async () => {
   // Validate form
-  const { valid } = await profileFormRef.value.validate();
-  if (!valid) return;
+  const { valid } = await profileFormRef.value.validate()
+  if (!valid) return
 
-  loading.value = true;
+  loading.value = true
 
   try {
     // Create FormData for file upload
-    const formData = new FormData();
+    const formData = new FormData()
 
     // Add profile picture file if present
     if (profileForm.value.profilePictureFile) {
-      formData.append('profilePicture', profileForm.value.profilePictureFile);
+      formData.append('profilePicture', profileForm.value.profilePictureFile)
     }
 
     // Prepare other form data based on user role
-    const formFields = {};
+    const formFields = {}
     
     if (isStudent.value) {
       // UpdateStudentProfileInput fields
-      formFields.name = profileForm.value.name;
-      formFields.number = profileForm.value.number;
-      formFields.birthPlace = profileForm.value.birthPlace;
-      formFields.birthDate = profileForm.value.birthDate || null;
-      formFields.gender = profileForm.value.gender;
-      formFields.address = profileForm.value.address;
-      formFields.phone = profileForm.value.phone;
-      formFields.status = profileForm.value.status;
-      formFields.fatherName = profileForm.value.fatherName;
-      formFields.motherName = profileForm.value.motherName;
+      formFields.name = profileForm.value.name
+      formFields.number = profileForm.value.number
+      formFields.birthPlace = profileForm.value.birthPlace
+      formFields.birthDate = profileForm.value.birthDate || null
+      formFields.gender = profileForm.value.gender
+      formFields.address = profileForm.value.address
+      formFields.phone = profileForm.value.phone
+      formFields.status = profileForm.value.status
+      formFields.fatherName = profileForm.value.fatherName
+      formFields.motherName = profileForm.value.motherName
     } else {
       // UpdateTeacherProfileInput fields
-      formFields.name = profileForm.value.name;
-      formFields.number = profileForm.value.number;
-      formFields.birthPlace = profileForm.value.birthPlace;
-      formFields.birthDate = profileForm.value.birthDate || null;
-      formFields.gender = profileForm.value.gender;
-      formFields.address = profileForm.value.address;
-      formFields.phone = profileForm.value.phone;
-      formFields.status = profileForm.value.status;
-      formFields.titlePrefix = profileForm.value.titlePrefix;
-      formFields.titleSuffix = profileForm.value.titleSuffix;
-      formFields.religion = profileForm.value.religion;
-      formFields.unit = profileForm.value.unit;
+      formFields.name = profileForm.value.name
+      formFields.number = profileForm.value.number
+      formFields.birthPlace = profileForm.value.birthPlace
+      formFields.birthDate = profileForm.value.birthDate || null
+      formFields.gender = profileForm.value.gender
+      formFields.address = profileForm.value.address
+      formFields.phone = profileForm.value.phone
+      formFields.status = profileForm.value.status
+      formFields.titlePrefix = profileForm.value.titlePrefix
+      formFields.titleSuffix = profileForm.value.titleSuffix
+      formFields.religion = profileForm.value.religion
+      formFields.unit = profileForm.value.unit
     }
 
     // Remove empty values and append to FormData
     Object.keys(formFields).forEach(key => {
-      const value = formFields[key];
+      const value = formFields[key]
       if (value !== null && value !== undefined && value !== '') {
-        formData.append(key, value);
+        formData.append(key, value)
       }
-    });
+    })
 
     // Call the profile update API with FormData
-    const action = isStudent.value ? 'profile/updateStudentProfile' : 'profile/updateTeacherProfile';
-    const result = await store.dispatch(action, formData);
+    const action = isStudent.value ? 'profile/updateStudentProfile' : 'profile/updateTeacherProfile'
+    const result = await store.dispatch(action, formData)
 
     if (result) {
       // Update the user data in the store
-      const updatedUser = { ...user.value, ...result.data };
-      store.commit('app/SET_USER_APP', updatedUser);
-      localStorage.setItem('App-User', JSON.stringify(updatedUser));
+      const updatedUser = { ...user.value, ...result.data }
+
+      store.commit('SET_USER_APP', updatedUser)
+      localStorage.setItem('App-User', JSON.stringify(updatedUser))
 
       // Show success message
-      const { toast } = await import('vue-sonner');
-      toast.success('Profil berhasil diperbarui');
+      const { toast } = await import('vue-sonner')
+
+      toast.success('Profil berhasil diperbarui')
       
       // Reset the file input
-      profileForm.value.profilePictureFile = null;
+      profileForm.value.profilePictureFile = null
       if (fileInput.value) {
-        fileInput.value.value = '';
+        fileInput.value.value = ''
       }
       
       // Navigate back to dashboard
-      router.push('/');
+      router.push('/')
     }
   } catch (error) {
-    console.error('Failed to update profile:', error);
-    const { toast } = await import('vue-sonner');
-    toast.error('Gagal memperbarui profil');
+    console.error('Failed to update profile:', error)
+
+    const { toast } = await import('vue-sonner')
+
+    toast.error('Gagal memperbarui profil')
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 // Initialize profile form
 const initializeProfileForm = () => {
@@ -653,30 +775,32 @@ const initializeProfileForm = () => {
     address: user.value.address || '',
     phone: user.value.phone || '',
     status: user.value.status || '',
+
     // Student-specific fields
     fatherName: user.value.fatherName || '',
     motherName: user.value.motherName || '',
+
     // Teacher-specific fields
     titlePrefix: user.value.titlePrefix || '',
     titleSuffix: user.value.titleSuffix || '',
     religion: user.value.religion || '',
-    unit: user.value.unit || ''
-  };
-};
+    unit: user.value.unit || '',
+  }
+}
 
 // Watch for changes in user data
 watch(
   () => user.value,
   () => {
-    initializeProfileForm();
+    initializeProfileForm()
   },
-  { immediate: true }
-);
+  { immediate: true },
+)
 
 // Mount
 onMounted(() => {
-  initializeProfileForm();
-});
+  initializeProfileForm()
+})
 </script>
 
 <style lang="scss" scoped>

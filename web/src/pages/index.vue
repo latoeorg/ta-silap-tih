@@ -18,7 +18,9 @@
           color="disabled"
           class="mb-4"
         />
-        <h2 class="text-h5 mb-2">Role tidak dikenali</h2>
+        <h2 class="text-h5 mb-2">
+          Role tidak dikenali
+        </h2>
         <p class="text-body-1 text-medium-emphasis">
           Silakan hubungi administrator untuk mengatur role Anda.
         </p>
@@ -28,19 +30,19 @@
 </template>
 
 <script setup>
-import AdminDashboard from "@/components/dashboard/admin-dashboard.vue";
-import TeacherDashboard from "@/components/dashboard/teacher-dashboard.vue";
-import StudentDashboard from "@/components/dashboard/student-dashboard.vue";
+import AdminDashboard from "@/components/dashboard/admin-dashboard.vue"
+import StudentDashboard from "@/components/dashboard/student-dashboard.vue"
+import TeacherDashboard from "@/components/dashboard/teacher-dashboard.vue"
 
-const store = useVuex();
+const store = useVuex()
 
 // Get user role from store
-const userRole = computed(() => store.state.app.user?.role);
+const userRole = computed(() => store.state.app.user?.role)
 
 // Redirect to login if not authenticated
 onMounted(() => {
   if (!store.state.app.user) {
-    navigateTo("/login");
+    navigateTo("/login")
   }
-});
+})
 </script>

@@ -37,6 +37,7 @@ const app = {
             password: payload?.password,
           },
         })
+
         context.commit("SET_USER_APP", result.data.data.user)
         localStorage.setItem("App-User", JSON.stringify(result.data.data.user))
 
@@ -44,6 +45,25 @@ const app = {
         localStorage.setItem("App-Token", result.data.data.token)
 
         window.location.href = "/"
+
+        return true
+      } catch (error) {
+        toast.error(error.response.data.message)
+      } finally {
+        context.commit("SET_LOADING_APP", false)
+      }
+    },
+    async GetProfile(context, payload) {
+      context.commit("SET_LOADING_APP", true)
+
+      try {
+        const result = await axiosInstance({
+          url: `/profile`,
+          method: "GET",
+        })
+
+        context.commit("SET_USER_APP", result.data.data)
+        localStorage.setItem("App-User", JSON.stringify(result.data.data))
 
         return true
       } catch (error) {
