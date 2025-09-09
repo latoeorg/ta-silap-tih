@@ -149,11 +149,18 @@ export class GradeService {
     meta: { total: number; page: number; limit: number };
   }> {
     const { courseId, userId, examType } = filters;
-    const where: Prisma.GradeWhereInput = {};
+    const where: Prisma.GradeWhereInput = {
+      isDeleted: false,
+      ...(courseId && { courseId }),
+      ...(userId && { userId }),
+      ...(examType && { examType }),
+    };
 
-    if (courseId) where.courseId = courseId;
-    if (userId) where.userId = userId;
-    if (examType) where.examType = examType;
+    console.log("where", where);
+
+    // if (courseId) where.courseId = courseId;
+    // if (userId) where.userId = userId;
+    // if (examType) where.examType = examType;
 
     const skip = (page - 1) * limit;
 

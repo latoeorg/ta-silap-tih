@@ -67,7 +67,7 @@ export class GradeController {
   static async getGrades(req: Request, res: Response): Promise<void> {
     try {
       const {
-        courseId,
+        course_id,
         userId,
         examType,
         page = "1",
@@ -75,6 +75,9 @@ export class GradeController {
         include,
       } = req.query;
       const user = req.user;
+      const courseId = course_id as string | undefined;
+
+      console.log("courseId", courseId, req.query);
 
       const includeComponents = include === "components";
 
@@ -109,6 +112,8 @@ export class GradeController {
           filters.userId = userId as string;
         }
       }
+
+      console.log("filters", filters);
 
       const result = await GradeService.findAll(
         parseInt(page as string, 10),
