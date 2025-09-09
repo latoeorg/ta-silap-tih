@@ -186,6 +186,8 @@ export class UserController {
         }
       }
 
+      if (data.birthDate) data.birthDate = new Date(data.birthDate);
+
       let profile;
       if (user.role === Role.STUDENT) {
         profile = await UserService.updateStudentProfile(user.email, data);

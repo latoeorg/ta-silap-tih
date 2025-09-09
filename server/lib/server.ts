@@ -29,12 +29,25 @@ export default class App {
     this.express.use(express.json());
     this.express.use(express.urlencoded({ extended: true }));
     this.express.use(cors());
-    this.express.use(helmet());
+    this.express.use(
+      helmet({
+        crossOriginResourcePolicy: { policy: "cross-origin" }, // 👈 allow images from other origins
+        crossOriginEmbedderPolicy: false, // disable unless you truly need COEP
+        crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+      })
+    );
 
     // Serve static files for uploads
     this.express.use(
       "/uploads",
-      express.static(path.join(process.cwd(), "uploads"))
+      express.static(path.join(process.cwd(), "uploads"), {
+        setHeaders(res) {
+          res.setHeader("Cross-Origin-Resource-Policy", "cross-origin"); // 👈 redundant but explicit
+          res.setHeader("Access-Control-Allow-Origin", "*"); // or your frontend origin instead of *
+          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+          res.setHeader("Content-Type", "image/jpeg"); // serve correct type
+        },
+      })
     );
 
     // // Rate limiting
