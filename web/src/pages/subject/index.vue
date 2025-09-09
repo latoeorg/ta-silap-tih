@@ -266,7 +266,7 @@ const headers = ref([
   { title: "Mata Pelajaran", key: "courses", sortable: false },
   { title: "Bobot Penilaian", key: "weights", sortable: false },
   { title: "Status", key: "status", sortable: false },
-  { title: "Aksi", key: "actions", align: "end", sortable: false },
+  { title: "Aksi", key: "actions", sortable: false },
 ])
 
 // Composables

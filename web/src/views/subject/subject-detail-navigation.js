@@ -15,9 +15,10 @@ export const SubjectDetailTabs = [
     title: 'Mata Pelajaran',
     tab: SubjectDetailTab.courses,
   },
-  {
-    icon: 'tabler-calendar',
-    title: 'Bobot Penilaian',
-    tab: SubjectDetailTab.assessmentWeight,
-  },
+
+  // {
+  //   icon: 'tabler-calendar',
+  //   title: 'Bobot Penilaian',
+  //   tab: SubjectDetailTab.assessmentWeight,
+  // },
 ]

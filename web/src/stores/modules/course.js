@@ -187,12 +187,11 @@ const course = {
       context.commit("SET_LOADING", { key: "form", value: true })
       try {
         const course_id = context.state.is_update
-        const data = { name: context.state.form.name } // Only send updatable fields as per docs
 
         const result = await axiosInstance({
           method: "PUT",
           url: `/course/${course_id}`, // Changed endpoint
-          data: data,
+          data: context.state.form,
         })
 
         toast.success(result.data.message)

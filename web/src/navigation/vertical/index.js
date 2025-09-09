@@ -26,7 +26,7 @@ export default [
     hidden: !IsCan("GET_CLASS"),
   },
   {
-    title: "Mata Pelajaran",
+    title: "Jurusan",
     icon: { icon: "tabler-book" },
     to: { name: "subject" },
     hidden: !IsCan("GET_SUBJECT"),

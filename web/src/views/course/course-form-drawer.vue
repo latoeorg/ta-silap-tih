@@ -24,7 +24,7 @@
               {{ isUpdate ? 'Edit Kursus' : 'Kursus Baru' }}
             </h2>
             <p class="header-description">
-              {{ isUpdate ? 'Perbarui detail kursus' : 'Buat kursus baru dengan menetapkan subjek dan pengajar' }}
+              {{ isUpdate ? 'Perbarui detail kursus' : 'Buat kursus baru dengan menetapkan Jurusan dan pengajar' }}
             </p>
           </div>
         </div>
@@ -68,7 +68,7 @@
                   icon="tabler-book-2"
                   class="title-icon"
                 />
-                Subjek
+                Jurusan
               </VCardTitle>
               <VCardText class="card-content">
                 <VSelect
@@ -76,8 +76,8 @@
                   :items="list_subject"
                   item-title="name"
                   item-value="id"
-                  label="Pilih Subjek"
-                  placeholder="Pilih subjek yang akan diajarkan"
+                  label="Pilih Jurusan"
+                  placeholder="Pilih Jurusan yang akan diajarkan"
                   :rules="rules.subjectId"
                   clearable
                 >
@@ -373,7 +373,7 @@ watch([subjectId, classGroupId], () => {
 // --- Validation ---
 const rules = {
   name: [v => !!v || 'Nama kursus wajib diisi', v => (v && v.length) >= 3 || 'Minimal 3 karakter'],
-  subjectId: [v => !!v || 'Subjek wajib dipilih'],
+  subjectId: [v => !!v || 'Jurusan wajib dipilih'],
   teacherId: [v => !!v || 'Pengajar wajib dipilih'],
   classGroupId: [v => !!v || 'Kelas wajib dipilih'],
 }
