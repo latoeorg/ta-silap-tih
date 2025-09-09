@@ -301,6 +301,30 @@ export class CourseService {
     });
   }
 
+  static async getCourseStudents(id: string): Promise<any[]> {
+    // Check if course exists
+    const course = await prisma.course.findUnique({
+      where: { id },
+      include: {
+        students: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            studentProfile: true,
+          },
+        },
+      },
+    });
+
+    if (!course) {
+      throw new Error("Course not found");
+    }
+
+    return course.students.map((student) => student.id);
+  }
+
   /**
    * Update students enrolled in a course
    */

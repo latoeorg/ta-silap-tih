@@ -191,6 +191,30 @@ export class CourseController {
   }
 
   /**
+   * Get students enrolled in a course
+   */
+  static async getCourseStudents(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+
+      const students = await CourseService.getCourseStudents(id);
+
+      ApiResponse.success({
+        res,
+        data: students,
+        message: "Course students retrieved successfully",
+      });
+    } catch (error) {
+      console.error("Get course students error:", error);
+      ApiResponse.error({
+        res,
+        message: JSON.stringify(error) || "Failed to retrieve course students",
+        error,
+      });
+    }
+  }
+
+  /**
    * Update students enrolled in a course
    */
   static async updateCourseStudents(req: Request, res: Response) {

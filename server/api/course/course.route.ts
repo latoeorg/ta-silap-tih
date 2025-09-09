@@ -15,6 +15,7 @@ router.put("/:id", CourseController.updateCourse);
 router.delete("/:id", CourseController.deleteCourse);
 
 // Course students management route
+router.get("/:id/students", CourseController.getCourseStudents);
 router.put("/:id/students", CourseController.updateCourseStudents);
 
 export default router;
