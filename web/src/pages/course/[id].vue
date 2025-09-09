@@ -56,12 +56,31 @@
       />
     </div>
     <div v-else-if="activeTab == CourseDetailTab.students && canViewStudents">
-      <UserDataTable
-        title="Daftar Siswa"
-        :course-id="courseId"
-        hide-add-button
-        hide-actions
-      />
+      <VCard>
+        <VCardTitle class="d-flex justify-space-between align-center">
+          <span>Daftar Siswa</span>
+          <VBtn
+            color="primary"
+            prepend-icon="tabler-users"
+            @click="openStudentAssignModal"
+          >
+            Kelola Siswa
+          </VBtn>
+        </VCardTitle>
+        
+        <VDivider />
+        
+        <VCardText class="pa-0">
+          <UserDataTable
+            :key="`students-${courseId}-${report?.updatedAt}`"
+            title=""
+            :course-id="courseId"
+            hide-add-button
+            hide-actions
+            role="STUDENT"
+          />
+        </VCardText>
+      </VCard>
     </div>
     <div v-else-if="activeTab == CourseDetailTab.attendance">
       <AttendanceEnhancedTable
@@ -108,6 +127,13 @@
       </VCard>
     </div>
   </div>
+
+  <!-- Student Assignment Modal -->
+  <CourseDetailStudentAssignModal
+    v-model:open="studentAssignModal"
+    :course-id="courseId"
+    @refresh="handleRefresh"
+  />
 </template>
 
 <script setup>
@@ -116,6 +142,7 @@ import AssessmentWeightDataTable from "@/views/assessment-weight/assessment-weig
 import AttendanceEnhancedTable from "@/views/course/attendance/attendance-enhanced-table.vue"
 import { CourseDetailTab } from "@/views/course/detail/course-detail-navigation"
 import CourseDetailNavigation from "@/views/course/detail/course-detail-navigation.vue"
+import CourseDetailStudentAssignModal from "@/views/course/detail/course-detail-student-assign-modal.vue"
 import CourseDetailSummary from "@/views/course/detail/course-detail-summary.vue"
 import GradeEnhancedTable from "@/views/course/grades/grade-enhanced-table.vue"
 import UserDataTable from "@/views/user/user-data-table.vue"
@@ -126,7 +153,7 @@ const courseId = ref(route.params.id)
 
 const activeTab = computed(() => route.query.tab || CourseDetailTab.summary)
 
-const loading = computed(() => store.state.course.loading.report)
+const loading = computed(() => store.state.course.loading.course)
 const report = computed(() => store.state.course.course)
 const user = computed(() => store.state.app.user)
 
@@ -138,6 +165,18 @@ const canViewStudents = computed(() => {
 const canViewAssessmentWeight = computed(() => {
   return user.value?.role === "TEACHER" || user.value?.role === "ADMIN"
 })
+
+// Modal state
+const studentAssignModal = ref(false)
+
+// Functions
+const openStudentAssignModal = () => {
+  studentAssignModal.value = true
+}
+
+const handleRefresh = () => {
+  refetch()
+}
 
 const refetch = () => store.dispatch("course/getCourse", courseId.value)
 

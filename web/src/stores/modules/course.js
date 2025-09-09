@@ -228,6 +228,23 @@ const course = {
       }
     },
     
+    getStudentIds: async (context, courseId) => {
+      context.commit("SET_LOADING", { key: "course", value: true })
+      try {
+        const result = await axiosInstance({
+          method: "GET",
+          url: `/course/${courseId}/students`,
+        })
+
+        return result.data.data
+      } catch (error) {
+        console.error(error)
+        toast.error(error.response?.data?.message || 'Gagal memuat data siswa course')
+      } finally {
+        context.commit("SET_LOADING", { key: "course", value: false })
+      }
+    },
+    
     updateStudents: async (context, { courseId, studentIds }) => {
       context.commit("SET_LOADING", { key: "form", value: true })
       try {

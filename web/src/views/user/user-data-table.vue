@@ -76,7 +76,7 @@
 
 <script setup>
 import axiosInstance from "@/utils/axios"
-import { computed, onMounted, ref } from 'vue' // 👈 Add computed
+import { computed, onMounted, ref, watch } from 'vue' // 👈 Add computed
 import { toast } from "vue-sonner"
 import UserFormDrawer from '../../views/user/user-form-drawer.vue'
 
@@ -142,6 +142,13 @@ const table_options = ref({
   total_pages: 0,
   total_items: 0,
   search: "",
+})
+
+// Watch for courseId changes to refetch data
+watch(() => props.courseId, (newCourseId, oldCourseId) => {
+  if (newCourseId !== oldCourseId && newCourseId) {
+    refetch()
+  }
 })
 
 const refetch = async () => {
