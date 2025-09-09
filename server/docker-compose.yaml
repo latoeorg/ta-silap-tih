@@ -2,7 +2,7 @@ version: "1"
 
 services:
   postgres:
-    image: postgres
+    image: postgres:16
     container_name: ta-silap-tih-postgres
     ports:
       - "54322:5432"
