@@ -10,12 +10,7 @@ async function hash(pw: string) {
   return bcryptjs.hash(pw, 10);
 }
 
-async function upsertUser(u: {
-  email: string;
-  name: string;
-  role: Role;
-  password: string;
-}) {
+async function upsertUser(u: { email: string; name: string; role: Role; password: string }) {
   return prisma.user.upsert({
     where: { email: u.email },
     update: {
@@ -126,10 +121,7 @@ async function main() {
     classGroups.push(cg);
 
     // assign 15–20 random students
-    const members = faker.helpers.arrayElements(
-      students,
-      faker.number.int({ min: 15, max: 20 })
-    );
+    const members = faker.helpers.arrayElements(students, faker.number.int({ min: 15, max: 20 }));
     for (const s of members) {
       await prisma.user.update({
         where: { id: s.id },
@@ -139,16 +131,23 @@ async function main() {
   }
 
   // --- Subjects ---
-  const subjects = await prisma.subject.createManyAndReturn({
-    data: [
-      "Mathematics",
-      "Physics",
-      "Chemistry",
-      "Biology",
-      "Bahasa Indonesia",
-    ].map((n) => ({ name: n })),
-    skipDuplicates: true,
-  });
+  const subjectNames = ["Mathematics", "Physics", "Chemistry", "Biology", "Bahasa Indonesia"];
+  const subjects = [];
+
+  for (const name of subjectNames) {
+    // First try to find existing subject
+    let subject = await prisma.subject.findFirst({
+      where: { name },
+    });
+
+    if (!subject) {
+      // Create if doesn't exist
+      subject = await prisma.subject.create({
+        data: { name },
+      });
+    }
+    subjects.push(subject);
+  }
 
   // --- Courses (10) ---
   const courses = [];
@@ -185,9 +184,8 @@ async function main() {
 
     for (const st of enrolled.students) {
       const examType = faker.helpers.arrayElement(Object.values(ExamType));
-      const scores = Array.from(
-        { length: faker.number.int({ min: 1, max: 3 }) },
-        () => faker.number.int({ min: 60, max: 100 })
+      const scores = Array.from({ length: faker.number.int({ min: 1, max: 3 }) }, () =>
+        faker.number.int({ min: 60, max: 100 })
       );
       const total = scores.reduce((a, b) => a + b, 0) / scores.length;
 
