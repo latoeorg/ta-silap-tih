@@ -1,7 +1,7 @@
-export const IsCan = (code) => {
-  const user = JSON.parse(localStorage.getItem("App-User"));
+export const IsCan = code => {
+  const user = JSON.parse(localStorage.getItem("App-User"))
 
-  if (!user || !user.role) return false;
+  if (!user || !user.role) return false
 
   // Define permissions based on roles
   const rolePermissions = {
@@ -66,35 +66,37 @@ export const IsCan = (code) => {
       "GET_PROFILE",
       "PUT_PROFILE",
     ],
-  };
+  }
 
   // Check if the user's role has the permission for the given code
-  return rolePermissions[user.role]?.includes(code) || false;
-};
+  return rolePermissions[user.role]?.includes(code) || false
+}
 
 // Helper function to check user role
-export const hasRole = (role) => {
-  const user = JSON.parse(localStorage.getItem("App-User"));
-  return user && user.role === role;
-};
+export const hasRole = role => {
+  const user = JSON.parse(localStorage.getItem("App-User"))
+  
+  return user && user.role === role
+}
 
 // Helper function to check if user is admin
 export const isAdmin = () => {
-  return hasRole("ADMIN");
-};
+  return hasRole("ADMIN")
+}
 
 // Helper function to check if user is teacher
 export const isTeacher = () => {
-  return hasRole("TEACHER");
-};
+  return hasRole("TEACHER")
+}
 
 // Helper function to check if user is student
 export const isStudent = () => {
-  return hasRole("STUDENT");
-};
+  return hasRole("STUDENT")
+}
 
 // Helper function to get current user role
 export const getCurrentUserRole = () => {
-  const user = JSON.parse(localStorage.getItem("App-User"));
-  return user?.role || null;
-};
+  const user = JSON.parse(localStorage.getItem("App-User"))
+  
+  return user?.role || null
+}

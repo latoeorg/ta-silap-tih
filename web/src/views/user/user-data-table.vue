@@ -194,7 +194,10 @@ const headers = ref(
 const drawerForm = ref(false)
 
 const handleDrawerForm = value => {
-  if (value) store.dispatch('user/fetchBeforeForm')
+  if (value) {
+    store.dispatch('user/fetchBeforeForm')
+    if(props.role) store.commit('user/SET_FORM', { key: 'role', value: props.role })
+  }
   drawerForm.value = value
 }
 

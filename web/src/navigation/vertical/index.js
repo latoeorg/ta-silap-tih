@@ -1,4 +1,4 @@
-import { IsCan, hasRole } from "@/utils/permission";
+import { IsCan, hasRole } from "@/utils/permission"
 
 export default [
   {
@@ -16,7 +16,7 @@ export default [
     hidden: !IsCan("GET_COURSE"),
   },
   {
-    heading: "Pengaturan",
+    heading: "Setup",
     hidden: hasRole("STUDENT"), // Hide entire section for students
   },
   {
@@ -32,23 +32,34 @@ export default [
     hidden: !IsCan("GET_SUBJECT"),
   },
   {
-    title: "Pengguna",
-    icon: { icon: "tabler-users" },
-    to: { name: "user" },
+    heading: "User Management",
     hidden: !IsCan("GET_USER"), // Only admin can see this
   },
   {
-    title: "Pengaturan Sistem",
-    icon: { icon: "tabler-settings" },
-    to: { name: "settings" },
-    hidden: !IsCan("GET_SETTINGS"), // Only admin can see this
+    title: "Guru",
+    icon: { icon: "tabler-users" },
+    to: { name: "user-teacher" },
+    hidden: !IsCan("GET_USER"), // Only admin can see this
   },
+  {
+    title: "Siswa",
+    icon: { icon: "tabler-users" },
+    to: { name: "user-student" },
+    hidden: !IsCan("GET_USER"), // Only admin can see this
+  },
+
+  // {
+  //   title: "Pengaturan",
+  //   icon: { icon: "tabler-settings" },
+  //   to: { name: "settings" },
+  //   hidden: !IsCan("GET_SETTINGS"), // Only admin can see this
+  // },
 ]
-  .map((item) => {
+  .map(item => {
     if (item.children) {
-      item.children = item.children.filter((child) => !child.hidden);
+      item.children = item.children.filter(child => !child.hidden)
     }
 
-    return item;
+    return item
   })
-  .filter((item) => !item.hidden);
+  .filter(item => !item.hidden)

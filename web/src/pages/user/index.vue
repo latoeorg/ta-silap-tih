@@ -2,12 +2,24 @@
   <!-- Access denied for non-admin users -->
   <VCard v-if="!canAccessUserManagement">
     <VCardText class="text-center py-12">
-      <VIcon icon="tabler-shield-x" size="64" color="error" class="mb-4" />
-      <h2 class="text-h5 mb-2">Akses Ditolak</h2>
+      <VIcon
+        icon="tabler-shield-x"
+        size="64"
+        color="error"
+        class="mb-4"
+      />
+      <h2 class="text-h5 mb-2">
+        Akses Ditolak
+      </h2>
       <p class="text-body-1 text-medium-emphasis">
         Anda tidak memiliki izin untuk mengakses halaman pengelolaan pengguna.
       </p>
-      <VBtn color="primary" variant="outlined" class="mt-4" to="/">
+      <VBtn
+        color="primary"
+        variant="outlined"
+        class="mt-4"
+        to="/"
+      >
         Kembali ke Beranda
       </VBtn>
     </VCardText>
@@ -30,7 +42,10 @@
           </div>
 
           <VBtn @click="handleDrawerForm(true)">
-            <VIcon start icon="tabler-plus" />
+            <VIcon
+              start
+              icon="tabler-plus"
+            />
             Tambah
           </VBtn>
         </div>
@@ -79,61 +94,61 @@
 </template>
 
 <script setup>
-import UserFormDrawer from "../../views/user/user-form-drawer.vue";
-import { IsCan } from "@/utils/permission";
+import { IsCan } from "@/utils/permission"
+import UserFormDrawer from "../../views/user/user-form-drawer.vue"
 
 const props = defineProps({
   role: {
     type: String,
     default: "STAFF",
   },
-});
+})
 
 // Check if user can access user management (admin only)
-const canAccessUserManagement = computed(() => IsCan("GET_USER"));
+const canAccessUserManagement = computed(() => IsCan("GET_USER"))
 
 const headers = ref([
   { title: "Pengguna", key: "first_name" },
   { title: "E-mel", key: "email" },
   { title: "Peranan", key: "role" },
   { title: "Tindakan", align: "end", key: "actions", sortable: false },
-]);
+])
 
-const drawerForm = ref(false);
+const drawerForm = ref(false)
 
-const store = useVuex();
+const store = useVuex()
 
-const handleDrawerForm = (value) => {
-  if (value) store.dispatch("user/fetchBeforeForm");
-  drawerForm.value = value;
-};
+const handleDrawerForm = value => {
+  if (value) store.dispatch("user/fetchBeforeForm")
+  drawerForm.value = value
+}
 
-const handleUpdate = async (id) => {
-  await store.dispatch("user/setFormUpdate", id);
-  handleDrawerForm(true);
-};
+const handleUpdate = async id => {
+  await store.dispatch("user/setFormUpdate", id)
+  handleDrawerForm(true)
+}
 
-const handleDelete = async (id) => {
-  const confirm = await SwalDelete();
+const handleDelete = async id => {
+  const confirm = await SwalDelete()
   if (confirm)
-    await store.dispatch("user/delete", id).then((res) => {
-      if (res) refetch();
-    });
-};
+    await store.dispatch("user/delete", id).then(res => {
+      if (res) refetch()
+    })
+}
 
-const loading = computed(() => store.state.user.loading.reports);
-const reports = computed(() => store.state.user.reports);
+const loading = computed(() => store.state.user.loading.reports)
+const reports = computed(() => store.state.user.reports)
 
 const table_options = computed({
   get: () => store.state.user.table_options,
-  set: (value) => store.commit("user/SET_TABLE_OPTIONS", value),
-});
+  set: value => store.commit("user/SET_TABLE_OPTIONS", value),
+})
 
 const refetch = () =>
   store.dispatch("user/getReports", {
     // ...(props.role == 'STAFF' ? { role_exclude: 'Promotor' } : {}),
     // ...(props.role == 'PROMOTOR' ? { role_include: 'Promotor' } : {}),
-  });
+  })
 
-onMounted(() => refetch());
+onMounted(() => refetch())
 </script>
