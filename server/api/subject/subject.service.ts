@@ -20,7 +20,9 @@ export class SubjectService {
     subjects: Subject[];
     meta: { total: number; page: number; limit: number };
   }> {
-    let condition: any = {};
+    let condition: any = {
+      isDeleted: false,
+    };
     if (where.role === "TEACHER") {
       condition = {
         courses: {
@@ -126,18 +128,10 @@ export class SubjectService {
 
     if (!subject) throw new Error("Subject not found");
 
-    // Check if subject is used in any course
-    const courseCount = await prisma.course.count({
-      where: { subjectId: id },
-    });
-
-    if (courseCount > 0) {
-      throw new Error("Cannot delete subject that is used in courses");
-    }
-
     // Delete subject
-    await prisma.subject.delete({
+    await prisma.subject.update({
       where: { id },
+      data: { isDeleted: true },
     });
   }
 }

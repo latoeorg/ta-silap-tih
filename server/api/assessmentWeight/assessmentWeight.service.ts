@@ -1,4 +1,9 @@
-import { PrismaClient, AssessmentWeight } from "@prisma/client";
+import {
+  PrismaClient,
+  AssessmentWeight,
+  Course,
+  Subject,
+} from "@prisma/client";
 import {
   AssessmentWeightCreateInput,
   AssessmentWeightUpdateInput,
@@ -10,19 +15,36 @@ export class AssessmentWeightService {
     userId: string,
     input: AssessmentWeightCreateInput
   ): Promise<AssessmentWeight> {
-    const { subjectId, examType, weight, quota } = input;
+    const { subjectId, courseId, examType, weight, quota } = input;
 
-    // Check if subject exists
-    const subject = await prisma.subject.findUnique({
-      where: { id: subjectId },
-    });
+    let course = null;
+    let subject = null;
 
-    if (!subject) throw new Error("Subject not found");
+    if (courseId) {
+      course = await prisma.course.findUnique({
+        where: { id: courseId },
+        include: { subject: true },
+      });
+
+      subject = course?.subject || null;
+
+      if (!course) throw new Error("Course not found");
+    }
+
+    if (subjectId) {
+      // Check if subject exists
+      subject = await prisma.subject.findUnique({
+        where: { id: subjectId },
+      });
+
+      if (!subject) throw new Error("Subject not found");
+    }
 
     // Create assessment weight
     return prisma.assessmentWeight.create({
       data: {
-        subjectId,
+        subjectId: String(subject?.id),
+        courseId: course?.id || null,
         examType,
         weight,
         quota: quota || 1,
@@ -34,16 +56,21 @@ export class AssessmentWeightService {
   static async findAll(
     page = 1,
     limit = 10,
-    subjectId?: string
+    subjectId?: string,
+    courseId?: string
   ): Promise<{
     assessmentWeights: AssessmentWeight[];
     meta: { total: number; page: number; limit: number };
   }> {
-    const where = subjectId ? { subjectId } : {};
     const skip = (page - 1) * limit;
+
     const [assessmentWeights, total] = await Promise.all([
       prisma.assessmentWeight.findMany({
-        where,
+        where: {
+          ...(subjectId && { subjectId: subjectId || undefined }),
+          ...(courseId && { courseId: courseId || undefined }),
+          isDeleted: false,
+        },
         skip,
         take: limit,
         include: {
@@ -58,7 +85,13 @@ export class AssessmentWeightService {
           },
         },
       }),
-      prisma.assessmentWeight.count({ where }),
+      prisma.assessmentWeight.count({
+        where: {
+          ...(subjectId && { subjectId: subjectId || undefined }),
+          ...(courseId && { courseId: courseId || undefined }),
+          isDeleted: false,
+        },
+      }),
     ]);
 
     return {

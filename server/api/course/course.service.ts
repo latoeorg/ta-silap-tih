@@ -90,12 +90,17 @@ export class CourseService {
   static async findAll(
     page = 1,
     limit = 10,
-    subjectId?: string
+    subjectId?: string,
+    courseId?: string
   ): Promise<{
     courses: Course[];
     meta: { total: number; page: number; limit: number };
   }> {
-    const where = subjectId ? { subjectId } : {};
+    const where = {
+      ...(subjectId && { subjectId }),
+      ...(courseId && { id: courseId }),
+      isDeleted: false,
+    };
     const skip = (page - 1) * limit;
 
     const [courses, total] = await Promise.all([
@@ -105,6 +110,7 @@ export class CourseService {
         take: limit,
         orderBy: { name: "asc" },
         include: {
+          classGroup: true,
           teacher: {
             select: {
               id: true,
@@ -161,6 +167,7 @@ export class CourseService {
           studentProfile: true,
         },
       },
+      classGroup: true,
     };
 
     // Add grades if requested
@@ -279,7 +286,7 @@ export class CourseService {
    */
   static async delete(id: string): Promise<void> {
     // Check if course exists
-    const course = await prisma.course.findUnique({
+    const course = await prisma.course.findFirst({
       where: { id },
     });
 
@@ -288,8 +295,9 @@ export class CourseService {
     }
 
     // Delete course
-    await prisma.course.delete({
+    await prisma.course.update({
       where: { id },
+      data: { isDeleted: true },
     });
   }
 
@@ -379,6 +387,7 @@ export class CourseService {
         take: limit,
         orderBy: { name: "asc" },
         include: {
+          classGroup: true,
           teacher: {
             select: {
               id: true,
@@ -439,6 +448,7 @@ export class CourseService {
         take: limit,
         orderBy: { name: "asc" },
         include: {
+          classGroup: true,
           teacher: {
             select: {
               id: true,

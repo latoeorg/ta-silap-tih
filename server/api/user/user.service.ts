@@ -164,7 +164,9 @@ export class UserService {
     } = params;
 
     // Prepare filters
-    const where: any = {};
+    const where: any = {
+      isDeleted: false,
+    };
 
     // Role filter
     if (role) {
@@ -295,8 +297,9 @@ export class UserService {
   }
 
   static async delete(id: string) {
-    return await prisma.user.delete({
+    return await prisma.user.update({
       where: { id },
+      data: { isDeleted: true },
     });
   }
 

@@ -28,10 +28,13 @@ export class AssessmentWeightController {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
     const subjectId = req.query.subjectId as string | undefined;
+    const courseId = req.query.courseId as string | undefined;
+
     const result = await AssessmentWeightService.findAll(
       page,
       limit,
-      subjectId
+      subjectId,
+      courseId
     );
 
     ApiResponse.success({

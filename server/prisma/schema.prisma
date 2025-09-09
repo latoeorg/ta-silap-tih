@@ -33,6 +33,7 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   classGroupId String?
   ClassGroup   ClassGroup[]
@@ -57,6 +58,7 @@ model StudentProfile {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 }
 
 model TeacherProfile {
@@ -80,6 +82,7 @@ model TeacherProfile {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 }
 
 model ClassGroup {
@@ -90,6 +93,7 @@ model ClassGroup {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
   students User[]   @relation("ClassStudents")
   courses  Course[]
@@ -103,20 +107,25 @@ model Subject {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 }
 
 model AssessmentWeight {
   id          String   @id @default(cuid())
   subjectId   String
+  courseId    String?
   examType    ExamType
   weight      Float
   quota       Int      @default(1)
   createdById String
   createdBy   User     @relation("CreatedWeights", fields: [createdById], references: [id])
-  subject     Subject  @relation(fields: [subjectId], references: [id])
+
+  subject Subject @relation(fields: [subjectId], references: [id])
+  course  Course? @relation(fields: [courseId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 }
 
 model Course {
@@ -136,8 +145,10 @@ model Course {
   grades      Grade[]
   attendances Attendance[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  isDeleted        Boolean            @default(false)
+  AssessmentWeight AssessmentWeight[]
 }
 
 model Grade {
@@ -152,6 +163,7 @@ model Grade {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 }
 
 model GradeComponent {
@@ -163,6 +175,7 @@ model GradeComponent {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 }
 
 enum ExamType {

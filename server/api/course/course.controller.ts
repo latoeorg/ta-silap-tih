@@ -42,6 +42,8 @@ export class CourseController {
 
       let result;
 
+      console.log("user", user);
+
       if (user.role === "STUDENT") {
         // Students can only see courses they are enrolled in
         result = await CourseService.findStudentCourses(
@@ -141,12 +143,13 @@ export class CourseController {
   static async updateCourse(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { name, teacherId, subjectId } = req.body;
+      const { name, teacherId, subjectId, classGroupId } = req.body;
 
       const course = await CourseService.update(id, {
         name,
         teacherId,
         subjectId,
+        classGroupId,
       });
 
       ApiResponse.success({

@@ -385,7 +385,7 @@ export class DashboardService {
         title: "Assessment weight configured",
         description: `${weight.examType} weight (${(
           weight.weight * 100
-        ).toFixed(0)}%) set for ${weight.subject.name} by ${
+        ).toFixed(0)}%) set for ${weight?.subject.name} by ${
           weight.createdBy.name
         }`,
         createdAt: weight.createdAt,
