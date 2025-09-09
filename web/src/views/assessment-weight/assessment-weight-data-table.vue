@@ -122,8 +122,14 @@
               </tbody>
             </VTable>
           </VCard>
-          <VDivider class="my-4" />
-          <div class="add-new-assessment">
+          <VDivider
+            v-if="totalWeight < 100"
+            class="my-4"
+          />
+          <div
+            v-if="totalWeight < 100"
+            class="add-new-assessment"
+          >
             <p class="text-subtitle-2 mb-2">
               Tambah Jenis Penilaian Baru
             </p>
