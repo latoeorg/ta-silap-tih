@@ -7,7 +7,7 @@
           <VIcon icon="tabler-user-edit" size="48" color="white" />
           <div>
             <h1 class="text-h4 font-weight-bold text-white mb-1">
-              Profil {{ isStudent ? "Siswa" : "Dosen" }}
+              Profil {{ isStudent ? "Siswa" : "Pengajar" }}
             </h1>
             <p class="text-white opacity-80">
               Kelola dan perbarui informasi profil Anda
@@ -212,7 +212,7 @@
                 >
                   <VSelect
                     v-model="profileForm.status"
-                    :label="isStudent ? 'Status Siswa' : 'Status Dosen'"
+                    :label="isStudent ? 'Status Siswa' : 'Status Pengajar'"
                     prepend-inner-icon="tabler-flag"
                     variant="outlined"
                     :items="statusOptions"
@@ -489,7 +489,7 @@ const getInitials = (name) => {
 const getRoleText = (role) => {
   const roleMap = {
     STUDENT: "Siswa",
-    TEACHER: "Dosen",
+    TEACHER: "Pengajar",
     ADMIN: "Administrator",
   };
 
@@ -660,30 +660,34 @@ const updateProfile = async () => {
 
 // Initialize profile form
 const initializeProfileForm = () => {
+  const profile = isStudent.value
+    ? user.value.studentProfile
+    : user.value.teacherProfile;
+
   profileForm.value = {
     name: user.value.name || "",
     email: user.value.email || "",
-    profilePicture: user.value.profilePicture || "",
+    profilePicture: profile?.profilePicture || "",
     profilePictureFile: null, // Always start with no file selected
-    number: user.value.number || "",
-    birthPlace: user.value.birthPlace || "",
-    birthDate: user.value.birthDate
-      ? new Date(user.value.birthDate).toISOString().split("T")[0]
+    number: profile?.number || "",
+    birthPlace: profile?.birthPlace || "",
+    birthDate: profile?.birthDate
+      ? new Date(profile.birthDate).toISOString().split("T")[0]
       : "",
-    gender: user.value.gender || "",
-    address: user.value.address || "",
-    phone: user.value.phone || "",
-    status: user.value.status || "",
+    gender: profile?.gender || "",
+    address: profile?.address || "",
+    phone: profile?.phone || "",
+    status: profile?.status || "",
 
     // Student-specific fields
-    fatherName: user.value.fatherName || "",
-    motherName: user.value.motherName || "",
+    fatherName: profile?.fatherName || "",
+    motherName: profile?.motherName || "",
 
     // Teacher-specific fields
-    titlePrefix: user.value.titlePrefix || "",
-    titleSuffix: user.value.titleSuffix || "",
-    religion: user.value.religion || "",
-    unit: user.value.unit || "",
+    titlePrefix: profile?.titlePrefix || "",
+    titleSuffix: profile?.titleSuffix || "",
+    religion: profile?.religion || "",
+    unit: profile?.unit || "",
   };
 };
 
