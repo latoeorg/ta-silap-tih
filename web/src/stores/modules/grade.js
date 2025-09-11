@@ -31,7 +31,7 @@ const grade = {
     },
     table_options: {
       page: 1,
-      page_size: 10,
+      page_size: 1000,
       total_pages: 0,
       total_items: 0,
       search: "",
@@ -137,6 +137,7 @@ const grade = {
             search: context.state.table_options.search,
             page: context.state.table_options.page,
             page_size: context.state.table_options.page_size,
+            limit: 1000,
           },
         });
 

@@ -39,7 +39,11 @@
               Input Nilai Massal
             </VBtn> -->
 
-            <VBtn v-if="!hideAddButton" color="primary" @click="refreshData">
+            <VBtn
+              v-if="!hideAddButton"
+              color="primary"
+              @click="handleRefreshData"
+            >
               <VIcon start icon="tabler-refresh" />
               Refresh
             </VBtn>
@@ -91,13 +95,10 @@
                 >
                   <div class="text-center">
                     <div class="font-weight-bold">
-                      {{ getExamTypeText(weight.examType) }} ({{
-                        weight.weight
-                      }}%)
+                      {{ getExamTypeText(weight.examType) }}
                     </div>
                     <div class="text-caption">
-                      {{ weight.quota }}
-                      {{ weight.quota > 1 ? "komponen" : "komponen" }}
+                      {{ weight.weight }}% ({{ weight.quota }})
                     </div>
                   </div>
                 </th>
@@ -176,7 +177,6 @@
                     v-for="componentIndex in weight.quota"
                     :key="`${student.id}-${weight.id}-${componentIndex}`"
                     :class="getComponentCellClass(weight.examType)"
-                    @click="editGradeComponent(student, weight, componentIndex)"
                   >
                     <div class="grade-component-cell">
                       <VTextField
@@ -192,6 +192,16 @@
                         min="0"
                         max="100"
                         hide-details
+                        :loading="
+                          savingComponents.has(
+                            `${student.id}-${weight.examType}-${componentIndex}`
+                          )
+                        "
+                        :class="{
+                          'unsaved-changes': saveTimeouts.has(
+                            `${student.id}-${weight.examType}-${componentIndex}`
+                          ),
+                        }"
                         @update:model-value="
                           updateGradeComponent(
                             student.id,
@@ -201,6 +211,13 @@
                           )
                         "
                         @blur="
+                          saveGradeComponent(
+                            student.id,
+                            weight.examType,
+                            componentIndex
+                          )
+                        "
+                        @keyup.enter="
                           saveGradeComponent(
                             student.id,
                             weight.examType,
@@ -257,13 +274,13 @@
       :open="batchModal"
       :course-id="courseId || selectedCourse"
       @handle-close="handleBatchModal"
-      @on-submit-success="refreshData"
+      @on-submit-success="handleRefreshData"
     />
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import GradeBatchModal from "./grade-batch-modal.vue";
 
 const props = defineProps({
@@ -288,6 +305,8 @@ const searchQuery = ref("");
 const selectedCourse = ref("");
 const batchModal = ref(false);
 const gradeComponents = ref({}); // Store grade components locally for editing
+const savingComponents = ref(new Set()); // Track which components are being saved
+const saveTimeouts = ref(new Map()); // Store timeouts for debounced saving
 
 // Computed properties
 const loading = computed(
@@ -324,7 +343,11 @@ const assessmentWeightsSummary = computed(() => {
 });
 
 // Methods
-const refreshData = async () => {
+const refreshData = async (forceRefresh = false) => {
+  if (forceRefresh) {
+    // Clear local grade components to force repopulation
+    gradeComponents.value = {};
+  }
   await Promise.all([fetchStudents(), fetchAssessmentWeights(), fetchGrades()]);
 };
 
@@ -362,15 +385,18 @@ const fetchGrades = async () => {
 };
 
 const populateGradeComponents = () => {
-  // Clear existing local data
-  gradeComponents.value = {};
+  // Only populate if gradeComponents is empty to avoid overwriting user input
+  const hasExistingData = Object.keys(gradeComponents.value).length > 0;
 
   // Populate with existing grade data
   grades.value.forEach((grade) => {
     if (grade.components && Array.isArray(grade.components)) {
       grade.components.forEach((component) => {
         const key = `${grade.userId}-${grade.examType}-${component.index}`;
-        gradeComponents.value[key] = component.score;
+        // Only set if key doesn't exist or if we're force refreshing
+        if (!hasExistingData || !(key in gradeComponents.value)) {
+          gradeComponents.value[key] = component.score;
+        }
       });
     }
   });
@@ -386,13 +412,43 @@ const updateGradeComponent = (userId, examType, componentIndex, value) => {
   const key = `${userId}-${examType}-${componentIndex}`;
 
   gradeComponents.value[key] = value;
+
+  // Debounced save - clear existing timeout
+  if (saveTimeouts.value.has(key)) {
+    clearTimeout(saveTimeouts.value.get(key));
+  }
+
+  // Set new timeout for auto-save
+  const timeoutId = setTimeout(() => {
+    saveGradeComponent(userId, examType, componentIndex);
+    saveTimeouts.value.delete(key);
+  }, 1000); // Save after 1 second of no changes
+
+  saveTimeouts.value.set(key, timeoutId);
 };
 
 const saveGradeComponent = async (userId, examType, componentIndex) => {
   const key = `${userId}-${examType}-${componentIndex}`;
   const score = gradeComponents.value[key];
 
-  if (!score || isNaN(parseFloat(score))) return;
+  // Skip if already saving this component
+  if (savingComponents.value.has(key)) {
+    return;
+  }
+
+  // Validate score
+  if (!score || score === "" || isNaN(parseFloat(score))) {
+    return;
+  }
+
+  const numericScore = parseFloat(score);
+  if (numericScore < 0 || numericScore > 100) {
+    console.warn("Score must be between 0 and 100");
+    return;
+  }
+
+  // Mark as saving
+  savingComponents.value.add(key);
 
   try {
     await store.dispatch("grade/updateComponent", {
@@ -400,13 +456,16 @@ const saveGradeComponent = async (userId, examType, componentIndex) => {
       courseId: props.courseId || selectedCourse.value,
       examType,
       componentIndex,
-      score: parseFloat(score),
+      score: numericScore,
     });
 
-    // Refresh grades after saving
-    await fetchGrades();
+    console.log(`Grade component saved: ${key} = ${numericScore}`);
   } catch (error) {
     console.error("Error saving grade component:", error);
+    // You could add a toast notification here
+  } finally {
+    // Remove from saving set
+    savingComponents.value.delete(key);
   }
 };
 
@@ -456,6 +515,27 @@ const handleBatchGradeEntry = () => {
 
 const handleBatchModal = () => {
   batchModal.value = false;
+};
+
+// Save all pending changes before refreshing
+const saveAllPendingChanges = async () => {
+  const pendingPromises = Array.from(saveTimeouts.value.entries()).map(
+    ([key, timeoutId]) => {
+      clearTimeout(timeoutId);
+      const [userId, examType, componentIndex] = key.split("-");
+      return saveGradeComponent(userId, examType, parseInt(componentIndex));
+    }
+  );
+
+  saveTimeouts.value.clear();
+  await Promise.all(pendingPromises);
+};
+
+const handleRefreshData = async () => {
+  // Save any pending changes first
+  await saveAllPendingChanges();
+  // Then refresh with force flag
+  await refreshData(true);
 };
 
 // Utility functions
@@ -580,26 +660,24 @@ const getStatusText = (grade) => {
 // Watchers
 watch(selectedCourse, () => {
   if (selectedCourse.value) {
-    refreshData();
+    refreshData(true); // Force refresh when changing courses
   }
 });
 
-// Initialize grade components from existing grades
+// Watch for changes in grades data and update local components intelligently
 watch(
   grades,
   (newGrades) => {
-    newGrades.forEach((grade) => {
-      if (grade.components) {
-        grade.components.forEach((component) => {
-          const key = `${grade.userId}-${grade.examType}-${component.index}`;
-
-          gradeComponents.value[key] = component.score;
-        });
-      }
-    });
+    // Only populate components if we don't have local changes
+    populateGradeComponents();
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: false } // Use shallow watching to avoid excessive triggers
 );
+
+// Watch for course changes
+watch([() => props.courseId, selectedCourse], () => {
+  refreshData(true); // Force refresh when course changes
+});
 
 // Lifecycle
 onMounted(() => {
@@ -609,18 +687,11 @@ onMounted(() => {
   }
 });
 
-// Watch for changes in grades data and update local components
-watch(
-  grades,
-  () => {
-    populateGradeComponents();
-  },
-  { deep: true }
-);
-
-// Watch for course changes
-watch([() => props.courseId, selectedCourse], () => {
-  refreshData();
+// Clean up timeouts when component is unmounted
+onUnmounted(() => {
+  // Clear all pending timeouts
+  saveTimeouts.value.forEach((timeoutId) => clearTimeout(timeoutId));
+  saveTimeouts.value.clear();
 });
 </script>
 
@@ -724,6 +795,11 @@ watch([() => props.courseId, selectedCourse], () => {
 
 .grade-component-cell .v-text-field {
   inline-size: 100%;
+}
+
+.unsaved-changes .v-field__field {
+  border: 2px solid rgb(var(--v-theme-warning)) !important;
+  background-color: rgb(var(--v-theme-warning), 0.1) !important;
 }
 
 .grade-table-container {

@@ -102,7 +102,8 @@ const attendance = {
             ...params,
             search: context.state.table_options.search,
             page: context.state.table_options.page,
-            page_size: context.state.table_options.page_size,
+            page_size: 1000,
+            limit: 1000,
           },
         });
 
