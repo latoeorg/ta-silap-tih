@@ -49,7 +49,11 @@
               Absensi Massal
             </VBtn> -->
 
-            <VBtn v-if="!hideAddButton" color="primary" @click="refreshData">
+            <VBtn
+              v-if="!hideAddButton"
+              color="primary"
+              @click="handleRefreshData"
+            >
               <VIcon start icon="tabler-refresh" />
               Refresh
             </VBtn>
@@ -153,6 +157,11 @@
                   :key="`${student.id}-${date.full}`"
                   :class="getAttendanceCellClass(date)"
                   class="attendance-cell text-center"
+                  :style="
+                    hasUnsavedChanges(student.id, date.full)
+                      ? 'border: 2px solid orange !important;'
+                      : ''
+                  "
                   @click="editAttendance(student, date)"
                 >
                   <div class="attendance-cell-content">
@@ -164,11 +173,14 @@
                       density="compact"
                       hide-details
                       variant="plain"
+                      :loading="
+                        savingAttendances.has(`${student.id}-${date.full}`)
+                      "
                       @update:model-value="
                         updateAttendance(student.id, date.full, $event)
                       "
                       @blur="saveAttendance(student.id, date.full)"
-                      style="min-width: 80px"
+                      style="min-width: 120px"
                     >
                       <template #selection="{ item }">
                         <VChip
@@ -177,6 +189,7 @@
                           variant="tonal"
                         >
                           {{ getStatusIcon(item.value) }}
+                          {{ item.value || "" }}
                         </VChip>
                       </template>
                       <template #item="{ props: itemProps, item }">
@@ -231,13 +244,13 @@
       :course-id="courseId || selectedCourse"
       :selected-date="selectedDateForBatch"
       @handle-close="handleBatchModal"
-      @on-submit-success="refreshData"
+      @on-submit-success="handleRefreshData"
     />
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import AttendanceBatchModal from "./attendance-batch-modal.vue";
 
 const props = defineProps({
@@ -264,6 +277,8 @@ const selectedMonth = ref(new Date().toISOString().slice(0, 7)); // YYYY-MM form
 const batchModal = ref(false);
 const selectedDateForBatch = ref("");
 const attendanceData = ref({}); // Store attendance data locally for editing
+const savingAttendances = ref(new Set()); // Track which attendances are being saved
+const saveTimeouts = ref(new Map()); // Store timeouts for debounced saving
 
 // Computed properties
 const loading = computed(
@@ -332,7 +347,11 @@ const currentMonthInfo = computed(() => {
 });
 
 // Methods
-const refreshData = async () => {
+const refreshData = async (forceRefresh = false) => {
+  if (forceRefresh) {
+    // Clear local attendance data to force repopulation
+    attendanceData.value = {};
+  }
   await Promise.all([fetchStudents(), fetchAttendances()]);
 };
 
@@ -371,14 +390,17 @@ const fetchAttendances = async () => {
 };
 
 const populateAttendanceData = () => {
-  // Clear existing local data
-  attendanceData.value = {};
+  // Only populate if attendanceData is empty to avoid overwriting user input
+  const hasExistingData = Object.keys(attendanceData.value).length > 0;
 
   // Populate with existing attendance data
   attendances.value.forEach((attendance) => {
     const dateKey = attendance.date?.split("T")[0]; // Get YYYY-MM-DD format
     const key = `${attendance.userId}-${dateKey}`;
-    attendanceData.value[key] = attendance.status;
+    // Only set if key doesn't exist or if we're force refreshing
+    if (!hasExistingData || !(key in attendanceData.value)) {
+      attendanceData.value[key] = attendance.status;
+    }
   });
 };
 
@@ -390,11 +412,37 @@ const getAttendanceStatus = (userId, date) => {
 const updateAttendance = (userId, date, status) => {
   const key = `${userId}-${date}`;
   attendanceData.value[key] = status;
+
+  // Debounced save - clear existing timeout
+  if (saveTimeouts.value.has(key)) {
+    clearTimeout(saveTimeouts.value.get(key));
+  }
+
+  // Set new timeout for auto-save
+  const timeoutId = setTimeout(() => {
+    saveAttendance(userId, date);
+    saveTimeouts.value.delete(key);
+  }, 1000); // Save after 1 second of no changes
+
+  saveTimeouts.value.set(key, timeoutId);
 };
 
 const saveAttendance = async (userId, date) => {
+  const key = `${userId}-${date}`;
   const status = getAttendanceStatus(userId, date);
-  if (!status) return;
+
+  // Skip if already saving this attendance
+  if (savingAttendances.value.has(key)) {
+    return;
+  }
+
+  // Validate status
+  if (!status || status === "") {
+    return;
+  }
+
+  // Mark as saving
+  savingAttendances.value.add(key);
 
   try {
     await store.dispatch("attendance/createOrUpdate", {
@@ -404,10 +452,13 @@ const saveAttendance = async (userId, date) => {
       status,
     });
 
-    // Refresh attendance data
-    await fetchAttendances();
+    console.log(`Attendance saved: ${key} = ${status}`);
   } catch (error) {
     console.error("Error saving attendance:", error);
+    // You could add a toast notification here
+  } finally {
+    // Remove from saving set
+    savingAttendances.value.delete(key);
   }
 };
 
@@ -469,6 +520,35 @@ const handleBatchModal = () => {
   batchModal.value = false;
 };
 
+// Save all pending changes before refreshing
+const saveAllPendingChanges = async () => {
+  const pendingPromises = Array.from(saveTimeouts.value.entries()).map(
+    ([key, timeoutId]) => {
+      clearTimeout(timeoutId);
+      const [userId, date] = key.split("-");
+      return saveAttendance(userId, date);
+    }
+  );
+
+  saveTimeouts.value.clear();
+  await Promise.all(pendingPromises);
+};
+
+const handleRefreshData = async () => {
+  // Save any pending changes first
+  await saveAllPendingChanges();
+  // Then refresh with force flag
+  await refreshData(true);
+};
+
+// Cleanup function for timeouts
+const cleanupTimeouts = () => {
+  saveTimeouts.value.forEach((timeoutId) => {
+    clearTimeout(timeoutId);
+  });
+  saveTimeouts.value.clear();
+};
+
 // Utility functions
 const getStatusColor = (status) => {
   switch (status) {
@@ -527,6 +607,11 @@ const getAttendanceCellClass = (date) => {
   return baseClass;
 };
 
+const hasUnsavedChanges = (userId, date) => {
+  const key = `${userId}-${date}`;
+  return saveTimeouts.value.has(key);
+};
+
 // Lifecycle
 onMounted(() => {
   refreshData();
@@ -535,9 +620,13 @@ onMounted(() => {
   }
 });
 
+onUnmounted(() => {
+  cleanupTimeouts();
+});
+
 // Watchers
 watch([() => props.courseId, selectedCourse, selectedMonth], () => {
-  refreshData();
+  refreshData(true); // Force refresh when changing course or month
 });
 
 watch(
@@ -545,7 +634,7 @@ watch(
   () => {
     populateAttendanceData();
   },
-  { deep: true }
+  { deep: false, immediate: true } // Use shallow watching to avoid excessive triggers
 );
 </script>
 
@@ -619,6 +708,12 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Unsaved changes indicator */
+.has-unsaved-changes {
+  border: 2px solid orange !important;
+  background-color: rgba(255, 165, 0, 0.1) !important;
 }
 
 /* Summary Column */
