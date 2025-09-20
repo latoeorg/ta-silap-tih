@@ -15,14 +15,21 @@ export class SubjectService {
   static async findAll(
     page = 1,
     limit = 10,
-    where: { userId?: string; role?: string } = {}
+    where: { userId?: string; role?: string; search?: string } = {}
   ): Promise<{
     subjects: Subject[];
-    meta: { total: number; page: number; limit: number };
+    meta: { total: number; page: number; limit: number; search?: string };
   }> {
     let condition: any = {
       isDeleted: false,
     };
+
+    if (where.search) {
+      condition.OR = [
+        { name: { contains: where.search, mode: "insensitive" } },
+      ];
+    }
+
     if (where.role === "TEACHER") {
       condition = {
         courses: {

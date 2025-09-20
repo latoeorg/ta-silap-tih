@@ -21,11 +21,16 @@ export class SubjectController {
   static async findAll(req: Request, res: Response) {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
+    const search = (req.query.search as string) || "";
+
     const user = req.user;
+
     const result = await SubjectService.findAll(page, limit, {
       userId: user.userId,
       role: user.role,
+      search,
     });
+
     ApiResponse.success({
       res,
       data: result.subjects,
