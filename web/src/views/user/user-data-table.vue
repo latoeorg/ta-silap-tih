@@ -32,7 +32,7 @@
       <VCardText class="px-0 pt-0">
         <VDataTableServer
           v-model:options="table_options"
-          v-model:items-per-page="table_options.page_size"
+          v-model:items-per-page="table_options.itemsPerPage"
           v-model:page="table_options.page"
           v-model="selected"
           :items-length="table_options.total_items"
@@ -138,7 +138,7 @@ const reports = ref([])
 
 const table_options = ref({
   page: 1,
-  page_size: 5,
+  itemsPerPage: 5,
   total_pages: 0,
   total_items: 0,
   search: "",
@@ -160,8 +160,11 @@ const refetch = async () => {
       ...(props.courseId ? { course_id: props.courseId } : {}),
       search: table_options.value.search,
       page: table_options.value.page,
-      page_size: table_options.value.page_size,
+      page_size: table_options.value.itemsPerPage,
     }
+
+    console.log('params', params, table_options.value)
+    
 
     const { data: result } = await axiosInstance({
       url: `/user`,
@@ -171,7 +174,7 @@ const refetch = async () => {
 
     reports.value = result.data
     table_options.value.page = result.pagination.page
-    table_options.value.page_size = result.pagination.page_size
+    table_options.value.itemsPerPage = result.pagination.page_size
     table_options.value.total_pages = result.pagination.total_pages
     table_options.value.total_items = result.pagination.total_items
   } catch (error) {
