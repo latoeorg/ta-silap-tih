@@ -33,16 +33,20 @@ export class ClassGroupService {
     return classGroup;
   }
 
-  static async findAll(
-    page = 1,
-    limit = 10
-  ): Promise<{
-    classGroups: ClassGroup[];
-    meta: { total: number; page: number; limit: number };
-  }> {
+  static async findAll(page = 1, limit = 10, where: { search?: string } = {}) {
     const skip = (page - 1) * limit;
+
+    const condition: any = {};
+
+    if (where.search) {
+      condition.OR = [
+        { name: { contains: where.search, mode: "insensitive" } },
+      ];
+    }
+
     const [classGroups, total] = await Promise.all([
       prisma.classGroup.findMany({
+        where: condition,
         skip,
         take: limit,
         orderBy: { name: "asc" },
@@ -65,7 +69,7 @@ export class ClassGroupService {
           },
         },
       }),
-      prisma.classGroup.count(),
+      prisma.classGroup.count({ where: condition }),
     ]);
 
     return {

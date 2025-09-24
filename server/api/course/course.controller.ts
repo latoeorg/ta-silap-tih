@@ -37,12 +37,10 @@ export class CourseController {
    */
   static async getAllCourses(req: Request, res: Response) {
     try {
-      const { subjectId, page = "1", limit = "10" } = req.query;
+      const { subjectId, page = "1", limit = "10", search } = req.query;
       const user = req.user;
 
       let result;
-
-      console.log("user", user);
 
       if (user.role === "STUDENT") {
         // Students can only see courses they are enrolled in
@@ -50,7 +48,8 @@ export class CourseController {
           user.userId,
           parseInt(page as string, 10),
           parseInt(limit as string, 10),
-          subjectId as string
+          subjectId as string,
+          search as string
         );
       } else if (user.role === "TEACHER") {
         // Teachers can see courses they teach
@@ -58,14 +57,17 @@ export class CourseController {
           user.userId,
           parseInt(page as string, 10),
           parseInt(limit as string, 10),
-          subjectId as string
+          subjectId as string,
+          search as string
         );
       } else {
         // Admins can see all courses
         result = await CourseService.findAll(
           parseInt(page as string, 10),
           parseInt(limit as string, 10),
-          subjectId as string
+          subjectId as string,
+          "",
+          search as string
         );
       }
 

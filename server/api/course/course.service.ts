@@ -91,16 +91,28 @@ export class CourseService {
     page = 1,
     limit = 10,
     subjectId?: string,
-    courseId?: string
-  ): Promise<{
-    courses: Course[];
-    meta: { total: number; page: number; limit: number };
-  }> {
+    courseId?: string,
+    search?: string
+  ) {
     const where = {
       ...(subjectId && { subjectId }),
       ...(courseId && { id: courseId }),
       isDeleted: false,
     };
+
+    if (search) {
+      Object.assign(where, {
+        OR: [
+          { name: { contains: search, mode: "insensitive" } },
+          {
+            subject: {
+              name: { contains: search, mode: "insensitive" },
+            },
+          },
+        ],
+      });
+    }
+
     const skip = (page - 1) * limit;
 
     const [courses, total] = await Promise.all([
@@ -385,11 +397,9 @@ export class CourseService {
     studentId: string,
     page = 1,
     limit = 10,
-    subjectId?: string
-  ): Promise<{
-    courses: Course[];
-    meta: { total: number; page: number; limit: number };
-  }> {
+    subjectId?: string,
+    search?: string
+  ) {
     const where: any = {
       students: {
         some: {
@@ -400,6 +410,17 @@ export class CourseService {
 
     if (subjectId) {
       where.subjectId = subjectId;
+    }
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        {
+          subject: {
+            name: { contains: search, mode: "insensitive" },
+          },
+        },
+      ];
     }
 
     const skip = (page - 1) * limit;
@@ -450,17 +471,26 @@ export class CourseService {
     teacherId: string,
     page = 1,
     limit = 10,
-    subjectId?: string
-  ): Promise<{
-    courses: Course[];
-    meta: { total: number; page: number; limit: number };
-  }> {
+    subjectId?: string,
+    search?: string
+  ) {
     const where: any = {
       teacherId,
     };
 
     if (subjectId) {
       where.subjectId = subjectId;
+    }
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        {
+          subject: {
+            name: { contains: search, mode: "insensitive" },
+          },
+        },
+      ];
     }
 
     const skip = (page - 1) * limit;

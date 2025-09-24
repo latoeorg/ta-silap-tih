@@ -25,7 +25,11 @@ export class ClassGroupController {
   static async findAll(req: Request, res: Response) {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
-    const result = await ClassGroupService.findAll(page, limit);
+    const search = (req.query.search as string) || "";
+
+    const result = await ClassGroupService.findAll(page, limit, {
+      search,
+    });
 
     ApiResponse.success({
       res,
