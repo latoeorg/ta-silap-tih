@@ -149,12 +149,7 @@ export class GradeController {
   static async getMyGrades(req: Request, res: Response): Promise<void> {
     try {
       const user = req.user;
-      const { 
-        course_id, 
-        examType, 
-        page = "1", 
-        limit = "10" 
-      } = req.query;
+      const { course_id, examType, page = "1", limit = "10" } = req.query;
 
       // Only students can access this endpoint
       if (user.role !== "STUDENT") {
@@ -173,7 +168,7 @@ export class GradeController {
       if (course_id) {
         filters.courseId = course_id as string;
       }
-      
+
       if (examType) {
         filters.examType = examType as ExamType;
       }

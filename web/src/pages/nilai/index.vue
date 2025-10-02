@@ -4,22 +4,15 @@
       <VCol cols="12">
         <VCard>
           <VCardTitle class="d-flex align-center">
-            <VIcon
-              icon="tabler-award"
-              size="24"
-              class="me-3"
-            />
+            <VIcon icon="tabler-award" size="24" class="me-3" />
             Nilai Saya
             <VSpacer />
           </VCardTitle>
-          
+
           <VCardText>
             <!-- Filters -->
             <VRow class="mb-4">
-              <VCol
-                cols="12"
-                md="4"
-              >
+              <VCol cols="12" md="4">
                 <AppSelect
                   v-model="selectedCourse"
                   :items="courseOptions"
@@ -30,11 +23,8 @@
                   @update:model-value="fetchGrades"
                 />
               </VCol>
-              
-              <VCol
-                cols="12"
-                md="4"
-              >
+
+              <VCol cols="12" md="4">
                 <AppSelect
                   v-model="selectedExamType"
                   :items="examTypeOptions"
@@ -61,18 +51,14 @@
               <!-- Subject -->
               <template #item.course.subject.name="{ item }">
                 <div class="d-flex align-center">
-                  <VIcon
-                    icon="tabler-book"
-                    size="20"
-                    class="me-2"
-                  />
-                  {{ item.course?.subject?.name || '-' }}
+                  <VIcon icon="tabler-book" size="20" class="me-2" />
+                  {{ item.course?.subject?.name || "-" }}
                 </div>
               </template>
 
               <!-- Course -->
               <template #item.course.name="{ item }">
-                {{ item.course?.name || '-' }}
+                {{ item.course?.name || "-" }}
               </template>
 
               <!-- Exam Type -->
@@ -94,7 +80,7 @@
                     size="small"
                     variant="tonal"
                   >
-                    {{ item.totalScore || '-' }}
+                    {{ item.totalScore || "-" }}
                   </VChip>
                 </div>
               </template>
@@ -112,10 +98,7 @@
                     {{ component.score }}
                   </VChip>
                 </div>
-                <span
-                  v-else
-                  class="text-body-2 text-disabled"
-                >
+                <span v-else class="text-body-2 text-disabled">
                   Tidak ada komponen
                 </span>
               </template>
@@ -123,13 +106,10 @@
               <!-- Teacher -->
               <template #item.course.teacher.name="{ item }">
                 <div class="d-flex align-center">
-                  <VAvatar
-                    size="32"
-                    class="me-2"
-                  >
+                  <VAvatar size="32" class="me-2">
                     <VIcon icon="tabler-user" />
                   </VAvatar>
-                  {{ item.course?.teacher?.name || '-' }}
+                  {{ item.course?.teacher?.name || "-" }}
                 </div>
               </template>
 
@@ -143,10 +123,7 @@
                   @click="viewGradeDetails(item)"
                 >
                   <VIcon icon="tabler-eye" />
-                  <VTooltip
-                    activator="parent"
-                    location="top"
-                  >
+                  <VTooltip activator="parent" location="top">
                     Lihat Detail
                   </VTooltip>
                 </VBtn>
@@ -160,9 +137,7 @@
                     size="64"
                     class="text-disabled"
                   />
-                  <div class="text-h6 mt-2">
-                    Belum ada nilai
-                  </div>
+                  <div class="text-h6 mt-2">Belum ada nilai</div>
                   <div class="text-body-2 text-disabled">
                     Nilai akan muncul setelah guru memasukkan penilaian
                   </div>
@@ -175,35 +150,24 @@
     </VRow>
 
     <!-- Grade Details Dialog -->
-    <VDialog
-      v-model="detailDialog"
-      max-width="600"
-    >
+    <VDialog v-model="detailDialog" max-width="600">
       <VCard v-if="selectedGrade">
         <VCardTitle class="d-flex align-center">
-          <VIcon
-            icon="tabler-award"
-            size="24"
-            class="me-3"
-          />
+          <VIcon icon="tabler-award" size="24" class="me-3" />
           Detail Nilai
         </VCardTitle>
-        
+
         <VCardText>
           <VRow>
             <VCol cols="12">
               <div class="text-h6 mb-4">
-                {{ selectedGrade.course?.subject?.name }} - {{ selectedGrade.course?.name }}
+                {{ selectedGrade.course?.subject?.name }} -
+                {{ selectedGrade.course?.name }}
               </div>
             </VCol>
-            
-            <VCol
-              cols="6"
-              md="4"
-            >
-              <div class="text-body-2 text-disabled">
-                Jenis Ujian
-              </div>
+
+            <VCol cols="6" md="4">
+              <div class="text-body-2 text-disabled">Jenis Ujian</div>
               <VChip
                 :color="getExamTypeColor(selectedGrade.examType)"
                 size="small"
@@ -212,42 +176,32 @@
                 {{ getExamTypeName(selectedGrade.examType) }}
               </VChip>
             </VCol>
-            
-            <VCol
-              cols="6"
-              md="4"
-            >
-              <div class="text-body-2 text-disabled">
-                Nilai Total
-              </div>
+
+            <VCol cols="6" md="4">
+              <div class="text-body-2 text-disabled">Nilai Total</div>
               <div class="text-h6">
                 <VChip
                   :color="getScoreColor(selectedGrade.totalScore)"
                   size="small"
                   variant="tonal"
                 >
-                  {{ selectedGrade.totalScore || '-' }}
+                  {{ selectedGrade.totalScore || "-" }}
                 </VChip>
               </div>
             </VCol>
-            
-            <VCol
-              cols="12"
-              md="4"
-            >
-              <div class="text-body-2 text-disabled">
-                Guru
-              </div>
-              <div>{{ selectedGrade.course?.teacher?.name || '-' }}</div>
+
+            <VCol cols="12" md="4">
+              <div class="text-body-2 text-disabled">Guru</div>
+              <div>{{ selectedGrade.course?.teacher?.name || "-" }}</div>
             </VCol>
-            
+
             <VCol
-              v-if="selectedGrade.components && selectedGrade.components.length > 0"
+              v-if="
+                selectedGrade.components && selectedGrade.components.length > 0
+              "
               cols="12"
             >
-              <div class="text-body-2 text-disabled mb-2">
-                Komponen Nilai
-              </div>
+              <div class="text-body-2 text-disabled mb-2">Komponen Nilai</div>
               <div class="d-flex flex-wrap ga-2">
                 <VChip
                   v-for="(component, index) in selectedGrade.components"
@@ -261,14 +215,10 @@
             </VCol>
           </VRow>
         </VCardText>
-        
+
         <VCardActions>
           <VSpacer />
-          <VBtn
-            color="primary"
-            variant="text"
-            @click="detailDialog = false"
-          >
+          <VBtn color="primary" variant="text" @click="detailDialog = false">
             Tutup
           </VBtn>
         </VCardActions>
@@ -278,112 +228,112 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
-import { useStore } from 'vuex'
+import { computed, onMounted, ref, watch } from "vue";
+import { useStore } from "vuex";
 
-const store = useStore()
+const store = useStore();
 
 // Reactive data
-const page = ref(1)
-const itemsPerPage = ref(10)
-const selectedCourse = ref(null)
-const selectedExamType = ref(null)
-const detailDialog = ref(false)
-const selectedGrade = ref(null)
+const page = ref(1);
+const itemsPerPage = ref(10);
+const selectedCourse = ref(null);
+const selectedExamType = ref(null);
+const detailDialog = ref(false);
+const selectedGrade = ref(null);
 
 // Table headers
 const headers = [
-  { title: 'Mata Pelajaran', key: 'course.subject.name', sortable: false },
-  { title: 'Kelas', key: 'course.name', sortable: false },
-  { title: 'Jenis Ujian', key: 'examType', sortable: false },
-  { title: 'Nilai Total', key: 'totalScore', sortable: false },
-  { title: 'Komponen', key: 'components', sortable: false },
-  { title: 'Guru', key: 'course.teacher.name', sortable: false },
-  { title: 'Aksi', key: 'actions', sortable: false, align: 'center' },
-]
+  { title: "Mata Pelajaran", key: "course.subject.name", sortable: false },
+  { title: "Kelas", key: "course.name", sortable: false },
+  { title: "Jenis Ujian", key: "examType", sortable: false },
+  { title: "Nilai Total", key: "totalScore", sortable: false },
+  { title: "Komponen", key: "components", sortable: false },
+  { title: "Guru", key: "course.teacher.name", sortable: false },
+  { title: "Aksi", key: "actions", sortable: false, align: "center" },
+];
 
 // Computed properties
-const grades = computed(() => store.state.grade.grades)
-const loading = computed(() => store.state.grade.loading.grades)
-const totalItems = computed(() => store.state.grade.table_options.total_items)
-const examTypeOptions = computed(() => store.state.grade.examTypeOptions)
+const grades = computed(() => store.state.grade.grades);
+const loading = computed(() => store.state.grade.loading.grades);
+const totalItems = computed(() => store.state.grade.table_options.total_items);
+const examTypeOptions = computed(() => store.state.grade.examTypeOptions);
 
 const courseOptions = computed(() => {
-  const uniqueCourses = new Map()
-  
-  grades.value.forEach(grade => {
+  const uniqueCourses = new Map();
+
+  grades.value.forEach((grade) => {
     if (grade.course && grade.course.subject) {
-      const key = grade.course.id
+      const key = grade.course.id;
       if (!uniqueCourses.has(key)) {
         uniqueCourses.set(key, {
           value: grade.course.id,
           text: `${grade.course.subject.name} - ${grade.course.name}`,
-        })
+        });
       }
     }
-  })
-  
-  return Array.from(uniqueCourses.values())
-})
+  });
+
+  return Array.from(uniqueCourses.values());
+});
 
 // Methods
 const fetchGrades = async () => {
-  const params = {}
-  
+  const params = {};
+
   if (selectedCourse.value) {
-    params.course_id = selectedCourse.value
+    params.course_id = selectedCourse.value;
   }
-  
+
   if (selectedExamType.value) {
-    params.examType = selectedExamType.value
+    params.examType = selectedExamType.value;
   }
-  
-  await store.dispatch('grade/getMyGrades', params)
-}
 
-const getExamTypeName = examType => {
-  const option = examTypeOptions.value.find(opt => opt.value === examType)
+  await store.dispatch("grade/getMyGrades", params);
+};
 
-  return option ? option.title : examType
-}
+const getExamTypeName = (examType) => {
+  const option = examTypeOptions.value.find((opt) => opt.value === examType);
 
-const getExamTypeColor = examType => {
+  return option ? option.title : examType;
+};
+
+const getExamTypeColor = (examType) => {
   const colors = {
-    DAILY: 'info',
-    QUIZ: 'warning',
-    MID_TERM: 'primary',
-    FINAL: 'error',
-    ASSIGNMENT: 'success',
-  }
+    DAILY: "info",
+    QUIZ: "warning",
+    MID_TERM: "primary",
+    FINAL: "error",
+    ASSIGNMENT: "success",
+  };
 
-  return colors[examType] || 'default'
-}
+  return colors[examType] || "default";
+};
 
-const getScoreColor = score => {
-  if (!score) return 'default'
-  if (score >= 85) return 'success'
-  if (score >= 70) return 'info'
-  if (score >= 60) return 'warning'
+const getScoreColor = (score) => {
+  if (!score) return "default";
+  if (score >= 85) return "success";
+  if (score >= 70) return "info";
+  if (score >= 60) return "warning";
 
-  return 'error'
-}
+  return "error";
+};
 
-const viewGradeDetails = grade => {
-  selectedGrade.value = grade
-  detailDialog.value = true
-}
+const viewGradeDetails = (grade) => {
+  selectedGrade.value = grade;
+  detailDialog.value = true;
+};
 
 // Watch for page changes
 watch([page, itemsPerPage], () => {
-  store.commit('grade/SET_TABLE_OPTIONS', {
+  store.commit("grade/SET_TABLE_OPTIONS", {
     page: page.value,
     page_size: itemsPerPage.value,
-  })
-  fetchGrades()
-})
+  });
+  fetchGrades();
+});
 
 // Initial load
 onMounted(() => {
-  fetchGrades()
-})
+  fetchGrades();
+});
 </script>

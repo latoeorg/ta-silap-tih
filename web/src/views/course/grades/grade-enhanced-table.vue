@@ -264,6 +264,7 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
+import { useStore } from "vuex";
 import GradeBatchModal from "./grade-batch-modal.vue";
 
 const props = defineProps({
@@ -281,7 +282,7 @@ const props = defineProps({
   },
 });
 
-const store = useVuex();
+const store = useStore();
 
 // Local state
 const searchQuery = ref("");
@@ -298,10 +299,13 @@ const loading = computed(
 );
 
 const students = computed(() => store.state.user.reports || []);
+
 const assessmentWeights = computed(
   () => store.state.assessmentWeight.reports || []
 );
+
 const grades = computed(() => store.state.grade.grades || []);
+
 const courses = computed(() => store.state.course.reports || []);
 
 const filteredStudents = computed(() => {
@@ -324,8 +328,12 @@ const assessmentWeightsSummary = computed(() => {
 });
 
 // Methods
-const refreshData = async () => {
-  await Promise.all([fetchStudents(), fetchAssessmentWeights(), fetchGrades()]);
+const refreshData = async (skipGradesFetch = false) => {
+  const promises = [fetchStudents(), fetchAssessmentWeights()];
+  if (!skipGradesFetch) {
+    promises.push(fetchGrades());
+  }
+  await Promise.all(promises);
 };
 
 const fetchStudents = async () => {
@@ -348,17 +356,36 @@ const fetchAssessmentWeights = async () => {
   await store.dispatch("assessmentWeight/getReports", params);
 };
 
-const fetchGrades = async () => {
-  const params = {};
+const fetchGrades = async (preserveLocalChanges = false) => {
+  const params = {
+    page: 1,
+    page_size: 100, // Ensure we get all grades to avoid pagination issues
+  };
+
   if (props.courseId) {
     params.course_id = props.courseId;
   } else if (selectedCourse.value) {
     params.course_id = selectedCourse.value;
   }
+
+  // Store current local changes before fetching
+  const currentLocalChanges = preserveLocalChanges
+    ? { ...gradeComponents.value }
+    : {};
+
   await store.dispatch("grade/getGrades", params);
 
   // Populate local gradeComponents with existing data
   populateGradeComponents();
+
+  // Restore unsaved local changes if requested
+  if (preserveLocalChanges) {
+    Object.keys(currentLocalChanges).forEach((key) => {
+      if (currentLocalChanges[key] !== gradeComponents.value[key]) {
+        gradeComponents.value[key] = currentLocalChanges[key];
+      }
+    });
+  }
 };
 
 const populateGradeComponents = () => {
@@ -370,10 +397,49 @@ const populateGradeComponents = () => {
     if (grade.components && Array.isArray(grade.components)) {
       grade.components.forEach((component) => {
         const key = `${grade.userId}-${grade.examType}-${component.index}`;
+
         gradeComponents.value[key] = component.score;
       });
     }
   });
+};
+
+const getOriginalGradeComponent = (userId, examType, componentIndex) => {
+  const grade = grades.value.find(
+    (g) => g.userId === userId && g.examType === examType
+  );
+  if (grade && grade.components) {
+    const component = grade.components.find((c) => c.index === componentIndex);
+
+    return component ? component.score : null;
+  }
+
+  return null;
+};
+
+const updateLocalGradeData = (userId, examType, componentIndex, score) => {
+  // Find and update the specific grade in the store
+  const gradeIndex = grades.value.findIndex(
+    (g) => g.userId === userId && g.examType === examType
+  );
+  if (gradeIndex !== -1) {
+    const grade = grades.value[gradeIndex];
+    if (!grade.components) {
+      grade.components = [];
+    }
+
+    const componentIndexActual = grade.components.findIndex(
+      (c) => c.index === componentIndex
+    );
+    if (componentIndexActual !== -1) {
+      grade.components[componentIndexActual].score = score;
+    } else {
+      grade.components.push({ index: componentIndex, score: score });
+    }
+
+    // Update the store directly to avoid full refresh
+    store.commit("grade/SET_GRADES", [...grades.value]);
+  }
 };
 
 const getGradeComponent = (userId, examType, componentIndex) => {
@@ -395,7 +461,7 @@ const saveGradeComponent = async (userId, examType, componentIndex) => {
   if (!score || isNaN(parseFloat(score))) return;
 
   try {
-    await store.dispatch("grade/updateComponent", {
+    const success = await store.dispatch("grade/updateComponent", {
       userId,
       courseId: props.courseId || selectedCourse.value,
       examType,
@@ -403,10 +469,30 @@ const saveGradeComponent = async (userId, examType, componentIndex) => {
       score: parseFloat(score),
     });
 
-    // Refresh grades after saving
-    await fetchGrades();
+    if (success) {
+      // Update local grades data instead of full refresh to preserve UI state
+      updateLocalGradeData(userId, examType, componentIndex, parseFloat(score));
+    } else {
+      // Reset local value on failure
+      const originalValue = getOriginalGradeComponent(
+        userId,
+        examType,
+        componentIndex
+      );
+
+      gradeComponents.value[key] = originalValue || "";
+    }
   } catch (error) {
     console.error("Error saving grade component:", error);
+
+    // Reset local value on error
+    const originalValue = getOriginalGradeComponent(
+      userId,
+      examType,
+      componentIndex
+    );
+
+    gradeComponents.value[key] = originalValue || "";
   }
 };
 

@@ -31,7 +31,7 @@ const grade = {
     },
     table_options: {
       page: 1,
-      page_size: 10,
+      page_size: 100,
       total_pages: 0,
       total_items: 0,
       search: "",
@@ -143,7 +143,9 @@ const grade = {
         context.commit("SET_GRADES", result.data.data);
         context.commit("SET_TABLE_OPTIONS", {
           page: result.data.pagination?.page || 1,
-          page_size: result.data.pagination?.page_size || 10,
+          page_size:
+            result.data.pagination?.page_size ||
+            context.state.table_options.page_size,
           total_pages: result.data.pagination?.total_pages || 0,
           total_items: result.data.pagination?.total_items || 0,
         });
