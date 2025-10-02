@@ -157,6 +157,36 @@ const grade = {
       }
     },
 
+    getMyGrades: async (context, params) => {
+      context.commit("SET_LOADING", { key: "grades", value: true });
+      try {
+        const result = await axiosInstance({
+          url: `/grade/my-grades`,
+          method: "GET",
+          params: {
+            ...params,
+            page: context.state.table_options.page,
+            page_size: context.state.table_options.page_size,
+          },
+        });
+
+        context.commit("SET_GRADES", result.data.data);
+        context.commit("SET_TABLE_OPTIONS", {
+          page: result.data.pagination?.page || 1,
+          page_size: result.data.pagination?.page_size || 10,
+          total_pages: result.data.pagination?.total_pages || 0,
+          total_items: result.data.pagination?.total_items || 0,
+        });
+      } catch (error) {
+        console.log(error);
+        toast.error(
+          error.response?.data?.message || "Failed to fetch your grades"
+        );
+      } finally {
+        context.commit("SET_LOADING", { key: "grades", value: false });
+      }
+    },
+
     getGradeComponents: async (context) => {
       context.commit("SET_LOADING", { key: "components", value: true });
       try {

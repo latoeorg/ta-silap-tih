@@ -203,6 +203,80 @@ export class GradeService {
   }
 
   /**
+   * Find grades for a specific student (student-only endpoint)
+   */
+  static async findStudentGrades(
+    studentId: string,
+    page: number,
+    limit: number,
+    filters: {
+      courseId?: string;
+      examType?: ExamType;
+      userId?: string;
+    }
+  ): Promise<{
+    grades: Grade[];
+    meta: { total: number; page: number; limit: number };
+  }> {
+    const where: Prisma.GradeWhereInput = {
+      isDeleted: false,
+      userId: studentId, // Always filter by the student's ID
+      ...(filters.courseId && { courseId: filters.courseId }),
+      ...(filters.examType && { examType: filters.examType }),
+    };
+
+    const skip = (page - 1) * limit;
+
+    const [grades, total] = await Promise.all([
+      prisma.grade.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: [
+          { course: { name: "asc" } },
+          { examType: "asc" },
+          { createdAt: "desc" },
+        ],
+        include: {
+          course: {
+            select: {
+              id: true,
+              name: true,
+              subject: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              teacher: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          components: {
+            orderBy: {
+              index: "asc",
+            },
+          },
+        },
+      }),
+      prisma.grade.count({ where }),
+    ]);
+
+    return {
+      grades,
+      meta: {
+        total,
+        page,
+        limit,
+      },
+    };
+  }
+
+  /**
    * Find a specific grade by student, course and exam type
    */
   static async findByKey(

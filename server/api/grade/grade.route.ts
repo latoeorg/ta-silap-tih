@@ -11,6 +11,7 @@ gradeRouter.use(authenticate);
 gradeRouter.post("/", GradeController.createGrade);
 gradeRouter.post("/batch", GradeController.createBatchGrades);
 gradeRouter.get("/", GradeController.getGrades);
+gradeRouter.get("/my-grades", GradeController.getMyGrades); // Student-specific endpoint
 gradeRouter.get("/component", GradeController.getGradeComponents);
 gradeRouter.put("/component", GradeController.updateGradeComponent);
 gradeRouter.get("/:userId/:courseId/:examType", GradeController.getGradeByKey);

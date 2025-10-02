@@ -144,6 +144,69 @@ export class GradeController {
   }
 
   /**
+   * Get student's own grades (for student role)
+   */
+  static async getMyGrades(req: Request, res: Response): Promise<void> {
+    try {
+      const user = req.user;
+      const { 
+        course_id, 
+        examType, 
+        page = "1", 
+        limit = "10" 
+      } = req.query;
+
+      // Only students can access this endpoint
+      if (user.role !== "STUDENT") {
+        ApiResponse.error({
+          res,
+          message: "Unauthorized: This endpoint is only for students",
+          statusCode: 403,
+        });
+        return;
+      }
+
+      const filters: any = {
+        userId: user.userId, // Always filter by current user
+      };
+
+      if (course_id) {
+        filters.courseId = course_id as string;
+      }
+      
+      if (examType) {
+        filters.examType = examType as ExamType;
+      }
+
+      const result = await GradeService.findStudentGrades(
+        user.userId,
+        parseInt(page as string, 10),
+        parseInt(limit as string, 10),
+        filters
+      );
+
+      ApiResponse.success({
+        res,
+        data: result.grades,
+        pagination: {
+          total_items: result.meta.total,
+          page: result.meta.page,
+          page_size: result.meta.limit,
+          total_pages: Math.ceil(result.meta.total / result.meta.limit),
+        },
+        message: "Student grades retrieved successfully",
+      });
+    } catch (error) {
+      console.error("Get student grades error:", error);
+      ApiResponse.error({
+        res,
+        message: "Failed to retrieve student grades",
+        error,
+      });
+    }
+  }
+
+  /**
    * Get a specific grade by student, course and exam type
    */
   static async getGradeByKey(req: Request, res: Response): Promise<void> {
